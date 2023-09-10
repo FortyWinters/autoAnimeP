@@ -76,6 +76,37 @@ class Mikan:
                 
         print("搜索结束")
 
+    def run_with_sftp(self):
+        ssl._create_default_https_context = ssl._create_unverified_context
+        
+        t = paramiko.Transport((QB_IP, 22))
+        t.banner_timeout = 10
+        t.connect(username=QB_USERNAME, password=QB_PASSWORD)
+        try:
+            sftp = paramiko.SFTPClient.from_transport(t)
+            print("sftp连接建立成功")
+        except Exception as e:
+            print("sftp连接建立失败")
+            print(e)
+            return
+        
+        print("搜索开始\n")
+        for search_str in self.search_list:
+            search_url = self.get_url(search_str)
+            html = self.get_page(search_url)
+            self.get_seed(html, search_str)
+            local = SEED_PATH + urllib.parse.quote(search_str) + ".torrent"
+            server = QB_PATH + urllib.parse.quote(search_str) + ".torrent"
+            try:
+                sftp.put(local, server)
+                print("种子上传成功 (" + search_str +")\n")
+            except Exception as e:
+                print("种子上传失败 (" + search_str +")")
+                print(e)
+                print("\n")
+        t.close()
+        print("sftp连接断开")
+        
 if __name__ == '__main__':
     anime_name = "无职转生-s2-1080p-奶茶屋-"
     search_list = []
@@ -83,7 +114,7 @@ if __name__ == '__main__':
         search_list.append(anime_name + str(i + 1))
     
     mikan = Mikan(search_list)
-    mikan.run()
+    mikan.run_with_sftp()
 
 
 
