@@ -110,7 +110,7 @@ class Mikan:
 if __name__ == '__main__':
     anime_name = "无职转生-s2-1080p-奶茶屋-0"
     search_list = []
-    for i in range(5):
+    for i in range(12):
         search_list.append(anime_name + str(i + 1))
     
     mikan = Mikan(search_list)
