@@ -21,7 +21,7 @@ class Mikan:
         self.search_list = search_list
     
     def get_url(self, search_str):
-        search_str_list = search_str.split('-')
+        search_str_list = search_str.split('+')
         search_url = ""
         for word in search_str_list:
             if '\u4e00' <= word <= '\u9fff':
@@ -37,53 +37,32 @@ class Mikan:
         res = requests.get(url=search_url, headers=headers).text
         return res
     
-    def get_seed(self, html, search_str):
+    def get_seed_list(self, html, search_str):
         seed_list = re.findall(r'/Download.*torrent', html)
         if len(seed_list) == 0:
             print("未发现种子QAQ (" + search_str + ")")
             return
-        seed_url = self.url + seed_list[0]
+        return seed_list
+
+    def download_seed(self, seed_url):
         opener = urllib.request.build_opener()
         opener.addheaders = [('User-Agent', self.ua.random)]
         urllib.request.install_opener(opener)
-        urllib.request.urlretrieve(seed_url, 'seed/' + urllib.parse.quote(search_str) + '.torrent')
-        print("种子下载成功! (" + search_str + ")")
-
-    def sftp_upload(self, search_str):
+        try:
+            urllib.request.urlretrieve(self.url + seed_url, 'seed/' + seed_url.replace('/', '_')[1:] + '.torrent')
+            print("种子下载成功! (" + seed_url + ")")
+            return True
+        except Exception as e:
+            print(e)
+            print("种子下载失败QAQ (" + seed_url + ")")
+            return False
+            
+    def run_with_sftp(self):
+        ssl._create_default_https_context = ssl._create_unverified_context
         try:
             t = paramiko.Transport((QB_IP, 22))
             t.banner_timeout = 10
             t.connect(username=QB_USERNAME, password=QB_PASSWORD)
-            sftp = paramiko.SFTPClient.from_transport(t)
-            local = SEED_PATH + urllib.parse.quote(search_str) + ".torrent"
-            server = QB_PATH + urllib.parse.quote(search_str) + ".torrent"
-            sftp.put(local, server)
-            t.close()
-            print("种子上传成功 (" + search_str +")\n")
-        except Exception as e:
-            print("种子上传失败 (" + search_str +")")
-            print(e)
-            print("\n")
-            
-    # 不用了
-    def run(self):
-        ssl._create_default_https_context = ssl._create_unverified_context
-        print("搜索开始\n")
-        for search_str in self.search_list:
-            search_url = self.get_url(search_str)
-            html = self.get_page(search_url)
-            self.get_seed(html, search_str)
-            self.sftp_upload(search_str)
-                
-        print("搜索结束")
-
-    def run_with_sftp(self):
-        ssl._create_default_https_context = ssl._create_unverified_context
-        
-        t = paramiko.Transport((QB_IP, 22))
-        t.banner_timeout = 10
-        t.connect(username=QB_USERNAME, password=QB_PASSWORD)
-        try:
             sftp = paramiko.SFTPClient.from_transport(t)
             print("sftp连接建立成功")
         except Exception as e:
@@ -94,26 +73,35 @@ class Mikan:
         print("搜索开始\n")
         for search_str in self.search_list:
             search_url = self.get_url(search_str)
+            print("搜索[" + search_str + ']')
             html = self.get_page(search_url)
-            self.get_seed(html, search_str)
-            local = SEED_PATH + urllib.parse.quote(search_str) + ".torrent"
-            server = QB_PATH + urllib.parse.quote(search_str) + ".torrent"
-            try:
-                sftp.put(local, server)
-                print("种子上传成功 (" + search_str +")\n")
-            except Exception as e:
-                print("种子上传失败 (" + search_str +")")
-                print(e)
-                print("\n")
+            seed_url_list = self.get_seed_list(html, search_str)
+
+            for seed_url in seed_url_list:
+                res = self.download_seed(seed_url)
+                if not res:
+                    continue
+
+                local = SEED_PATH + seed_url.replace('/', '_')[1:]
+                server = QB_PATH + seed_url.replace('/', '_')[1:]
+
+                try:
+                    sftp.put(local, server)
+                    print("种子上传成功")
+                except Exception as e:
+                    print("种子上传失败")
+                    print(e)
+                    print("\n")
+            
+            print('\n')
+
         t.close()
         print("sftp连接断开")
         
 if __name__ == '__main__':
-    anime_name = "无职转生-1080p-Baha-0"
-    search_list = []
-    for i in range(12):
-        search_list.append(anime_name + str(i + 1))
-
-    test = ["无职转生-1080p-Baha-10"]
-    mikan = Mikan(test)
+    search_list = [
+        "无职转生+1080p+二",
+        "死神+诀别+Lilith+1080p"
+    ]
+    mikan = Mikan(search_list)
     mikan.run_with_sftp()
