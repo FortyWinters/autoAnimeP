@@ -3,7 +3,7 @@ import ssl
 import requests
 import urllib.request
 from fake_useragent import UserAgent
-
+import paramiko
 
 class Mikan:
     def __init__(self, search_list):
@@ -40,6 +40,22 @@ class Mikan:
         urllib.request.urlretrieve(seed_url, 'seed/' + urllib.parse.quote(search_str) + '.torrent')
         print("种子下载成功! (" + search_str + ")\n")
 
+    def sftp_upload(self, search_str):
+        try:
+            t = paramiko.Transport(("10.129.47.21", 22))
+            t.banner_timeout = 10
+            t.connect(username="root", password="aa987b6d9aceedce111b4be891dbb3d2")
+            sftp = paramiko.SFTPClient.from_transport(t)
+            local = "/home/csy/autoAnime/seed/" + urllib.parse.quote(search_str) + ".torrent"
+            server = "/tmp/mountd/disk1_part1/qBittorrent/torrentFiles/" + urllib.parse.quote(search_str) + ".torrent"
+            sftp.put(local, server)
+            t.close()
+            return True
+        except Exception as e:
+            print(e)
+        return False
+
+
     def run(self):
         ssl._create_default_https_context = ssl._create_unverified_context
         print("搜索开始\n")
@@ -47,6 +63,11 @@ class Mikan:
             search_url = self.get_url(search_str)
             html = self.get_page(search_url)
             self.get_seed(html, search_str)
+            res = self.sftp_upload(search_str)
+            if not res:
+                print("种子上传失败 (" + search_str +")\n")
+            else:
+                print("种子上传成功 (" + search_str +")\n")
         print("搜索结束")
 
 if __name__ == '__main__':
