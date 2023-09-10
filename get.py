@@ -109,10 +109,11 @@ class Mikan:
         print("sftp连接断开")
         
 if __name__ == '__main__':
-    anime_name = "无职转生-s2-1080p-Baha-0"
+    anime_name = "无职转生-1080p-Baha-0"
     search_list = []
     for i in range(12):
         search_list.append(anime_name + str(i + 1))
-    
-    mikan = Mikan(search_list)
+
+    test = ["无职转生-1080p-Baha-10"]
+    mikan = Mikan(test)
     mikan.run_with_sftp()
