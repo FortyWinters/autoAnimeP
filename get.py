@@ -49,7 +49,8 @@ class Mikan:
         opener.addheaders = [('User-Agent', self.ua.random)]
         urllib.request.install_opener(opener)
         try:
-            urllib.request.urlretrieve(self.url + seed_url, 'seed/' + seed_url.replace('/', '_')[1:] + '.torrent')
+            #urllib.request.urlretrieve(self.url + seed_url, 'seed/' + seed_url.replace('/', '_')[1:] + '.torrent')
+            urllib.request.urlretrieve(self.url + seed_url, 'seed/' + seed_url.replace('/', '_')[1:])
             print("种子下载成功! (" + seed_url + ")")
             return True
         except Exception as e:
