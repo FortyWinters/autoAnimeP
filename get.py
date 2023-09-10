@@ -109,7 +109,7 @@ class Mikan:
         print("sftp连接断开")
         
 if __name__ == '__main__':
-    anime_name = "无职转生-s2-1080p-奶茶屋-0"
+    anime_name = "无职转生-s2-1080p-桜都-0"
     search_list = []
     for i in range(12):
         search_list.append(anime_name + str(i + 1))
