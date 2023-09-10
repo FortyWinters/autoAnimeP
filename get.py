@@ -40,7 +40,7 @@ class Mikan:
     def get_seed(self, html, search_str):
         seed_list = re.findall(r'/Download.*torrent', html)
         if len(seed_list) == 0:
-            print("未发现种子QAQ (" + search_str + ")\n")
+            print("未发现种子QAQ (" + search_str + ")")
             return
         seed_url = self.url + seed_list[0]
         opener = urllib.request.build_opener()
@@ -64,7 +64,8 @@ class Mikan:
             print("种子上传失败 (" + search_str +")")
             print(e)
             print("\n")
-
+            
+    # 不用了
     def run(self):
         ssl._create_default_https_context = ssl._create_unverified_context
         print("搜索开始\n")
@@ -115,19 +116,3 @@ if __name__ == '__main__':
     
     mikan = Mikan(search_list)
     mikan.run_with_sftp()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
