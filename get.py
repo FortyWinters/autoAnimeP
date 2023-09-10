@@ -86,9 +86,6 @@ class Mikan:
                 local = SEED_PATH + seed_url.replace('/', '_')[1:]
                 server = QB_PATH + seed_url.replace('/', '_')[1:]
 
-                print(local)
-                print(server)
-
                 try:
                     sftp.put(local, server)
                     print("种子上传成功")
@@ -105,7 +102,7 @@ class Mikan:
 if __name__ == '__main__':
     search_list = [
         "无职转生+1080p+二",
-        #"死神+诀别+Lilith+1080p"
+        "死神+诀别+Lilith+1080p"
     ]
     mikan = Mikan(search_list)
     mikan.run_with_sftp()
