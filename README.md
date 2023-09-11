@@ -1,5 +1,1 @@
 # autoAnime
-
-### Mysql
-
-### Crawler
