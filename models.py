@@ -46,6 +46,8 @@ def query_list_by_anime_name():  # 增加过滤条件进行查询
         print(dic)
         print(cur)
 
+        list.append(dic)
+    return list
 # from sqlalchemy.exc import SQLAlchemyError
 # from flask import current_app
 

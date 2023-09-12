@@ -9,13 +9,15 @@ def index():
     # mikan = Mikan()
     # anime_list = mikan.get_anime_list()
     # anime_name = []
-    query_list_by_anime_name()
+    # query_list_by_anime_name()
 
 
     # for a in anime_list:
     #     anime_name.append(a.anime_name)
     # return render_template("anime_list.html", anime_name=anime_name)
-    return render_template("anime_list.html")
+    anime_list = query_list_by_anime_name()
+
+    return render_template("anime_list.html", anime_list=anime_list)
 
 @bp.route("/insert_anime_list")
 def insert_anime_list():
