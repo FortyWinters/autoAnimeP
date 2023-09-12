@@ -9,7 +9,7 @@
 6. init.sh 脚本实现自动化部署。
 
 ## 使用
-### falsk测试
+### flask测试
 ```
 sh test.sh
 ```
