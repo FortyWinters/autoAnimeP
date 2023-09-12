@@ -1,11 +1,12 @@
 from exts import db
 
 class AnimeModel(db.Model):
-    __tablename__ = "anime"
+    __tablename__ = "anime_list"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    anime_name = db.Column(db.String(100), nullable=False, unique=True)
-    
-
+    anime_name = db.Column(db.String(40), nullable=True, unique=True)
+    mikan_id = db.Column(db.Integer, nullable=False, unique=True)
+    img_url = db.Column(db.String(40), nullable=False)
+    update_day = db.Column(db.Integer, nullable=False)
 
 
 
