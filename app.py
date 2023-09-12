@@ -1,9 +1,9 @@
 from flask import Flask
-import config
 from exts import db
 from models import AnimeModel
 from flask_migrate import Migrate
 from blueprints.anime import bp as anime_bp
+import config
 
 app = Flask(__name__)
 
