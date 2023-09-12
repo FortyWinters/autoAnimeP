@@ -17,7 +17,7 @@ class qBconnector:
     def getTorrentInfo(self):
         # Todo: read torrent from db
         torrentInfo = dict(
-            path = '/path/to/torrent/1.torrent'
+            path = '/path/to/torrent/1.torrent',
             name = 'testName_2',
             episode = 1,
         )
