@@ -9,7 +9,8 @@
 6. init.sh 脚本实现自动化部署。
 
 ## 使用
-### falsk启动
+### falsk测试
 ```
-sh run.sh
+sh test.sh
 ```
+127.0.0.1:5000/anime
