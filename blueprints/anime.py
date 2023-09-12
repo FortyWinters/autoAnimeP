@@ -12,3 +12,4 @@ def index():
         anime_name.append(a.anime_name)
     return render_template("anime_list.html", anime_name=anime_name)
 
+

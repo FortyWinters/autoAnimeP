@@ -1,6 +1,6 @@
 from flask import Flask
 from exts import db
-from models import AnimeModel
+from models import AnimeList
 from flask_migrate import Migrate
 from blueprints.index import bp as index_bp
 from blueprints.anime import bp as anime_bp
