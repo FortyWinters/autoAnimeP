@@ -1,5 +1,5 @@
 version: "2"
- services:
+services:
   qbittorrent:
     image: linuxserver/qbittorrent
     container_name: qbittorrent
@@ -10,8 +10,8 @@ version: "2"
       - UMASK_SET=022
       - WEBUI_PORT=8081 
     volumes:
-      - /root/qBittorrent/config:/config 
-      - /root/qBittorrent/downloads:/downloads 
+      - ./docker/qBittorrent/config:/config 
+      - ./docker/qBittorrent/downloads:/downloads 
     ports:
       - 6881:6881
       - 6881:6881/udp
@@ -27,8 +27,8 @@ version: "2"
     ports:
       - 3306:3306
     volumes:
-      - /root/mysql/data:/var/lib/mysql
-      - /root/mysql/config/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/config/my.cnf:/etc/mysql/my.cnf
     command:
       --max_connections=1000
       --character-set-server=utf8mb4
