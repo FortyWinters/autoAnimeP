@@ -25,3 +25,4 @@ def insert_anime_list():
         img_name = a.img_url.split('/')[4]
         insert_data_to_anime_list(a.anime_name, a.mikan_id, img_name, a.update_day)
     print("anime list insert finished")
+    return None
