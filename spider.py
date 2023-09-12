@@ -4,7 +4,6 @@ from fake_useragent import UserAgent
 from lxml import etree
 from common import *
 import ssl
-from models import *
 
 class Mikan:
     def __init__(self):
@@ -67,11 +66,6 @@ class Mikan:
         url = self.url + img_url
         img_name = img_url.split('/')[4]
         self.download(url, path + '/' + img_name)
-
-    def insert_to_anime_list(self, a):
-        img_name = a.img_url.split('/')[4]
-        print(img_name)
-        insert_data_to_anime_list(a.anime_name, a.mikan_id, a.img_url, a.update_day)
         
 def lxml_result_to_str(result):
     result_str = ''
@@ -82,6 +76,4 @@ def lxml_result_to_str(result):
 if __name__ == '__main__':
     mikan = Mikan()
     list = mikan.get_anime_list()
-    for a in list:
-        mikan.insert_to_anime_list(a)
 
