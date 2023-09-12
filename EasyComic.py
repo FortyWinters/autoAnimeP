@@ -1,11 +1,12 @@
 import qbittorrentapi
+import os
 
 class qBconnector:
     def __init__(self, conn_info):
         self.conn_info = conn_info
-        self.qbt_client = self.connect()
+        self.qbt_client = self.connectqB()
 
-    def connect(self):
+    def connectqB(self):
         qbt_client = qbittorrentapi.Client(**self.conn_info)
         try:
              qbt_client.auth_log_in()
@@ -13,24 +14,35 @@ class qBconnector:
             print(e)
         return qbt_client
 
-    def putTorrent(self):
+    def getTorrentInfo(self):
         # Todo: read torrent from db
+        torrentInfo = dict(
+            path = '/path/to/torrent/1.torrent'
+            name = 'testName_2',
+            episode = 1,
+        )
+        return torrentInfo
 
-        self.qbt_client.torrents_add(torrent_files='/path/to/torrent/1.torrent',save_path='/downloads')
+    def addTorrent(self):
+        torrentInfo = self.getTorrentInfo()
+        path = torrentInfo['path']
+        savePath = '/downloads/' + torrentInfo['name']
+        self.qbt_client.torrents_add(torrent_files=path,save_path=savePath)
 
     def pauseTorrent(self):
         self.qbt_client.torrents.pause.all()
+    
+    def run(self):
+        self.addTorrent()
 
 if __name__ == '__main__':
-    
     conn_info = dict(
         host = "10.112.5.25",
         port = "8081",
         username = "admin",
         password = "adminadmin",
     )
-
-    qb = qBconnector(conn_info)
+    qBconnector(conn_info).run()
 
 # instantiate a Client using the appropriate WebUI configuration
 # conn_info = dict(
