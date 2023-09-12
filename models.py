@@ -35,7 +35,7 @@ def query_list_by_anime_name():  # 增加过滤条件进行查询
     list = []
     for data in result:
         cur = Anime(data.anime_name, data.mikan_id, data.img_url, data.update_day)
-        list.append(cur)
+        #list.append(cur)
         dic = {
             "id": data.index,
             "animeName": data.anime_name,
@@ -43,10 +43,8 @@ def query_list_by_anime_name():  # 增加过滤条件进行查询
             "img_url": data.img_url,
             "update_day": data.update_day
         }
-        print(dic)
-        print(cur)
-
         list.append(dic)
+
     return list
 # from sqlalchemy.exc import SQLAlchemyError
 # from flask import current_app
