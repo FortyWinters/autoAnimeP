@@ -7,17 +7,17 @@ class AnimeList(db.Model):
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
     anime_name = db.Column(db.String(40), nullable=True, unique=True)
     mikan_id = db.Column(db.Integer, nullable=False, unique=True)
-    img_url = db.Column(db.String(40), nullable=False)
     update_day = db.Column(db.Integer, nullable=False)
+    img_url = db.Column(db.String(40), nullable=False)
 
 class AnimeSeed(db.Model):
     __tablename__ = "anime_seed"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
     mikan_id = db.Column(db.Integer, nullable=False)
-    episode = db.Column(db.Integer, nullable=False)
-    seed_url = db.Column(db.String(200), nullable=False)
     subgroup = db.Column(db.String(40), nullable=False)
+    episode = db.Column(db.Integer, nullable=False)
     seed_name = db.Column(db.String(200), nullable=False)
+    seed_url = db.Column(db.String(200), nullable=False)
 
 class AnimeTask(db.Model):
     __tablename__ = "anime_task"
