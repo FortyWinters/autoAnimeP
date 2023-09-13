@@ -10,6 +10,14 @@ class AnimeList(db.Model):
     img_url = db.Column(db.String(40), nullable=False)
     update_day = db.Column(db.Integer, nullable=False)
 
+class AnimeSeed(db.Model):
+    __tablename__ = "anime_seed"
+    index = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    mikan_id = db.Column(db.Integer, nullable=False, unique=True)
+    episode = db.Column(db.Integer, nullable=False, unique=True)
+    seed_url = db.Column(db.String(200), nullable=False)
+    subgroup = db.Column(db.String(40), nullable=False)
+    seed_name = db.Column(db.String(200), nullable=False)
 
 class AnimeTask(db.Model):
     __tablename__ = "anime_task"
@@ -46,6 +54,12 @@ def query_list_by_anime_name():  # 增加过滤条件进行查询
         list.append(dic)
 
     return list
+
+def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup, seed_name):
+    anime_seed = AnimeList(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup=subgroup, seed_name=seed_name)
+    db.session.add_all([anime_seed])
+    db.session.commit()
+
 # from sqlalchemy.exc import SQLAlchemyError
 # from flask import current_app
 
