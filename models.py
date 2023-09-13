@@ -50,7 +50,7 @@ def query_list_by_anime_name():  # 增加过滤条件进行查询
         #list.append(cur)
         dic = {
             "id": data.index,
-            "animeName": data.anime_name,
+            "anime_name": data.anime_name,
             "mikan_id": data.mikan_id,
             "img_url": data.img_url,
             "update_day": data.update_day

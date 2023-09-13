@@ -5,34 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>番剧列表</title>
 </head>
+
+<style>
+    ul {
+        list-style: none;
+    }
+    li {
+        float: left;
+        margin: 5px;
+    }
+    .container {
+        margin: 0 auto;
+    }
+    .anime-name {
+        width: 300px;
+        height: 40px;
+    }
+</style>
+
 <body>
     <div class="container">
-        <ul id="1"></ul>
-        <ul id="2"></ul>
-        <ul id="3"></ul>
-        <ul id="4"></ul>
-        <ul id="5"></ul>
-        <ul id="6"></ul>
-        <ul id="7"></ul>
+    {% for anime in anime_list %}
+    <ul>
+        <li>
+            <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url) }}" alt="" width="300px" height="400px">
+            <div class="anime-name">{{ anime.anime_name }}</div>
+        </li>
+    </ul>
+    {% endfor %}
     </div>
 </body>
 </html>
-
-<script>
-var anime_list = {{ anime_list|tojson }};
-
-function put(anime_list) {
-    for(var i=0; i<anime_list.length; i++) {
-        var img = document.createElement('img');
-        img.setAttribute("src", "img/anime_list/" + anime_list[i]["img_url"])
-        var li = document.createElement('li');
-        li.innerHTML = anime_list[i]["animeName"];
-        console.log(anime_list[i]);
-        var ul = document.getElementById(anime_list[i]["update_day"]);
-        ul.appendChild(img);
-        ul.appendChild(li);
-    }
-}
-
-put(anime_list);
-</script>
