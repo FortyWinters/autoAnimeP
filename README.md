@@ -18,4 +18,6 @@ sh test.sh
 // 数据库更新
 flask db migrate
 flask db upgrade
+
+flask db revision --rev-id
 ```
