@@ -26,7 +26,7 @@ class Mikan:
         html_doc = etree.HTML(html)
 
         anime_list = []
-
+        
         for info in html_doc.xpath('//div[@class="sk-bangumi"]'):
             update_day_ = info.xpath('.//@data-dayofweek')
             anime_info = info.xpath('.//li')
@@ -35,10 +35,10 @@ class Mikan:
                 mikan_id_ = a.xpath('.//@data-bangumiid')[0]
                 img_url_ = a.xpath('.//@data-src')
                 
-                anime_name = lxml_result_to_str(anime_name_)
-                mikan_id = int(lxml_result_to_str(mikan_id_))
-                img_url = lxml_result_to_str(img_url_)
-                update_day = int(lxml_result_to_str(update_day_))
+                anime_name = self.lxml_result_to_str(anime_name_)
+                mikan_id = int(self.lxml_result_to_str(mikan_id_))
+                img_url = self.lxml_result_to_str(img_url_)
+                update_day = int(self.lxml_result_to_str(update_day_))
                 if update_day == 7:
                     update_day = 9
                 if update_day == 0:
@@ -79,8 +79,8 @@ class Mikan:
         subgroup_name_ = html_doc.xpath('//li[@class="leftbar-item"]/span/a/text()')
         
         for i in range(len(subgroup_name_)):
-            subgroup_id = int(lxml_result_to_str(subgroup_id_[i])[1:])
-            subgroup_name = lxml_result_to_str(subgroup_name_[i])
+            subgroup_id = int(self.lxml_result_to_str(subgroup_id_[i])[1:])
+            subgroup_name = self.lxml_result_to_str(subgroup_name_[i])
 
             subgroup = Subgroup(subgroup_id, subgroup_name)
             subgroup_list.append(subgroup)
@@ -99,13 +99,13 @@ class Mikan:
             seed_url_ = tr.xpath('.//a[last()]/@href')
             seed_name_ = tr.xpath('.//a[@class="magnet-link-wrap"]/text()')
 
-            seed_url = lxml_result_to_str(seed_url_)
-            seed_name = lxml_result_to_str(seed_name_)
+            seed_url = self.lxml_result_to_str(seed_url_)
+            seed_name = self.lxml_result_to_str(seed_name_)
 
-            if not if_1080(seed_name):
+            if not self.if_1080(seed_name):
                 continue
 
-            episode_str = get_episode(seed_name)
+            episode_str = self.get_episode(seed_name)
             if episode_str == "null":
                 continue
 
@@ -120,26 +120,25 @@ class Mikan:
         url = "{}{}".format(self.url, seed_url)
         torrent_name = seed_url.split('/')[3]
         self.download(url, path + torrent_name)
-
             
-def lxml_result_to_str(result):
-    result_str = ''
-    for a in result:
-        result_str += str(a)
-    return result_str
+    def lxml_result_to_str(result):
+        result_str = ''
+        for a in result:
+            result_str += str(a)
+        return result_str
 
-def get_episode(seed_name):
-    str_list = re.findall(r'\[\d{2}\]|\s\d{2}\s', seed_name)
-    if len(str_list) == 0:
-        return "null"
-    episode_str = str_list[0][1:-1] 
-    return episode_str
+    def get_episode(seed_name):
+        str_list = re.findall(r'\[\d{2}\]|\s\d{2}\s', seed_name)
+        if len(str_list) == 0:
+            return "null"
+        episode_str = str_list[0][1:-1] 
+        return episode_str
 
-def if_1080(seed_name):
-    str_list = re.findall(r'1080p|x1080\s|\s1080\s', seed_name)
-    if len(str_list) == 0:
-        return False
-    return True
+    def if_1080(seed_name):
+        str_list = re.findall(r'1080p|x1080\s|\s1080\s', seed_name)
+        if len(str_list) == 0:
+            return False
+        return True
 
         
 if __name__ == '__main__':
