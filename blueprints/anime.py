@@ -29,8 +29,8 @@ def insert_anime_list():
     print("anime list insert finished")
     return None
 
-@bp.route("/insert_anime_list/<int: mikan_id>")
-def insert_anime_list(mikan_id):
+@bp.route("/insert_anime_seed_list/<int:mikan_id>")
+def insert_anime_seed_list(mikan_id):
     mikan = Mikan()
     seed_list = mikan.get_seed_list(mikan_id)
     for s in seed_list:
