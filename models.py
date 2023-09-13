@@ -13,8 +13,8 @@ class AnimeList(db.Model):
 class AnimeSeed(db.Model):
     __tablename__ = "anime_seed"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    mikan_id = db.Column(db.Integer, nullable=False, unique=True)
-    episode = db.Column(db.Integer, nullable=False, unique=True)
+    mikan_id = db.Column(db.Integer, nullable=False)
+    episode = db.Column(db.Integer, nullable=False)
     seed_url = db.Column(db.String(200), nullable=False)
     subgroup = db.Column(db.String(40), nullable=False)
     seed_name = db.Column(db.String(200), nullable=False)
