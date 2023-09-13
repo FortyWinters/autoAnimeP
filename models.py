@@ -36,6 +36,10 @@ def insert_data_to_anime_list(anime_name, mikan_id, img_url, update_day):
     db.session.add_all([anime_list])
     db.session.commit()
 
+def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup, seed_name):
+    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup=subgroup, seed_name=seed_name)
+    db.session.add_all([anime_seed])
+    db.session.commit()
 
 # 初步查询语句 可以修改输入参数
 def query_list_by_anime_name():  # 增加过滤条件进行查询
@@ -54,12 +58,6 @@ def query_list_by_anime_name():  # 增加过滤条件进行查询
         list.append(dic)
 
     return list
-
-def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup, seed_name):
-    anime_seed = AnimeList(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup=subgroup, seed_name=seed_name)
-    db.session.add_all([anime_seed])
-    db.session.commit()
-
 # from sqlalchemy.exc import SQLAlchemyError
 # from flask import current_app
 

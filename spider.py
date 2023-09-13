@@ -63,7 +63,7 @@ class Mikan:
             print("下载失败QAQ (" + url + ")")
             return False
     
-    def get_img(self, img_url, path):
+    def download_img(self, img_url, path):
         url = self.url + img_url
         img_name = img_url.split('/')[4]
         self.download(url, path + '/' + img_name)

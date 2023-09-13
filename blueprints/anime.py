@@ -28,3 +28,12 @@ def insert_anime_list():
         insert_data_to_anime_list(a.anime_name, a.mikan_id, img_name, a.update_day)
     print("anime list insert finished")
     return None
+
+@bp.route("/insert_anime_list/<int: mikan_id>")
+def insert_anime_list(mikan_id):
+    mikan = Mikan()
+    seed_list = mikan.get_seed_list(mikan_id)
+    for s in seed_list:
+        insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup, s.seed_name)
+    print("anime seed insert finished")
+
