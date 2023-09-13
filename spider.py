@@ -64,43 +64,9 @@ class Mikan:
             return False
     
     def download_img(self, img_url, path):
-        url = self.url + img_url
+        url = "{}{}".format(self.url, img_url)
         img_name = img_url.split('/')[4]
-        self.download(url, path + '/' + img_name)
-
-    def get_seed_list_(self, mikan_id):
-        url = self.url + "/Home/Bangumi/" + str(mikan_id)
-        html = self.get_html(url)
-        html_doc = etree.HTML(html)
-        
-        subgroup_list = html_doc.xpath('//div[@class="central-container"]/div[@class="subgroup-text"]/a[@target="_blank"]/text()')
-        table_list = html_doc.xpath('//div[@class="central-container"]/table')
-
-        seed_list = []
-
-        for i in range(len(subgroup_list)): 
-            seed_name_list = table_list[i].xpath('.//a[@class="magnet-link-wrap"]/text()')
-            seed_url_list = table_list[i].xpath('.//a[last()]/@href')
-
-            subgroup = lxml_result_to_str(subgroup_list[i])
-            
-            for j in range(len(seed_name_list)):
-                seed_name = lxml_result_to_str(seed_name_list[j])
-
-                if not if_1080(seed_name):
-                    continue
-
-                episode_str = get_episode(seed_name)
-                if episode_str == "null":
-                    continue
-
-                episode = int(episode_str)
-                seed_url = lxml_result_to_str(seed_url_list[j])
-
-                seed = Seed(mikan_id, episode, seed_url, subgroup, seed_name)
-                seed_list.append(seed)
-        
-        return seed_list
+        self.download(url, path + img_name)
     
     def get_subgroup_list(self, mikan_id):
         url = "{}/Home/Bangumi/{}".format(self.url, mikan_id)
@@ -149,6 +115,12 @@ class Mikan:
             seed_list.append(seed)
 
         return seed_list
+    
+    def download_seed(self, seed_url, path):
+        url = "{}{}".format(self.url, seed_url)
+        torrent_name = seed_url.split('/')[3]
+        self.download(url, path + torrent_name)
+
             
 def lxml_result_to_str(result):
     result_str = ''
@@ -171,7 +143,7 @@ def if_1080(seed_name):
 
         
 if __name__ == '__main__':
-    # mikan = Mikan()
+    mikan = Mikan()
     # list = mikan.get_anime_list()
 
     # subgroup_list = mikan.get_subgroup_list(list[0].mikan_id)
@@ -180,5 +152,5 @@ if __name__ == '__main__':
     #     for s in seed_list:
     #         print(s.seed_name)
 
-    print(get_episode("[北宇治字幕组] 无职转生Ⅱ ～到了异世界就拿出真本事～/ Mushoku Tensei - Season 2 [03][WebRip][1080p][HEVC_AAC][简体内嵌]"))
+    mikan.download_seed("/Download/20230913/dfe6eb7c5f780e90f74244a498949375c67143b0.torrent", "seed/")
   
