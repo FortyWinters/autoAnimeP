@@ -17,7 +17,7 @@ class AnimeSeed(db.Model):
     subgroup = db.Column(db.String(40), nullable=False)
     episode = db.Column(db.Integer, nullable=False)
     seed_name = db.Column(db.String(200), nullable=False)
-    seed_url = db.Column(db.String(200), nullable=False)
+    seed_url = db.Column(db.String(200), nullable=False, unique=True)
 
 class AnimeTask(db.Model):
     __tablename__ = "anime_task"
