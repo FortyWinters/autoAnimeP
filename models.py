@@ -14,7 +14,7 @@ class AnimeSeed(db.Model):
     __tablename__ = "anime_seed"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
     mikan_id = db.Column(db.Integer, nullable=False)
-    subgroup = db.Column(db.String(40), nullable=False)
+    subgroup_id = db.Column(db.Integer, nullable=False)
     episode = db.Column(db.Integer, nullable=False)
     seed_name = db.Column(db.String(200), nullable=False)
     seed_url = db.Column(db.String(200), nullable=False, unique=True)
@@ -36,8 +36,8 @@ def insert_data_to_anime_list(anime_name, mikan_id, img_url, update_day):
     db.session.add_all([anime_list])
     db.session.commit()
 
-def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup, seed_name):
-    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup=subgroup, seed_name=seed_name)
+def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_name):
+    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id, seed_name=seed_name)
     db.session.add_all([anime_seed])
     db.session.commit()
 

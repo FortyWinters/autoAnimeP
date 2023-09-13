@@ -6,11 +6,11 @@ class Anime:
         self.update_day = update_day
 
 class Seed:
-    def __init__(self, mikan_id, episode, seed_url, subgroup, seed_name):
+    def __init__(self, mikan_id, episode, seed_url, subgroup_id, seed_name):
         self.mikan_id  = mikan_id
         self.episode   = episode
         self.seed_url  = seed_url
-        self.subgroup  = subgroup
+        self.subgroup_id  = subgroup_id
         self.seed_name = seed_name
 
 class Task:
@@ -19,3 +19,8 @@ class Task:
         self.episode      = episode
         self.status       = status
         self.torrent_name = torrent_name
+
+class Subgroup:
+    def __init__(self, subgroup_id, subgroup_name):
+        self.subgroup_id = subgroup_id
+        self.subgroup_name = subgroup_name

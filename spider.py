@@ -2,7 +2,7 @@ import requests
 import urllib.request
 from fake_useragent import UserAgent
 from lxml import etree
-from common import Anime, Seed
+from common import Anime, Seed, Subgroup
 import ssl
 import re
 
@@ -68,7 +68,7 @@ class Mikan:
         img_name = img_url.split('/')[4]
         self.download(url, path + '/' + img_name)
 
-    def get_seed_list(self, mikan_id):
+    def get_seed_list_(self, mikan_id):
         url = self.url + "/Home/Bangumi/" + str(mikan_id)
         html = self.get_html(url)
         html_doc = etree.HTML(html)
@@ -101,6 +101,54 @@ class Mikan:
                 seed_list.append(seed)
         
         return seed_list
+    
+    def get_subgroup_list(self, mikan_id):
+        url = "{}/Home/Bangumi/{}".format(self.url, mikan_id)
+        html = self.get_html(url)
+        html_doc = etree.HTML(html)
+
+        subgroup_list = []
+
+        subgroup_id_ = html_doc.xpath('//li[@class="leftbar-item"]/span/a/@data-anchor')
+        subgroup_name_ = html_doc.xpath('//li[@class="leftbar-item"]/span/a/text()')
+        
+        for i in range(len(subgroup_name_)):
+            subgroup_id = int(lxml_result_to_str(subgroup_id_[i])[1:])
+            subgroup_name = lxml_result_to_str(subgroup_name_[i])
+
+            subgroup = Subgroup(subgroup_id, subgroup_name)
+            subgroup_list.append(subgroup)
+        
+        return subgroup_list
+    
+    def get_seed_list(self, mikan_id, subgroup_id):
+        url = "{}/Home/ExpandEpisodeTable?bangumiId={}&subtitleGroupId={}&take=65".format(self.url, mikan_id, subgroup_id)
+        html = self.get_html(url)
+        html_doc = etree.HTML(html)
+
+        seed_list = []
+
+        tr_list = html_doc.xpath('//tbody/tr')
+        for tr in tr_list:
+            seed_url_ = tr.xpath('.//a[last()]/@href')
+            seed_name_ = tr.xpath('.//a[@class="magnet-link-wrap"]/text()')
+
+            seed_url = lxml_result_to_str(seed_url_)
+            seed_name = lxml_result_to_str(seed_name_)
+
+            if not if_1080(seed_name):
+                continue
+
+            episode_str = get_episode(seed_name)
+            if episode_str == "null":
+                continue
+
+            episode = int(episode_str)
+
+            seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name)
+            seed_list.append(seed)
+
+        return seed_list
             
 def lxml_result_to_str(result):
     result_str = ''
@@ -109,7 +157,7 @@ def lxml_result_to_str(result):
     return result_str
 
 def get_episode(seed_name):
-    str_list = re.findall(r'\[\d{1,2}\]|\s\d{1,2}\s', seed_name)
+    str_list = re.findall(r'\[\d{2}\]|\s\d{2}\s', seed_name)
     if len(str_list) == 0:
         return "null"
     episode_str = str_list[0][1:-1] 
@@ -123,14 +171,14 @@ def if_1080(seed_name):
 
         
 if __name__ == '__main__':
-    mikan = Mikan()
-    list = mikan.get_anime_list()
-    print(list[0].anime_name)
-    print(list[0].mikan_id)
-    seed_list = mikan.get_seed_list(list[0].mikan_id)
-    for s in seed_list:
-        print(s.seed_name)
-        print(s.subgroup)
-        print(s.episode)
-        print(s.seed_url)
+    # mikan = Mikan()
+    # list = mikan.get_anime_list()
 
+    # subgroup_list = mikan.get_subgroup_list(list[0].mikan_id)
+    # for sub in subgroup_list:
+    #     seed_list = mikan.get_seed_list(list[0].mikan_id, sub.subgroup_id)
+    #     for s in seed_list:
+    #         print(s.seed_name)
+
+    print(get_episode("[北宇治字幕组] 无职转生Ⅱ ～到了异世界就拿出真本事～/ Mushoku Tensei - Season 2 [03][WebRip][1080p][HEVC_AAC][简体内嵌]"))
+  
