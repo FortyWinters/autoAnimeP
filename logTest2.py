@@ -1,12 +1,18 @@
 import logging
 import sys
 from logConfig import LogConfig
+import datetime
 
 LogConfig = LogConfig()
 logLevel = LogConfig.getLogLevel()
 logFile = LogConfig.getLogFiles()
 
-logging.basicConfig(filename=logFile, level=logLevel)
+logging.basicConfig(
+    level=logLevel,
+    filename=logFile,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 logger = logging.getLogger(sys.argv[0])
 
