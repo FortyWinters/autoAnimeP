@@ -19,6 +19,11 @@ def index():
 
     return render_template("anime_list.html", anime_list=anime_list)
 
+# TODO
+@bp.route("/subcribe_name")
+def subcribe_name():
+    pass
+
 @bp.route("/insert_anime_list")
 def insert_anime_list():
     mikan = Mikan()

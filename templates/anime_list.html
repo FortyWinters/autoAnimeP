@@ -12,15 +12,37 @@
     }
     li {
         float: left;
-        margin: 5px;
     }
     .container {
         margin: 0 auto;
     }
-    .anime-name {
+    .anime-container {
+        float: left;
+        height: 450px;
         width: 300px;
-        height: 40px;
+        margin: 0 5px 10px 5px;
     }
+    .anime-info {
+        height: 50px;
+        width: 300px;
+        padding-top: 5px;
+    }
+    .anime-name {
+        width: 260px;
+        float: left;
+    }
+    .subscribe-icon-botton {
+        float: right;
+        background-color: #d6d6d6;
+        border: none;
+        border-radius: 5px;
+        width: 30px;
+        height: 30px;
+    }
+    .subscribe-icon-botton:hover {
+        background-color:#30e8c6
+    }
+
 </style>
 
 <body>
@@ -28,11 +50,19 @@
     {% for anime in anime_list %}
     <ul>
         <li>
-            <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url) }}" alt="" width="300px" height="400px">
-            <div class="anime-name">{{ anime.anime_name }}</div>
+            <div class="anime-container">
+                <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url) }}" alt="" height="400px" width="300px">
+                <div class="anime-info">
+                    <div class="anime-name">{{ anime.anime_name }}</div>
+                    <button class="subscribe-icon-botton" mikan-id={{ anime.mikan_id }}>
+                        <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                </div>
+            </div>
         </li>
     </ul>
     {% endfor %}
     </div>
 </body>
 </html>
+
