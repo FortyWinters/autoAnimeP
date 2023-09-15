@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from spider import Mikan
+from exts import mikan
 from models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
@@ -20,7 +20,7 @@ def update_anime_list():
     for a in anime_list_old:
         anime_set.add(a["mikan_id"])
 
-    mikan = Mikan()
+    #mikan = Mikan()
     anime_list_new = mikan.get_anime_list()
     for a in anime_list_new:
         if a.mikan_id not in anime_set:
@@ -54,7 +54,7 @@ def insert_anime_seed_list(mikan_id):
     for s in seed_list_old:
         seed_set.add(s["seed_url"])
 
-    mikan = Mikan()
+    # mikan = Mikan()
     subgroup_list = mikan.get_subgroup_list(mikan_id)
     for sub in subgroup_list:
         seed_list = mikan.get_seed_list(mikan_id, sub.subgroup_id)
@@ -69,4 +69,4 @@ def insert_anime_seed_list(mikan_id):
                     continue
                 update_number += 1
     print("[INFO][BP][ANIME]insert_anime_seed_list, inserting anime seed finished, " + 
-        "mikan_id: {}, update number: {}, fail_number{}".format(mikan_id, update_number, fail_number))
+        "mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
