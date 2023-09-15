@@ -9,7 +9,7 @@
 6. init.sh 脚本实现自动化部署。
 7. 图床
 8. 日志
-9. 数据库crud
+9. 数据库crud [@bjrbh](https://github.com/bjrbh)
 10. 守护进程拉起定时任务（4、5）
 
 ## 使用

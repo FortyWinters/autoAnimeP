@@ -51,7 +51,7 @@
     <ul>
         <li>
             <div class="anime-container">
-                <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url) }}" alt="" height="400px" width="300px">
+                <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url.split('/')[4]) }}" alt="" height="400px" width="300px">
                 <div class="anime-info">
                     <div class="anime-name">{{ anime.anime_name }}</div>
                     <button class="subscribe-icon-botton" mikan-id={{ anime.mikan_id }}>
