@@ -1,5 +1,6 @@
 import yaml
 import logging
+from logging.handlers import RotatingFileHandler
 
 CRITICAL = 50
 FATAL = CRITICAL
@@ -15,6 +16,8 @@ class LogManager:
         self.prog = prog
         self.logLevel = self.getLogLevel()
         self.logDir = self.getLogDir()
+        self.max_file_size = 10 * 1024 * 1024
+        self.logMap = []
 
     def getLogLevel(self):
         try:
@@ -43,10 +46,11 @@ class LogManager:
         #formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-        file_handler = logging.FileHandler(self.logDir)
+        file_handler = RotatingFileHandler(self.logDir, maxBytes=self.max_file_size, backupCount=5)
         file_handler.setLevel(self.logLevel)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
+        logger.propagate = False
 
         # console_handler = logging.StreamHandler()
         # console_handler.setLevel(self.logLevel)

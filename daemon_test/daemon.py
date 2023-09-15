@@ -6,10 +6,10 @@ import subprocess
 
 
 def job1():
-    subprocess.call(['python3', 'job1.py'])
+    subprocess.call(['python3', 'logTest1.py'])
 
 def job2():
-    subprocess.call(['python3', 'job2.py'])
+    subprocess.call(['python3', 'logTest2.py'])
 
 def execAllTask():
     schedule.every(10).seconds.do(job1)
