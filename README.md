@@ -9,8 +9,10 @@
 6. init.sh 脚本实现自动化部署。
 7. 图床
 8. 日志
-9. 数据库crud [@bjrbh](https://github.com/bjrbh)
-10. 守护进程拉起定时任务（4、5）
+   8.1 基础日志功能
+   8.2 日志大小超过阈值时分割日志文件
+10. 数据库crud [@bjrbh](https://github.com/bjrbh)
+11. 守护进程拉起定时任务（4、5）
 
 ## 使用
 ### flask测试
