@@ -9,7 +9,7 @@ def index():
     anime_list = query_list_by_anime_name()
     return render_template("anime_list.html", anime_list=anime_list)
 
-@bp.route("update_anime_list")
+@bp.route("/update_anime_list")
 def update_anime_list():
     img_path = "static/img/anime_list/"
     update_number = 0
@@ -39,10 +39,23 @@ def update_anime_list():
     print("[INFO][BP][ANIME]update_anime_list, updating anime finished, " + 
           "update number: {}, fail number: {}".format(update_number, fail_number))
 
-# TODO
-@bp.route("/subcribe_name")
-def subcribe_name():
-    pass
+@bp.route("/subscribe_anime/<int:mikan_id>")
+def subcribe_anime(mikan_id):
+    if not update_list_subscribe_status(mikan_id, 1):
+        print("[ERROR][BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, " +
+              "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+    
+@bp.route("/cancle_subscribe_anime/<int:mikan_id>")
+def cancle_subscribe_anime(mikan_id):
+    if not update_list_subscribe_status(mikan_id, 0):
+        print("[ERROR][BP][ANIME]cancle_subscribe_anime error, update_anime_subscribe_status failed, " +
+              "mikan_id: {}, subscribe_status: {}".format(mikan_id, 0))
+
+    
+
+    
+
+    
 
 @bp.route("/insert_anime_seed_list/<int:mikan_id>")
 def insert_anime_seed_list(mikan_id):

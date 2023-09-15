@@ -63,7 +63,7 @@ def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_nam
 # TODO 继续优化 @bjrbh
 # 初步查询语句 可以修改输入参数
 def query_list_by_anime_name():  # 增加过滤条件进行查询
-    result = db.session.query(AnimeList).filter(AnimeList.index > 2).all()
+    result = db.session.query(AnimeList).all()
     list = []
     for data in result:
         cur = Anime(data.anime_name, data.mikan_id, data.img_url, data.update_day, data.anime_type, data.subscribe_status)
@@ -99,6 +99,10 @@ def query_seed_by_anime_name(mikan_id):  # 增加过滤条件进行查询
         list.append(dic)
 
     return list
+
+def update_list_subscribe_status(mikan_id, subscribe_status):
+    db.session.query(AnimeList).filter_by(mikan_id=mikan_id).update({"subscribe_status":subscribe_status})
+    db.session.commit()
 # from sqlalchemy.exc import SQLAlchemyError
 # from flask import current_app
 
