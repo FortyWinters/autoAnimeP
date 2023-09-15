@@ -44,11 +44,21 @@ def insert_data_to_anime_list(anime_name, mikan_id, img_url, update_day, anime_t
         return False
     else:
         return True
-
+    
+# TODO 继续优化 @bjrbh
 def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_name):
-    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id, seed_name=seed_name)
-    db.session.add_all([anime_seed])
-    db.session.commit()
+    try:
+        anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id, seed_name=seed_name)
+        db.session.add_all([anime_seed])
+        db.session.commit()
+    except Exception as e:
+        print("[ERROR][MODELS]insert_data_to_anime_seed failed, " + 
+              "mikan_id: {}, episode: {}, seed_url: {}, subgroup_id: {}, seed_name: {}".format(
+                  mikan_id, episode, seed_url, subgroup_id, seed_name))
+        return False
+    else:
+        return True
+
 
 # TODO 继续优化 @bjrbh
 # 初步查询语句 可以修改输入参数
@@ -66,6 +76,25 @@ def query_list_by_anime_name():  # 增加过滤条件进行查询
             "update_day": data.update_day,
             "anime_type": data.anime_type,
             "subscribe_status":data.subscribe_status
+        }
+        list.append(dic)
+
+    return list
+
+# TODO 继续优化 @bjrbh
+def query_seed_by_anime_name(mikan_id):  # 增加过滤条件进行查询
+    result = db.session.query(AnimeSeed).filter(AnimeSeed.mikan_id == mikan_id).all()
+    list = []
+    for data in result:
+        cur = Seed(data.mikan_id, data.episode, data.seed_url, data.subgroup_id, data.seed_name)
+        #list.append(cur)
+        dic = {
+            "id": data.index,
+            "mikan_id": data.mikan_id,
+            "episode": data.episode,
+            "seed_url": data.seed_url,
+            "subgroup_id": data.subgroup_id,
+            "seed_name": data.seed_name
         }
         list.append(dic)
 

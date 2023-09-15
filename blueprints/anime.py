@@ -36,7 +36,6 @@ def update_anime_list():
             if not img_res:
                 print("[ERROR][BP][ANIME]update_anime_list error, mikan.download_img failed, " +
                   "mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
-
     print("[INFO][BP][ANIME]update_anime_list, updating anime finished, " + 
           "update number: {}, fail number: {}".format(update_number, fail_number))
 
@@ -47,11 +46,27 @@ def subcribe_name():
 
 @bp.route("/insert_anime_seed_list/<int:mikan_id>")
 def insert_anime_seed_list(mikan_id):
+    update_number = 0
+    fail_number = 0
+
+    seed_set = set()
+    seed_list_old = query_seed_by_anime_name(mikan_id=mikan_id)
+    for s in seed_list_old:
+        seed_set.add(s["seed_url"])
+
     mikan = Mikan()
     subgroup_list = mikan.get_subgroup_list(mikan_id)
     for sub in subgroup_list:
         seed_list = mikan.get_seed_list(mikan_id, sub.subgroup_id)
         for s in seed_list:
-            insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name)
-    print("anime seed insert finished")
-
+            if s.seed_url not in seed_set:
+                res_insert = insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name)
+                if not res_insert:
+                    fail_number += 1
+                    print("[ERROR][BP][ANIME]insert_anime_seed_list error, insert_data_to_anime_seed failed, " +
+                          "mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(
+                              mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
+                    continue
+                update_number += 1
+    print("[INFO][BP][ANIME]insert_anime_seed_list, inserting anime seed finished, " + 
+        "mikan_id: {}, update number: {}, fail_number{}".format(mikan_id, update_number, fail_number))
