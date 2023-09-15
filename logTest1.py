@@ -1,20 +1,7 @@
-import logging
 import sys
-from logConfig import LogConfig
-import datetime
+from logManager import LogManager
 
-LogConfig = LogConfig()
-logLevel = LogConfig.getLogLevel()
-logFile = LogConfig.getLogFiles()
-
-logging.basicConfig(
-    level=logLevel,
-    filename=logFile,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-
-logger = logging.getLogger(sys.argv[0])
+logger = LogManager(sys.argv[0]).getLogObj()
 
 logger.debug('Exec %s', sys.argv[0])
 logger.info('Exec %s', sys.argv[0])

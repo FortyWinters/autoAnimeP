@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from exts import mikan
+from exts import mikan,logger
 from models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
@@ -7,6 +7,7 @@ bp = Blueprint("anime", __name__, url_prefix="/anime")
 @bp.route("/")
 def index():
     anime_list = query_list_by_anime_name()
+    logger.info("hello world")
     return render_template("anime_list.html", anime_list=anime_list)
 
 @bp.route("/update_anime_list")
