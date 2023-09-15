@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from exts import mikan,logger
+from exts import mikan, logger
 from models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
@@ -7,7 +7,6 @@ bp = Blueprint("anime", __name__, url_prefix="/anime")
 @bp.route("/")
 def index():
     anime_list = query_list_by_anime_name()
-    logger.info("hello world")
     return render_template("anime_list.html", anime_list=anime_list)
 
 @bp.route("/update_anime_list")
@@ -28,29 +27,40 @@ def update_anime_list():
             insert_res = insert_data_to_anime_list(a.anime_name, a.mikan_id, a.img_url, a.update_day, a.anime_type, a.subscribe_status)
             if not insert_res:
                 fail_number += 1
-                print("[ERROR][BP][ANIME]update_anime_list error, insert_data_to_anime_list failed, " +
-                  "mikan_id: {}".format(a.mikan_id)) 
+                logger.warning("[BP][ANIME]update_anime_list error, insert_data_to_anime_list failed, " +
+                    "mikan_id: {}".format(a.mikan_id))
+                # print("[ERROR][BP][ANIME]update_anime_list error, insert_data_to_anime_list failed, " +
+                #   "mikan_id: {}".format(a.mikan_id)) 
                 continue
             update_number += 1
             
             img_res = mikan.download_img(a.img_url, img_path)
             if not img_res:
-                print("[ERROR][BP][ANIME]update_anime_list error, mikan.download_img failed, " +
-                  "mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
-    print("[INFO][BP][ANIME]update_anime_list, updating anime finished, " + 
-          "update number: {}, fail number: {}".format(update_number, fail_number))
+                logger.warning("[ERROR][BP][ANIME]update_anime_list error, mikan.download_img failed, " +
+                    "mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
+                # print("[ERROR][BP][ANIME]update_anime_list error, mikan.download_img failed, " +
+                #   "mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
+    logger.info("[BP][ANIME]update_anime_list, updating anime finished, " + 
+          "update number: {}, fail number: {}".format(update_number, fail_number))        
+    # print("[INFO][BP][ANIME]update_anime_list, updating anime finished, " + 
+    #       "update number: {}, fail number: {}".format(update_number, fail_number))
+    return render_template("anime_list.html")
 
 @bp.route("/subscribe_anime/<int:mikan_id>")
 def subcribe_anime(mikan_id):
     if not update_list_subscribe_status(mikan_id, 1):
         print("[ERROR][BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, " +
               "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+
+    
+    
     
 @bp.route("/cancle_subscribe_anime/<int:mikan_id>")
 def cancle_subscribe_anime(mikan_id):
     if not update_list_subscribe_status(mikan_id, 0):
         print("[ERROR][BP][ANIME]cancle_subscribe_anime error, update_anime_subscribe_status failed, " +
               "mikan_id: {}, subscribe_status: {}".format(mikan_id, 0))
+
 
     
 
