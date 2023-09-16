@@ -23,10 +23,8 @@ class Mikan:
             html_doc = etree.HTML(res.text)
         except Exception as e:
             logger.warning("[SPIDER]request_html failed, url: {}, error: {}".format(url, e))
-            # print("[ERROR][SPIDER]request_html failed, url: {}, error: {}".format(url, e))
         else:
             logger.info("[SPIDER]request_html success, url: {}".format(url))
-            # print("[INFO][SPIDER]request_html success, url: {}".format(url))
             return html_doc
         
     def download(self, url, path):
@@ -38,18 +36,15 @@ class Mikan:
             urllib.request.urlretrieve(url, path)
         except Exception as e:
             logger.warning("[SPIDER]download failed, url: {}, error: {}".format(url, e))
-            # print("[ERROR][SPIDER]download failed, url: {}, error: {}".format(url, e))
             return False
         else:
             logger.info("[SPIDER]download success, url: {}".format(url))
-            # print("[INFO][SPIDER]download success, url: {}".format(url))
             return True
     
     def get_anime_list(self):
         html_doc = self.request_html(self.url)
         if html_doc == None:
             logger.warning("[SPIDER]get_anime_list failed, request_html failed, url: {}".format(self.url))
-            # print("[ERROR][SPIDER]get_anime_list failed, request_html failed, url: {}".format(self.url))
             return
         
         anime_list = []
@@ -83,7 +78,6 @@ class Mikan:
                 anime = Anime(anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status)
                 anime_list.append(anime)
         logger.info("[SPIDER]get_anime_list success, anime number: {}".format(len(anime_list)))
-        # print("[INFO][SPIDER]get_anime_list success, anime number: {}".format(len(anime_list)))
         return anime_list
 
     def get_subgroup_list(self, mikan_id):
@@ -91,7 +85,6 @@ class Mikan:
         html_doc = self.request_html(url)
         if html_doc == None:
             logger.warning("[SPIDER]get_subgroup_list failed, request_html failed, url: {}".format(self.url))
-            # print("[ERROR][SPIDER]get_subgroup_list failed, request_html failed, url: {}".format(self.url))
             return
         
         subgroup_list = []
@@ -107,7 +100,6 @@ class Mikan:
             subgroup_list.append(subgroup)
         
         logger.info("[SPIDER]get_subgroup_list success, mikan_id: {}, subgroup number: {}".format(mikan_id, len(subgroup_list)))
-        # print("[INFO][SPIDER]get_subgroup_list success, mikan_id: {}, subgroup number: {}".format(mikan_id, len(subgroup_list)))
         return subgroup_list
     
     def get_seed_list(self, mikan_id, subgroup_id):
@@ -115,7 +107,6 @@ class Mikan:
         html_doc = self.request_html(url)
         if html_doc == None:
             logger.warning("[SPIDER]get_seed_list failed, request_html failed, url: {}".format(self.url))
-            # print("[ERROR][SPIDER]get_seed_list failed, request_html failed, url: {}".format(self.url))
             return
         
         seed_list = []
@@ -139,8 +130,7 @@ class Mikan:
             seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name)
             seed_list.append(seed)
         
-        logger.info("[SPIDER]get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))
-        # print("[INFO][SPIDER]get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))        
+        logger.info("[SPIDER]get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))   
         return seed_list
     
     def download_img(self, img_url, path):
@@ -148,10 +138,8 @@ class Mikan:
         img_name = img_url.split('/')[4]
         if not self.download(url, path + img_name):
             logger.warning("[SPIDER]download_img failed, download failed, img_url: {}, path: {}".format(img_url, path))
-            # print("[ERROR][SPIDER]download_img failed, download failed, img_url: {}, path: {}".format(img_url, path))
             return False
         logger.info("[SPIDER]download_img success, img_url: {}, path: {}".format(img_url, path))
-        # print("[INFO][SPIDER]download_img success, img_url: {}, path: {}".format(img_url, path))
         return True
 
     def download_seed(self, seed_url, path):
@@ -159,10 +147,8 @@ class Mikan:
         torrent_name = seed_url.split('/')[3]
         if not self.download(url, path + torrent_name):
             logger.warning("[SPIDER]download_seed failed, download failed, seed_url: {}, path: {}".format(seed_url, path))
-            # print("[ERROR][SPIDER]download_seed failed, download failed, seed_url: {}, path: {}".format(seed_url, path))
             return False
         logger.info("[SPIDER]download_seed sucess, seed_url: {}, path: {}".format(seed_url, path))
-        # print("[INFO][SPIDER]download_seed sucess, seed_url: {}, path: {}".format(seed_url, path))   
         return True
 
     def lxml_result_to_str(self, result):
@@ -188,7 +174,7 @@ logger = m_LogManager.getLogObj(sys.argv[0])
 m_mikan = Mikan(logger)
 
 if __name__ == '__main__':
-    mikan = Mikan()
+    mikan = m_mikan
     # anime_list = mikan.get_anime_list()
     # subgroup_list = mikan.get_subgroup_list(3060)
     # seed_list = mikan.get_seed_list(3060, 611)
