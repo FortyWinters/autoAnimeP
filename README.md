@@ -13,7 +13,7 @@
    - ~~修复日志重复打印~~
    - ~~日志大小超过阈值时分割日志文件~~
    - 添加日志打印到终端的选项，完善log_config，yaml对应功能
-10. 数据库crud [@bjrbh](https://github.com/bjrbh)
+10. ~~数据库crud [@bjrbh](https://github.com/bjrbh)~~
 11. 守护进程拉起定时任务（4、5）
 
 ## 使用
