@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from exts import mikan, logger
-from models import *
+from lib.models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 

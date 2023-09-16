@@ -1,5 +1,5 @@
 import sys
-from logManager import m_LogManager
+from lib.logManager import m_LogManager
 
 logger = m_LogManager.getLogObj(sys.argv[0])
 logger = m_LogManager.getLogObj(sys.argv[0])

@@ -2,8 +2,8 @@ import sys
 from flask import current_app
 from sqlalchemy.exc import SQLAlchemyError
 from exts import db
-from common import *
-from logManager import m_LogManager
+from lib.common import *
+from lib.logManager import m_LogManager
 
 logger = m_LogManager.getLogObj(sys.argv[0])
 

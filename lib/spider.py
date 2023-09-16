@@ -4,9 +4,9 @@ import re
 import requests
 import urllib.request
 from lxml import etree
-from logManager import m_LogManager
+from lib.logManager import m_LogManager
 from fake_useragent import UserAgent
-from common import Anime, Seed, Subgroup
+from lib.common import Anime, Seed, Subgroup
 
 class Mikan:
     def __init__(self, logger):
