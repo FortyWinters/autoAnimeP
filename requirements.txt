@@ -39,5 +39,4 @@ typing_extensions==4.7.1
 urllib3==2.0.4
 Werkzeug==2.3.7
 yarg==0.1.9
-
 DBUtils~=3.0.3

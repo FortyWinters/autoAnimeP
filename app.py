@@ -4,7 +4,7 @@ from lib.models import AnimeList
 from flask_migrate import Migrate
 from blueprints.index import bp as index_bp
 from blueprints.anime import bp as anime_bp
-import config
+import lib.config as config
 
 app = Flask(__name__)
 
