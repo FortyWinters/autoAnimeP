@@ -5,10 +5,11 @@ from lxml import etree
 from common import Anime, Seed, Subgroup
 import ssl
 import re
-from logManager import LogManager
 import sys
 
-logger = LogManager(sys.argv[0]).getLogObj()
+from logManager import m_LogManager
+
+logger = m_LogManager.getLogObj(sys.argv[0])
 
 class Mikan:
     def __init__(self):

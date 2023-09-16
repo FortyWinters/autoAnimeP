@@ -1,8 +1,8 @@
 import sys
-from logManager import LogManager
 from flask_sqlalchemy import SQLAlchemy
 from spider import Mikan
+from logManager import m_LogManager
 
-logger = LogManager(sys.argv[0]).getLogObj()
+logger = m_LogManager.getLogObj(sys.argv[0])
 db = SQLAlchemy()
 mikan = Mikan()
