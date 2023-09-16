@@ -12,8 +12,8 @@ DEBUG = 10
 NOTSET = 0
 
 class LogManager:
-    def __init__(self, prog):
-        self.prog = prog
+    def __init__(self):
+        self.progs = dict()
         self.logLevel = self.getLogLevel()
         self.logDir = self.getLogDir()
         self.max_file_size = 10 * 1024 * 1024
@@ -27,21 +27,24 @@ class LogManager:
                 logLevel = "INFO"
         
         if logLevel == "DEBUG":
-            return 10
+            return DEBUG
         elif logLevel == "WARNING":
-            return 30
+            return WARNING
         elif logLevel == "ERROR":
-            return 40
+            return ERROR
         elif logLevel == "CRITICAL":
-            return 50
+            return CRITICAL
         else:
-            return 20
+            return INFO
         
     def getLogDir(self):
         return "log/autoAnimeApp.log"
     
-    def getLogObj(self):
-        logger = logging.getLogger(self.prog)
+    def getLogObj(self, prog):
+        if prog in self.progs:
+            return self.progs[prog]
+        
+        logger = logging.getLogger(prog)
         logger.setLevel(logging.DEBUG)
         #formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -57,4 +60,8 @@ class LogManager:
         # console_handler.setFormatter(formatter)
         # logger.addHandler(console_handler)
 
+        self.progs[prog] = logger
+
         return logger
+    
+m_LogManager = LogManager()
