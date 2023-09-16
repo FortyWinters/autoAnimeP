@@ -49,17 +49,22 @@ def update_anime_list():
 @bp.route("/subscribe_anime/<int:mikan_id>")
 def subcribe_anime(mikan_id):
     if not update_list_subscribe_status(mikan_id, 1):
-        print("[ERROR][BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, " +
-              "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+        # print("[ERROR][BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, " +
+            #  "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+        logger.warning("[BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, " +
+              "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))      
+    return render_template("anime_list.html")
+    
 
-    
-    
     
 @bp.route("/cancle_subscribe_anime/<int:mikan_id>")
 def cancle_subscribe_anime(mikan_id):
     if not update_list_subscribe_status(mikan_id, 0):
-        print("[ERROR][BP][ANIME]cancle_subscribe_anime error, update_anime_subscribe_status failed, " +
-              "mikan_id: {}, subscribe_status: {}".format(mikan_id, 0))
+        # print("[ERROR][BP][ANIME]cancle_subscribe_anime error, update_anime_subscribe_status failed, " +
+            #  "mikan_id: {}, subscribe_status: {}".format(mikan_id, 0))
+        logger.warning("[BP][ANIME]cancel_subcribe_anime error, update_anime_subscribe_status failed, " +
+            "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))    
+    return render_template("anime_list.html")
 
 
     
@@ -87,10 +92,15 @@ def insert_anime_seed_list(mikan_id):
                 res_insert = insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name)
                 if not res_insert:
                     fail_number += 1
-                    print("[ERROR][BP][ANIME]insert_anime_seed_list error, insert_data_to_anime_seed failed, " +
+                    # print("[ERROR][BP][ANIME]insert_anime_seed_list error, insert_data_to_anime_seed failed, " +
+                    #       "mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(
+                    #           mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
+                    logger.warning("[BP][ANIME]insert_anime_seed_list error, insert_data_to_anime_seed failed, " +
                           "mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(
                               mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
                     continue
                 update_number += 1
-    print("[INFO][BP][ANIME]insert_anime_seed_list, inserting anime seed finished, " + 
+    # print("[INFO][BP][ANIME]insert_anime_seed_list, inserting anime seed finished, " + 
+    #     "mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
+    logger.info("[BP][ANIME]insert_anime_seed_list, inserting anime seed finished, " + 
         "mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))

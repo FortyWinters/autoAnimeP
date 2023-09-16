@@ -26,7 +26,7 @@ class Mikan:
             logger.warning("[SPIDER]request_html failed, url: {}, error: {}".format(url, e))
             # print("[ERROR][SPIDER]request_html failed, url: {}, error: {}".format(url, e))
         else:
-            logger.info("[INFO][SPIDER]request_html success, url: {}".format(url))
+            logger.info("[SPIDER]request_html success, url: {}".format(url))
             # print("[INFO][SPIDER]request_html success, url: {}".format(url))
             return html_doc
         
@@ -43,7 +43,7 @@ class Mikan:
             return False
         else:
             logger.info("[SPIDER]download success, url: {}".format(url))
-            print("[INFO][SPIDER]download success, url: {}".format(url))
+            # print("[INFO][SPIDER]download success, url: {}".format(url))
             return True
     
     def get_anime_list(self):
@@ -115,7 +115,7 @@ class Mikan:
         url = "{}/Home/ExpandEpisodeTable?bangumiId={}&subtitleGroupId={}&take=65".format(self.url, mikan_id, subgroup_id)
         html_doc = self.request_html(url)
         if html_doc == None:
-            logger.warning("[ERROR][SPIDER]get_seed_list failed, request_html failed, url: {}".format(self.url))
+            logger.warning("[SPIDER]get_seed_list failed, request_html failed, url: {}".format(self.url))
             # print("[ERROR][SPIDER]get_seed_list failed, request_html failed, url: {}".format(self.url))
             return
         
@@ -140,7 +140,7 @@ class Mikan:
             seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name)
             seed_list.append(seed)
         
-        logger.info("[INFO][SPIDER]get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))
+        logger.info("[SPIDER]get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))
         # print("[INFO][SPIDER]get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))        
         return seed_list
     
@@ -159,9 +159,11 @@ class Mikan:
         url = "{}{}".format(self.url, seed_url)
         torrent_name = seed_url.split('/')[3]
         if not self.download(url, path + torrent_name):
-            print("[ERROR][SPIDER]download_seed failed, download failed, seed_url: {}, path: {}".format(seed_url, path))
+            logger.warning("[SPIDER]download_seed failed, download failed, seed_url: {}, path: {}".format(seed_url, path))
+            # print("[ERROR][SPIDER]download_seed failed, download failed, seed_url: {}, path: {}".format(seed_url, path))
             return False
-        print("[INFO][SPIDER]download_seed sucess, seed_url: {}, path: {}".format(seed_url, path))   
+        logger.info("[SPIDER]download_seed sucess, seed_url: {}, path: {}".format(seed_url, path))
+        # print("[INFO][SPIDER]download_seed sucess, seed_url: {}, path: {}".format(seed_url, path))   
         return True
 
     def lxml_result_to_str(self, result):
