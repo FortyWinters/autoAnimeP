@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anime_list.js') }}"></script>
     <title>番剧列表</title>
 </head>
 
@@ -54,7 +56,7 @@
                 <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url.split('/')[4]) }}" alt="" height="400px" width="300px">
                 <div class="anime-info">
                     <div class="anime-name">{{ anime.anime_name }}</div>
-                    <button class="subscribe-icon-botton" mikan-id={{ anime.mikan_id }}>
+                    <button class="subscribe-botton" id="{{ anime.mikan_id }}">
                         <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
                     </button>
                 </div>

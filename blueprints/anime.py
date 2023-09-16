@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template
 from exts import mikan, logger
 from lib.models import *
+from flask import request, jsonify
+
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 
@@ -43,12 +45,15 @@ def update_anime_list():
     return render_template("anime_list.html")
 
 
-@bp.route("/subscribe_anime/<int:mikan_id>")
-def subcribe_anime(mikan_id):
-    if not update_list_subscribe_status(mikan_id, 1):
-        logger.warning("[BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, " +
-                       "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
-    return render_template("anime_list.html")
+@bp.route("/subscribe_anime", methods=['POST'])
+def subcribe_anime():
+    mikan_id = request.args.get("mikan_id")
+    logger.info("[BP][ANIME]subcribe_anime, mikan_id: {}".format(mikan_id))
+    # if not update_list_subscribe_status(mikan_id, 1):
+    #     logger.warning("[BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, " +
+    #                    "mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+    
+    return jsonify({"code": 200, "message": "", "data": None})
 
 
 @bp.route("/cancle_subscribe_anime/<int:mikan_id>")
