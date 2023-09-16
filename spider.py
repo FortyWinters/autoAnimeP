@@ -1,20 +1,18 @@
-import requests
-import urllib.request
-from fake_useragent import UserAgent
-from lxml import etree
-from common import Anime, Seed, Subgroup
+import sys
 import ssl
 import re
-import sys
-
+import requests
+import urllib.request
+from lxml import etree
 from logManager import m_LogManager
-
-logger = m_LogManager.getLogObj(sys.argv[0])
+from fake_useragent import UserAgent
+from common import Anime, Seed, Subgroup
 
 class Mikan:
-    def __init__(self):
+    def __init__(self, logger):
         self.url = "https://mikanani.me"
         self.ua = UserAgent()
+        self.logger = logger
 
     def request_html(self, url):
         try:
@@ -185,7 +183,10 @@ class Mikan:
         if len(str_list) == 0:
             return False
         return True
-        
+
+logger = m_LogManager.getLogObj(sys.argv[0])
+m_mikan = Mikan(logger)
+
 if __name__ == '__main__':
     mikan = Mikan()
     # anime_list = mikan.get_anime_list()
