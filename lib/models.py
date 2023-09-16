@@ -165,7 +165,8 @@ def query_seed_by_anime_name(mikan_id):  # 增加过滤条件进行查询
 
 def update_list_subscribe_status(mikan_id, subscribe_status):
     db.session.query(AnimeList).filter_by(mikan_id=mikan_id).update({"subscribe_status": subscribe_status})
-    db.session.commit()
+    # db.session.commit()
+    return session_commit()
 
 
 # delete anime_list
@@ -191,7 +192,26 @@ def delete_anime_list_by_condition(anime_name='', mikan_id=-1, update_day=-1, an
         return session_commit()
     return False
 
-
+def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name=-1, seed_url=-1):
+    session = db.session.query(AnimeSeed)
+    if mikan_id != -1:
+        session = session.filter_by(mikan_id=mikan_id)
+    if subgroup_id != -1:
+        session = session.filter_by(subgroup_id=subgroup_id)
+    if episode != -1:
+        session = session.filter_by(episode=episode)
+    if seed_name != -1:
+        session = session.filter_by(seed_name=seed_name)
+    if seed_url != -1:
+        session = session.filter_by(seed_url=seed_url)
+    query = session.all()
+    count = 0
+    for data in query:
+        db.session.delete(data)
+        count = count + 1
+    if count > 0:
+        return session_commit()
+    return False
 # from sqlalchemy.exc import SQLAlchemyError
 # from flask import current_app
 
