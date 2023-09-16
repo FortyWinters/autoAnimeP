@@ -32,13 +32,9 @@ class AnimeSeed(db.Model):
 class AnimeTask(db.Model):
     __tablename__ = "anime_task"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    # 任务的默认id
-    anime_id = db.Column(db.Integer, nullable=False, unique=True)
-    # 剧集对应的番名（AnimeList）的id
-    status = db.Column(db.Integer)
-    # 下载的状态 0表示还没有开始下载 1表示下载成功 2表示下载开始但是过程失败
-    episode = db.Column(db.String(40))
-    # 剧集名称
+    mikan_id = db.Column(db.Integer, nullable=False, unique=True)
+    status = db.Column(db.Integer,comment='下载的状态 0表示还没有开始下载 1表示下载成功 2表示下载开始但是过程失败')
+    episode = db.Column(db.Integer, nullable=False)
 
 
 # TODO 继续优化 @bjrbh
