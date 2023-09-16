@@ -32,7 +32,7 @@ class AnimeSeed(db.Model):
 class AnimeTask(db.Model):
     __tablename__ = "anime_task"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    mikan_id = db.Column(db.Integer, nullable=False, unique=True)
+    mikan_id = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Integer,comment='下载的状态 0表示还没有开始下载 1表示下载成功 2表示下载开始但是过程失败')
     episode = db.Column(db.Integer, nullable=False)
     torrent_name = db.Column(db.String(200), nullable=False)
