@@ -1,5 +1,5 @@
 import pymysql
-import config as config
+import lib.config as config
 from dbutils.persistent_db import PersistentDB
 
 class DBconnect:

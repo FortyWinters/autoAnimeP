@@ -1,4 +1,7 @@
 import sys
+import os
+
+sys.path.append(os.getcwd())
 from lib.logManager import m_LogManager
 
 logger = m_LogManager.getLogObj(sys.argv[0])
