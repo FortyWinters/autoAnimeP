@@ -1,3 +1,4 @@
+import sys
 import yaml
 import logging
 from logging.handlers import RotatingFileHandler
@@ -14,17 +15,27 @@ NOTSET = 0
 class LogManager:
     def __init__(self):
         self.progs = dict()
-        self.logLevel = self.getLogLevel()
-        self.logDir = self.getLogDir()
+        self.logConfig = dict()
         self.max_file_size = 10 * 1024 * 1024
         self.logMap = []
 
-    def getLogLevel(self):
+        self.getLogConfig()
+
+    def getLogConfig(self):
+        config_dir = 'config_file/log_config.yaml'
         try:
-            with open('config_file/log_config.yaml', 'r') as config_file:
-                logLevel = yaml.safe_load(config_file)['logging']['level']
+            with open(config_dir, 'r') as config_file:
+                config = yaml.safe_load(config_file)['logging']
+                self.logConfig['logLevel'] = config['level']
+                self.logConfig['logDir'] = config['dir']
+
         except Exception as e:
-                logLevel = "INFO"
+                print(e)
+                print("[Error] log initial filed. cant' read log config from %s", config_dir)
+                sys.exit(0)
+
+    def getLogLevel(self):
+        logLevel = self.logConfig['logLevel']
         
         if logLevel == "DEBUG":
             return DEBUG
@@ -38,19 +49,22 @@ class LogManager:
             return INFO
         
     def getLogDir(self):
-        return "log/autoAnimeApp.log"
+        return self.logConfig["logDir"]
     
     def getLogObj(self, prog):
         if prog in self.progs:
             return self.progs[prog]
         
+        logDir = self.logConfig["logDir"]
+        logLevel = self.logConfig['logLevel']
+
         logger = logging.getLogger(prog)
         logger.setLevel(logging.DEBUG)
         #formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-        file_handler = RotatingFileHandler(self.logDir, maxBytes=self.max_file_size, backupCount=5)
-        file_handler.setLevel(self.logLevel)
+        file_handler = RotatingFileHandler(logDir, maxBytes=self.max_file_size, backupCount=5)
+        file_handler.setLevel(logLevel)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
         logger.propagate = False
