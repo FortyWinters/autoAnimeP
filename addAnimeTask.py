@@ -51,18 +51,26 @@ class AddAnimeTask:
         
         print(anime_task_episode_lists_new)
 
-        dir = "seed/" + mikan_id + "/"
+        # 下载种子, 并回写 anime_list
+        dir = "seed/" + str(mikan_id) + "/"
         print(dir)
         for episode, seed_url in anime_task_episode_lists_new.items():
             if not os.path.exists(dir):
                 os.makedirs(dir)
             m_mikan.download_seed(seed_url, dir)
 
+            torrent_name = seed_url.split('/')[3]
+            sql = "INSERT INTO anime_task (mikan_id, status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".format(mikan_id, 0, episode, torrent_name)
+            m_DBconnector.execute(sql)
+
         return anime_task_episode_lists_new
 
-AddAnimeTask().getAllSubscribeAnimeName()
-AddAnimeTask().getAnimeTaskByMikanId(3071)
+    def run(self):
+        for mikan_id in self.mikan_id_lists:
+            self.getAnimeTaskByMikanId(mikan_id)
 
+m_AddAnimeTask= AddAnimeTask()
 
-# sql = "INSERT INTO anime_task (mikan_id, status, episode) VALUES (3060, 0, 1)"
-# m_DBconnector.execute(sql)
+# AddAnimeTask().getAllSubscribeAnimeName()
+# AddAnimeTask().getAnimeTaskByMikanId(3060)
+# AddAnimeTask().run()
