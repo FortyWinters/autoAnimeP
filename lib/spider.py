@@ -10,7 +10,8 @@ from lib.common import Anime, Seed, Subgroup
 
 class Mikan:
     def __init__(self, logger):
-        self.url = "https://mikanani.me"
+        # self.url = "https://mikanani.me" # 墙外
+        self.url = "https://mikanime.tv"   # 墙内
         self.ua = UserAgent()
         self.logger = logger
 
