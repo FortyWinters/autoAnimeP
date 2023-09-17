@@ -24,7 +24,7 @@ def index():
         anime_order_list.append(a)
     for a in unsubscribe_order_list:
         anime_order_list.append(a)
-
+    logger.info("[BP][ANIME] index success, url: /anime/")
     return render_template("anime_list.html", anime_list=anime_order_list)
 
 # 更新番剧列表
@@ -43,14 +43,14 @@ def update_anime_list():
         if a.mikan_id not in anime_set:
             if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
                 fail_number += 1
-                logger.warning("[BP][ANIME]update_anime_list error, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
+                logger.warning("[BP][ANIME] update_anime_list, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
                 continue
             update_number += 1
 
             if not mikan.download_img(a.img_url, img_path):
-                logger.warning("[ERROR][BP][ANIME]update_anime_list error, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
+                logger.warning("[BP][ANIME] update_anime_list, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
                 return jsonify({"code": 400, "message": "update_anime_list", "data": None})
-    logger.info("[BP][ANIME]update_anime_list, updating anime finished, update number: {}, fail number: {}".format(update_number, fail_number))
+    logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
     return jsonify({"code": 200, "message": "update_anime_list", "data": None})
 
 # 订阅番剧
@@ -58,10 +58,10 @@ def update_anime_list():
 def subcribe_anime():
     mikan_id = request.args.get("mikan_id")
     if not update_anime_list_subscribe_status_by_mikan_id(mikan_id, 1):
-        logger.warning("[BP][ANIME]subcribe_anime error, update_anime_subscribe_status failed, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+        logger.warning("[BP][ANIME] subcribe_anime, update_anime_list_subscribe_status_by_mikan_id failed, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
         return jsonify({"code": 400, "message": "subcribe_anime", "data": None})
     
-    logger.info("[BP][ANIME]subcribe_anime success, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+    logger.info("[BP][ANIME] subcribe_anime success, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
     return jsonify({"code": 200, "message": "subcribe_anime", "data": None})
 
 # 取消订阅番剧
@@ -69,10 +69,10 @@ def subcribe_anime():
 def cancel_subscribe_anime():
     mikan_id = request.args.get("mikan_id")
     if not update_anime_list_subscribe_status_by_mikan_id(mikan_id, 0):
-        logger.warning("[BP][ANIME]cancel_subcribe_anime error, update_anime_subscribe_status failed, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+        logger.warning("[BP][ANIME] cancel_subcribe_anime, update_anime_list_subscribe_status_by_mikan_id failed, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
         return jsonify({"code": 400, "message": "cancel_subscribe_anime", "data": None})
     
-    logger.info("[BP][ANIME]cancel_subcribe_anime success, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
+    logger.info("[BP][ANIME] cancel_subcribe_anime success, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
     return jsonify({"code": 200, "message": "cancel_subscribe_anime", "data": None})
 
 # 更新种子
@@ -93,10 +93,10 @@ def insert_anime_seed():
             if s.seed_url not in seed_set:
                 if not insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name):
                     fail_number += 1
-                    logger.warning("[BP][ANIME]insert_anime_seed_list error, insert_data_to_anime_seed failed, mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
+                    logger.warning("[BP][ANIME] insert_anime_seed_list, insert_data_to_anime_seed failed, mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
                     continue
                 update_number += 1
-    logger.info("[BP][ANIME]insert_anime_seed_list, inserting anime seed finished, mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
+    logger.info("[BP][ANIME] insert_anime_seed_list success, mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
     return jsonify({"code": 200, "message": "insert_anime_seed", "data": None})
 
 # 删除种子
@@ -104,10 +104,10 @@ def insert_anime_seed():
 def delete_anime_seed():
     mikan_id = request.args.get("mikan_id")
     if not delete_anime_seed_by_condition(mikan_id=mikan_id):
-        logger.warning("[BP][ANIME]delete_anime_seed failed, mikan_id: {}".format(mikan_id))
+        logger.warning("[BP][ANIME] delete_anime_seed, delete_anime_seed_by_condition failed, mikan_id: {}".format(mikan_id))
         return jsonify({"code": 400, "message": "delete_anime_seed", "data": mikan_id})
 
-    logger.info("[BP][ANIME]delete_anime_seed finished, mikan_id: {}".format(mikan_id))
+    logger.info("[BP][ANIME] delete_anime_seed success, mikan_id: {}".format(mikan_id))
     return jsonify({"code": 200, "message": "delete_anime_seed", "data": mikan_id})
 
 # # 测试插入方法insert_data_to_anime_list_new的默认参数
