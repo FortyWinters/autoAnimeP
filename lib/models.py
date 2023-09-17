@@ -7,7 +7,6 @@ from lib.logManager import m_LogManager
 
 logger = m_LogManager.getLogObj(sys.argv[0])
 
-
 class AnimeList(db.Model):
     __tablename__ = "anime_list"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -37,87 +36,41 @@ class AnimeTask(db.Model):
     episode = db.Column(db.Integer, nullable=False)
     torrent_name = db.Column(db.String(200), nullable=False)
 
-
-# TODO 继续优化 @bjrbh
-def insert_data_to_anime_list(anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status):
+def session_commit():
     try:
-        anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day,
-                               anime_type=anime_type, subscribe_status=subscribe_status)
-        db.session.add_all([anime_list])
         db.session.commit()
-    except Exception as e:
-        print("[ERROR][MODELS]insert_data_to_anime_list failed, " +
-              "anime_name: {}, mikan_id: {}, img_url: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(
-                  anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status))
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.warning("[MODELS]session_commit failed, error: {}".format(e))
         return False
     else:
         return True
 
+def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="0", anime_type="0", subscribe_status="0"):
+    logger.info("[MODELS]insert_data_to_anime_list, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
 
-# ----------------[更新]👆使用session_commit用于数据库回滚 均是可选字段
-def insert_data_to_anime_list_new(mikan_id, anime_name="", img_url="", update_day="0", anime_type="0",
-                                  subscribe_status="0"):
-    anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day,
-                           anime_type=anime_type, subscribe_status=subscribe_status)
+    anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day, anime_type=anime_type, subscribe_status=subscribe_status)
     db.session.add_all([anime_list])
     return session_commit()
 
-
-# TODO 继续优化 @bjrbh
 def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_name):
-    try:
-        anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id,
-                               seed_name=seed_name)
-        db.session.add_all([anime_seed])
-        db.session.commit()
-    except Exception as e:
-        print("[ERROR][MODELS]insert_data_to_anime_seed failed, " +
-              "mikan_id: {}, episode: {}, seed_url: {}, subgroup_id: {}, seed_name: {}".format(
-                  mikan_id, episode, seed_url, subgroup_id, seed_name))
-        return False
-    else:
-        return True
+    logger.info("[MODELS]insert_data_to_anime_seed info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url))
 
-
-# ----------------[更新]👆使用session_commit用于数据库回滚
-def insert_data_to_anime_seed_new(mikan_id, episode, seed_url, subgroup_id, seed_name):
-    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id,
-                           seed_name=seed_name)
+    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id, seed_name=seed_name)
     db.session.add_all([anime_seed])
     return session_commit()
 
 
-# TODO 继续优化 @bjrbh
-# 初步查询语句 可以修改输入参数
-def query_list_by_anime_name():  # 增加过滤条件进行查询
-    result = db.session.query(AnimeList).all()
-    list = []
-    for data in result:
-        cur = Anime(data.anime_name, data.mikan_id, data.img_url, data.update_day, data.anime_type,
-                    data.subscribe_status)
-        # list.append(cur)
-        dic = {
-            "id": data.index,
-            "anime_name": data.anime_name,
-            "mikan_id": data.mikan_id,
-            "img_url": data.img_url,
-            "update_day": data.update_day,
-            "anime_type": data.anime_type,
-            "subscribe_status": data.subscribe_status
-        }
-        list.append(dic)
+def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1, subscribe_status=-1):
+    logger.info("[MODELS]query_anime_list_by_condition, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
 
-    return list
-
-
-# ----------------[更新]👆使用可选参数用于条件查询
-def query_list_by_anime_name_new(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1,
-                                 subscribe_status=-1):  # 增加过滤条件进行查询
     session = db.session.query(AnimeList)
     if anime_name != '':
         session = session.filter_by(anime_name=anime_name)
     if mikan_id != -1:
         session = session.filter_by(mikan_id=mikan_id)
+    if img_url != '':
+        session = session.filter_by(img_url=img_url)
     if update_day != -1:
         session = session.filter_by(update_day=update_day)
     if anime_type != -1:
@@ -127,52 +80,50 @@ def query_list_by_anime_name_new(anime_name='', mikan_id=-1, img_url='', update_
     result = session.all()
     list = []
     for data in result:
-        cur = Anime(data.anime_name, data.mikan_id, data.img_url, data.update_day, data.anime_type,
-                    data.subscribe_status)
-        # list.append(cur)
         dic = {
-            "id": data.index,
-            "anime_name": data.anime_name,
-            "mikan_id": data.mikan_id,
-            "img_url": data.img_url,
-            "update_day": data.update_day,
-            "anime_type": data.anime_type,
-            "subscribe_status": data.subscribe_status
+            "index"            : data.index,
+            "anime_name"       : data.anime_name,
+            "mikan_id"         : data.mikan_id,
+            "img_url"          : data.img_url,
+            "update_day"       : data.update_day,
+            "anime_type"       : data.anime_type,
+            "subscribe_status" : data.subscribe_status
         }
         list.append(dic)
-
     return list
 
+def query_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name='', seed_url=''):
+    logger.info("[MODELS]query_anime_seed_by_condition info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url))
 
-# TODO 继续优化 @bjrbh
-def query_seed_by_anime_name(mikan_id):  # 增加过滤条件进行查询
-    result = db.session.query(AnimeSeed).filter(AnimeSeed.mikan_id == mikan_id).all()
+    session = db.session.query(AnimeSeed)
+    if mikan_id != -1:
+        session = session.filter_by(mikan_id=mikan_id)
+    if subgroup_id != -1:
+        session = session.filter_by(subgroup_id=subgroup_id)
+    if episode != -1:
+        session = session.filter_by(episode=episode)
+    if seed_name != '':
+        session = session.filter_by(seed_name=seed_name)
+    if seed_url != '':
+        session = session.filter_by(seed_url=seed_url)
+    result = session.all()
     list = []
     for data in result:
-        cur = Seed(data.mikan_id, data.episode, data.seed_url, data.subgroup_id, data.seed_name)
-        # list.append(cur)
         dic = {
-            "id": data.index,
-            "mikan_id": data.mikan_id,
-            "episode": data.episode,
-            "seed_url": data.seed_url,
-            "subgroup_id": data.subgroup_id,
-            "seed_name": data.seed_name
+            "index"       : data.index,
+            "mikan_id"    : data.mikan_id,
+            "subgroup_id" : data.subgroup_id,
+            "episode"     : data.episode,
+            "seed_name"   : data.seed_name,
+            "seed_url"    : data.seed_url
         }
         list.append(dic)
-
     return list
 
 
-def update_list_subscribe_status(mikan_id, subscribe_status):
-    db.session.query(AnimeList).filter_by(mikan_id=mikan_id).update({"subscribe_status": subscribe_status})
-    # db.session.commit()
-    return session_commit()
-
-
-# delete anime_list
-
 def delete_anime_list_by_condition(anime_name='', mikan_id=-1, update_day=-1, anime_type=-1, subscribe_status=-1):
+    logger.info("[MODELS]delete_anime_list_by_condition info, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
+
     session = db.session.query(AnimeList)
     if anime_name != '':
         session = session.filter_by(anime_name=anime_name)
@@ -193,7 +144,9 @@ def delete_anime_list_by_condition(anime_name='', mikan_id=-1, update_day=-1, an
         return session_commit()
     return False
 
-def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name=-1, seed_url=-1):
+def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name='', seed_url=''):
+    logger.info("[MODELS]delete_anime_seed_by_condition info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url))
+
     session = db.session.query(AnimeSeed)
     if mikan_id != -1:
         session = session.filter_by(mikan_id=mikan_id)
@@ -201,9 +154,9 @@ def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed
         session = session.filter_by(subgroup_id=subgroup_id)
     if episode != -1:
         session = session.filter_by(episode=episode)
-    if seed_name != -1:
+    if seed_name != '':
         session = session.filter_by(seed_name=seed_name)
-    if seed_url != -1:
+    if seed_url != '':
         session = session.filter_by(seed_url=seed_url)
     query = session.all()
     count = 0
@@ -213,38 +166,10 @@ def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed
     if count > 0:
         return session_commit()
     return False
-# from sqlalchemy.exc import SQLAlchemyError
-# from flask import current_app
 
 
-# class DbSessionCommit():
-#     @staticmethod
-#     def add(self):
-#         db.session.add(self)
-#         return session_commit()
+def update_anime_list_subscribe_status_by_mikan_id(mikan_id, subscribe_status):
+    logger.info("[MODELS]update_anime_list_subscribe_status_by_mikan_id info, mikan_id: {}, subscribe_status: {}".format(mikan_id, subscribe_status))
 
-#     @staticmethod
-#     def update(self):
-#         return session_commit()
-
-#     @staticmethod
-#     def delete(self):
-#         db.session.delete(self)
-#         return session_commit()
-
-# class User(db.Model, DbSessionCommit):
-#     __tablename__ = 't_user'
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(255), unique=True, nullable=False)
-#     password = db.Column(db.String(255), nullable=False)
-
-def session_commit():
-    try:
-        db.session.commit()
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        reason = str(e)
-        logger.warning('[Models]Exception :' + reason)
-        return False
-    else:
-        return True
+    db.session.query(AnimeList).filter_by(mikan_id=mikan_id).update({"subscribe_status": subscribe_status})
+    return session_commit()
