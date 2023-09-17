@@ -96,8 +96,6 @@ class AddAnimeTask:
 
 m_AddAnimeTask= AddAnimeTask()
 
-m_AddAnimeTask.printAllSubscribeAnimeName()
-m_AddAnimeTask.run()
-m_AddAnimeTask.printAnimeTask()
-# AddAnimeTask().getAnimeTaskByMikanId(3060)
-# AddAnimeTask().run()
+# m_AddAnimeTask.printAllSubscribeAnimeName()
+# m_AddAnimeTask.run()
+# m_AddAnimeTask.printAnimeTask()
