@@ -3,60 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/anime_list.css') }}">
     <script src="{{ url_for('static', filename='jquery/jquery.3.7.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/anime_list.js') }}"></script>
     <title>番剧列表</title>
 </head>
-
-<style>
-    ul {
-        list-style: none;
-    }
-    li {
-        float: left;
-    }
-    .container {
-        margin: 0 auto;
-    }
-    .anime-container {
-        float: left;
-        height: 450px;
-        width: 300px;
-        margin: 0 5px 10px 5px;
-    }
-    .anime-info {
-        height: 50px;
-        width: 300px;
-        padding-top: 5px;
-    }
-    .anime-name {
-        width: 260px;
-        float: left;
-    }
-    .subscribe-button {
-        float: right;
-        background-color: #d6d6d6;
-        border: none;
-        border-radius: 5px;
-        width: 30px;
-        height: 30px;
-    }
-    .update-button {
-        background-color: #d6d6d6;
-        color: white;
-        font-size: 20px;
-        border: none;
-        border-radius: 5px;
-        width: 150px;
-        height: 50px;
-        margin-left: 45px;
-    }
-    .update-button:hover {
-        background-color: red;
-    }
-
-</style>
-
 <body>
     <div class="container">
     <button class="update-button">列表更新</button>
