@@ -25,7 +25,7 @@ def update_anime_list():
     anime_list_new = mikan.get_anime_list()
     for a in anime_list_new:
         if a.mikan_id not in anime_set:
-            if not insert_data_to_anime_list(a.anime_name, a.mikan_id, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
+            if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
                 fail_number += 1
                 logger.warning("[BP][ANIME]update_anime_list error, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
                 continue

@@ -1,5 +1,5 @@
 $(function() {
-    $('button.subscribe-botton').on('click', function() {
+    $('button.subscribe-button').on('click', function() {
         var mikan_id = $(this).attr('id');
         var subscribe_status = $(this).attr('subscribe_status');
         if(subscribe_status==0) {
@@ -58,4 +58,19 @@ $(function() {
 
         }
     });
+
+    $('button.update-button').on('click', function() {
+      // 更新番剧列表
+      $.ajax({
+        url: "/anime/update_anime_list",
+        method: "GET",
+        success: function(result) {
+          window.location.reload();
+        },
+        fail: function(error) {
+          console.log(error);
+        }
+      })
+    });
+
 });
