@@ -9,7 +9,23 @@ bp = Blueprint("anime", __name__, url_prefix="/anime")
 @bp.route("/")
 def index():
     anime_list = query_anime_list_by_condition()
-    return render_template("anime_list.html", anime_list=anime_list)
+    subscribe_list = []
+    unsubscribe_list = []
+    anime_order_list = []
+    for a in anime_list:
+        if a['subscribe_status'] == 1:
+            subscribe_list.append(a)
+        else:
+            unsubscribe_list.append(a)
+    
+    subscribe_order_list = sorted(subscribe_list, key=lambda x: x['update_day'])
+    unsubscribe_order_list = sorted(unsubscribe_list, key=lambda x: x['update_day'])
+    for a in subscribe_order_list:
+        anime_order_list.append(a)
+    for a in unsubscribe_order_list:
+        anime_order_list.append(a)
+
+    return render_template("anime_list.html", anime_list=anime_order_list)
 
 # 更新番剧列表
 @bp.route("/update_anime_list", methods=['GET'])

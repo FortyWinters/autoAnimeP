@@ -12,7 +12,7 @@ class AnimeList(db.Model):
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
     anime_name = db.Column(db.String(40), nullable=True, unique=True)
     mikan_id = db.Column(db.Integer, nullable=True, unique=True)
-    update_day = db.Column(db.Integer, nullable=True, comment='剧场版和ova为0')
+    update_day = db.Column(db.Integer, nullable=True, comment='剧场版和ova为8')
     img_url = db.Column(db.String(40), nullable=False)
     anime_type = db.Column(db.Integer, nullable=True, comment='0为番剧,1为剧场版,2为ova')
     subscribe_status = db.Column(db.Integer, nullable=True, comment='0为未订阅,1为已订阅')
@@ -46,7 +46,7 @@ def session_commit():
     else:
         return True
 
-def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="0", anime_type="0", subscribe_status="0"):
+def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="8", anime_type="0", subscribe_status="0"):
     logger.info("[MODELS]insert_data_to_anime_list, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
 
     anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day, anime_type=anime_type, subscribe_status=subscribe_status)

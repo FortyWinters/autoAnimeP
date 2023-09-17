@@ -64,10 +64,10 @@ class Mikan:
 
                 if update_day == 7:   # movie
                     anime_type = 1
-                    update_day = 0
+                    update_day = 8
                 elif update_day == 8: # ova
                     anime_type = 2
-                    update_day = 0
+                    update_day = 8
                 elif update_day == 0: # update on sunday
                     anime_type = 0
                     update_day = 7

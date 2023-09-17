@@ -9,13 +9,14 @@ $(function() {
             method: "POST",
             success: function(result) {
               console.log(result);
+              window.location.reload();
             },
             fail: function(error) {
               console.log(error);
             }
           })
-          $(this).attr('subscribe_status', 1) 
-          $(this).css("background-color", "red"); 
+          // $(this).attr('subscribe_status', 1) 
+          // $(this).css("background-color", "red"); 
 
           // 更新种子
           $.ajax({
@@ -36,13 +37,14 @@ $(function() {
             method: "POST",
             success: function(result) {
               console.log(result);
+              window.location.reload();
             },
             fail: function(error) {
               console.log(error);
             }
           })
-          $(this).attr('subscribe_status',0)
-          $(this).css("background-color", "#d6d6d6"); 
+          // $(this).attr('subscribe_status',0)
+          // $(this).css("background-color", "#d6d6d6"); 
 
           // 删除种子
           $.ajax({
