@@ -70,12 +70,20 @@ class AddAnimeTask:
             torrent_name = seed_url.split('/')[3]
             sql = "INSERT INTO anime_task (mikan_id, status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".format(mikan_id, 0, episode, torrent_name)
             m_DBconnector.execute(sql)
-
+        
+        if not self.isUpdate:
+            self.isUpdate = True
+        
         return anime_task_episode_lists_new
+
+    def deleteTaskByMikanId(self, mikan_id):
+        # TODO
+
+        return True
 
     def printAnimeTask(self):
         if not self.isUpdate:
-            print("[INFO] Please exec self.run() to update anime tasks before printAnimeTask.")
+            print("[INFO] Please exec self.getAnimeTaskByMikanId() to update anime tasks before printAnimeTask.")
             return False
         
         if len(self.animeTask) == 0:
@@ -86,13 +94,17 @@ class AddAnimeTask:
             print(mikan_id)
             for episode, seed_url in episode_map.items():
                 print(episode, seed_url)
+        
         self.isUpdate = False
         return True
 
     def run(self):
         for mikan_id in self.mikan_id_lists:
             self.getAnimeTaskByMikanId(mikan_id)
-        self.isUpdate = True
+
+    def deletAllTask(self):
+        for mikan_id in self.mikan_id_lists:
+            self.deleteTaskByMikanId(mikan_id)
 
 m_AddAnimeTask= AddAnimeTask()
 
