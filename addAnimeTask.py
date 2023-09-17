@@ -2,10 +2,11 @@ import os
 from lib.connect import m_DBconnector
 from lib.spider import m_mikan
 
-
 class AddAnimeTask:
     def __init__(self):
         self.mikan_id_lists = []
+
+        # TODO 定时老化
         self.isUpdate = False
 
         # animeTask : {mikan_id, {episode, seed_url}}
@@ -29,8 +30,6 @@ class AddAnimeTask:
             print(mikan_id, self.mikanIdToName(mikan_id))
     
     def getAnimeTaskByMikanId(self, mikan_id):
-        self.animeTask.clear()
-
         # 获取已经添加的任务
         # anime_task_episode_lists_old : {episode, status}
         anime_task_episode_lists_old = dict()
@@ -64,12 +63,13 @@ class AddAnimeTask:
         for episode, seed_url in anime_task_episode_lists_new.items():
             if not os.path.exists(dir):
                 os.makedirs(dir)
-            m_mikan.download_seed(seed_url, dir)
-            self.animeTask[mikan_id] = anime_task_episode_lists_new
+            # m_mikan.download_seed(seed_url, dir)
 
             torrent_name = seed_url.split('/')[3]
             sql = "INSERT INTO anime_task (mikan_id, status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".format(mikan_id, 0, episode, torrent_name)
             m_DBconnector.execute(sql)
+        
+        self.animeTask[mikan_id] = anime_task_episode_lists_new
         
         if not self.isUpdate:
             self.isUpdate = True
@@ -78,7 +78,8 @@ class AddAnimeTask:
 
     def deleteTaskByMikanId(self, mikan_id):
         # TODO
-
+        sql = "DELETE FROM anime_task WHERE mikan_id={}".format(mikan_id)
+        m_DBconnector.execute(sql)
         return True
 
     def printAnimeTask(self):
@@ -89,13 +90,14 @@ class AddAnimeTask:
         if len(self.animeTask) == 0:
             print("[INFO] No new tasks.")
             return True
-        
+
         for mikan_id, episode_map in self.animeTask.items():
-            print(mikan_id)
+            if len(episode_map) == 0:
+                continue
+            print(mikan_id, self.mikanIdToName(mikan_id))
             for episode, seed_url in episode_map.items():
                 print(episode, seed_url)
         
-        self.isUpdate = False
         return True
 
     def run(self):
@@ -109,5 +111,6 @@ class AddAnimeTask:
 m_AddAnimeTask= AddAnimeTask()
 
 # m_AddAnimeTask.printAllSubscribeAnimeName()
-# m_AddAnimeTask.run()
-# m_AddAnimeTask.printAnimeTask()
+m_AddAnimeTask.run()
+m_AddAnimeTask.printAnimeTask()
+# m_AddAnimeTask.deletAllTask()
