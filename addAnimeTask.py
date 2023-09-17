@@ -1,11 +1,14 @@
 import os
+import sys
 from lib.connect import m_DBconnector
 from lib.spider import m_mikan
+from lib.logManager import m_LogManager
 
 class AddAnimeTask:
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
         self.mikan_id_lists = []
-
+        
         # TODO 定时老化
         self.isUpdate = False
 
@@ -58,7 +61,7 @@ class AddAnimeTask:
         
         # print(anime_task_episode_lists_new)
 
-        # 下载种子, 并回写 anime_list
+        # 下载种子, 并回写 anime_task
         dir = "seed/" + str(mikan_id) + "/"
         for episode, seed_url in anime_task_episode_lists_new.items():
             if not os.path.exists(dir):
@@ -77,18 +80,17 @@ class AddAnimeTask:
         return anime_task_episode_lists_new
 
     def deleteTaskByMikanId(self, mikan_id):
-        # TODO
         sql = "DELETE FROM anime_task WHERE mikan_id={}".format(mikan_id)
         m_DBconnector.execute(sql)
         return True
 
     def printAnimeTask(self):
         if not self.isUpdate:
-            print("[INFO] Please exec self.getAnimeTaskByMikanId() to update anime tasks before printAnimeTask.")
+            logger.warning("Please exec self.getAnimeTaskByMikanId() to update anime tasks before printAnimeTask.")
             return False
         
         if len(self.animeTask) == 0:
-            print("[INFO] No new tasks.")
+            logger.info("[INFO] No new tasks.")
             return True
 
         for mikan_id, episode_map in self.animeTask.items():
@@ -108,9 +110,12 @@ class AddAnimeTask:
         for mikan_id in self.mikan_id_lists:
             self.deleteTaskByMikanId(mikan_id)
 
-m_AddAnimeTask= AddAnimeTask()
+logger = m_LogManager.getLogObj(sys.argv[0])
+m_addAnimeTask= AddAnimeTask(logger)
 
-# m_AddAnimeTask.printAllSubscribeAnimeName()
-m_AddAnimeTask.run()
-m_AddAnimeTask.printAnimeTask()
-# m_AddAnimeTask.deletAllTask()
+# m_addAnimeTask.printAllSubscribeAnimeName()
+# m_addAnimeTask.getAnimeTaskByMikanId(3060)
+
+# m_addAnimeTask.run()
+# m_addAnimeTask.printAnimeTask()
+# m_addAnimeTask.deletAllTask()
