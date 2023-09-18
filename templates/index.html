@@ -4,10 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <title>autoAnime</title>
+    <title>启动!</title>
 </head>
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        height: 100vh; /* 100% of the viewport height */
+    }
+</style>
 <body>
-    <h1>这是首页</h1>
-
+    <div class="container">
+    <img src="{{ url_for('static', filename='img/genshin.jpg') }}" alt="" width="800px" height="600px"> 
+</div>
 </body>
 </html>
