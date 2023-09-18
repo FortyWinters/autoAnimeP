@@ -19,8 +19,12 @@ m_addAnimeTask= AddAnimeTask(logger)
 m_addqbTask = AddqbTask(conn_info,logger)
 
 if __name__ == '__main__':
+    m_addAnimeTask.printAllSubscribeAnimeName()
     m_addAnimeTask.deletAllTask()
-    m_addAnimeTask.getAnimeTaskByMikanId(3060)
-    torrentInfos = m_addqbTask.getTorrentInfo(m_addAnimeTask.animeTask)
-    print(torrentInfos)
-    m_addqbTask.addTorrents(torrentInfos, m_addAnimeTask.mikanIdToName(3060))
+    m_addAnimeTask.getAllAnimeTask()
+    totalTorrentInfos = m_addqbTask.getTotalTorrentInfos(m_addAnimeTask.anime_task)
+
+    for mikan_id, torrentInfos in totalTorrentInfos.items():
+        anime_name = m_addAnimeTask.mikanIdToName(mikan_id)
+        print(anime_name, torrentInfos)
+        m_addqbTask.addTorrents(anime_name, torrentInfos)

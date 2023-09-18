@@ -13,7 +13,7 @@ class AddAnimeTask:
         self.isUpdate = False
 
         # animeTask : {mikan_id, {episode, seed_url}}
-        self.animeTask = dict()
+        self.anime_task = dict()
         
         self.updateSubscribeAnime()
 
@@ -62,22 +62,34 @@ class AddAnimeTask:
         # print(anime_task_episode_lists_new)
 
         # 下载种子, 并回写 anime_task
+        anime_task_cache = self.downloadAnimeSeed(mikan_id, anime_task_episode_lists_new)
+
+        re_download_times =  2
+        while len(anime_task_cache) > 0 and re_download_times > 0:
+            anime_task_cache = self.downloadAnimeSeed(mikan_id, anime_task_episode_lists_new)
+            re_download_times = re_download_times - 1
+
+        if not self.isUpdate:
+            self.isUpdate = True
+    
+    def downloadAnimeSeed(self, mikan_id, anime_task_episode_lists_new):
         dir = "seed/" + str(mikan_id) + "/"
+        anime_task_cache = dict()
         for episode, seed_url in anime_task_episode_lists_new.items():
             if not os.path.exists(dir):
                 os.makedirs(dir)
-            # m_mikan.download_seed(seed_url, dir)
-
-            torrent_name = seed_url.split('/')[3]
-            sql = "INSERT INTO anime_task (mikan_id, status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".format(mikan_id, 0, episode, torrent_name)
-            m_DBconnector.execute(sql)
+            
+            if m_mikan.download_seed(seed_url, dir):
+                torrent_name = seed_url.split('/')[3]
+                sql = "INSERT INTO anime_task (mikan_id, status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".format(mikan_id, 0, episode, torrent_name)
+                m_DBconnector.execute(sql)
         
-        self.animeTask[mikan_id] = anime_task_episode_lists_new
+                self.anime_task[mikan_id] = anime_task_episode_lists_new
+            else:
+                anime_task_cache[episode] = seed_url
+                logger.warning("[addAnimeTask] download seed {} failed.".format(seed_url))
         
-        if not self.isUpdate:
-            self.isUpdate = True
-        
-        return anime_task_episode_lists_new
+        return anime_task_cache
 
     def deleteTaskByMikanId(self, mikan_id):
         sql = "DELETE FROM anime_task WHERE mikan_id={}".format(mikan_id)
@@ -89,11 +101,11 @@ class AddAnimeTask:
             logger.warning("Please exec self.getAnimeTaskByMikanId() to update anime tasks before printAnimeTask.")
             return False
         
-        if len(self.animeTask) == 0:
+        if len(self.anime_task) == 0:
             logger.info("[INFO] No new tasks.")
             return True
 
-        for mikan_id, episode_map in self.animeTask.items():
+        for mikan_id, episode_map in self.anime_task.items():
             if len(episode_map) == 0:
                 continue
             print(mikan_id, self.mikanIdToName(mikan_id))
@@ -102,7 +114,7 @@ class AddAnimeTask:
         
         return True
 
-    def run(self):
+    def getAllAnimeTask(self):
         for mikan_id in self.mikan_id_lists:
             self.getAnimeTaskByMikanId(mikan_id)
 

@@ -14,44 +14,45 @@ class AddqbTask:
         try:
              qbt_client.auth_log_in()
         except Exception as e:
-            print("Login failed .")
+            logger.error("Login failed .")
             sys.exit()
         return qbt_client
     
-    def getTorrentInfo(self, task_lists):
-        # Todo: read torrent from db
-        torrentInfos = dict()
+    # task_lists <- animeTask
+    # animeTask : {mikan_id, {episode, seed_url}}
+    def getTotalTorrentInfos(self, task_lists):
+        total_torrent_infos = dict()
+        for mikan_id, task in task_lists.items():
+            total_torrent_infos[mikan_id] = self.getTorrentInfosByTask(mikan_id, task)
+        return total_torrent_infos
 
-        for mikan_id, episode_info in task_lists.items():
-            for episode, seed_url in episode_info.items():
-                torrentInfo = dict()
-        
-                torrent_name = seed_url.split('/')[3]
-                path = "seed/" + str(mikan_id) + '/' + torrent_name
-                torrentInfo['name']     = torrent_name
-                torrentInfo['episode']  = episode
-                torrentInfo['path']     = path
-                
-                torrentInfos[episode] = torrentInfo
-        
-        # print(torrentInfos)
-        return torrentInfos
+    # task <- {episode, seed_url}
+    def getTorrentInfosByTask(self, mikan_id, task):
+        torrent_infos = dict()
 
-    def addTorrents(self, torrentInfos, Anime_name):
-        for _, torrentInfo in torrentInfos.items():
-            path = torrentInfo['path']
-            savePath = '/downloads/' + Anime_name
+        for episode,seed_url in task.items():
+            torrent_info = dict()
+
+            torrent_name = seed_url.split('/')[3]
+            path = "seed/" + str(mikan_id) + '/' + torrent_name
+            torrent_info['name']     = torrent_name
+            torrent_info['path']     = path
+    
+            torrent_infos[episode] = torrent_info
+        return torrent_infos
+
+    def addTorrents(self, anime_name, torrent_infos):
+        for _, torrent_info in torrent_infos.items():
+            path = torrent_info['path']
+            local_save_path = '/downloads/' + anime_name
             try:
-                self.qbt_client.torrents_add(torrent_files=path,save_path=savePath)
+                self.qbt_client.torrents_add(torrent_files=path,save_path=local_save_path)
             except Exception as e:
-                logger.warning("Failed to add torrent seed:", torrentInfo['name'])
+                logger.warning("Failed to add torrent seed:", torrent_info['name'])
 
     def pauseTorrent(self):
         # pause all torrents
         self.qbt_client.torrents.pause.all()
-    
-    def run(self):
-        self.addTorrents()
 
 conn_info = dict(
     host = "10.112.5.25",
