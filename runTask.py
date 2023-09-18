@@ -3,8 +3,8 @@ import sys
 from lib.connect import m_DBconnector
 from lib.spider import m_mikan
 from lib.logManager import m_LogManager
-from addAnimeTask import AddAnimeTask
-from addqbTask import AddqbTask
+from lib.addAnimeTask import AddAnimeTask
+from lib.addqbTask import AddqbTask
 
 logger = m_LogManager.getLogObj(sys.argv[0])
 

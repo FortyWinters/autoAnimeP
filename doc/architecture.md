@@ -1,6 +1,6 @@
 爬虫：
-1. 如果没有新种子，并且 anime_list 中的重下标记位为 false，结束进程；
-2. 如果有新种子，或者 anime_list 中的重下标记位为 true，则调用 runTask。
+1. 如果没有新种子，并且 anime_task 中的重下标记位为 false，结束进程；
+2. 如果有新种子，或者 anime_task 中的重下标记位为 true，则调用 runTask。
 
 runTask：
 1. 读 anime_task 获取已经添加的任务；

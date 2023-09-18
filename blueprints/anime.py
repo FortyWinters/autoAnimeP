@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template
-from exts import mikan, logger
 from lib.models import *
-from flask import request, jsonify
+from flask import request
+from flask import Blueprint
+from flask import jsonify, render_template
+from exts import mikan, logger, addqbTask, addAnimeTask
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 
@@ -109,6 +110,29 @@ def delete_anime_seed():
 
     logger.info("[BP][ANIME] delete_anime_seed success, mikan_id: {}".format(mikan_id))
     return jsonify({"code": 200, "message": "delete_anime_seed", "data": mikan_id})
+
+# 订阅番剧下载
+@bp.route("/download_subscribe_anime", methods=['POST'])
+def download_subscribe_anime():
+    mikan_id = request.args.get("mikan_id")
+    logger.info("[BP][ANIME] download_subscribe_anime, mikan_id: {}".format(mikan_id))
+    addAnimeTask.getAnimeTaskByMikanId(mikan_id)
+    totalTorrentInfos = addqbTask.getTotalTorrentInfos(addAnimeTask.anime_task)
+    for mikan_id, torrentInfos in totalTorrentInfos.items():
+        anime_name = addAnimeTask.mikanIdToName(mikan_id)
+        print((anime_name, torrentInfos))
+        addqbTask.addTorrents(anime_name, torrentInfos)
+    
+    return jsonify({"code": 200, "message": "download_subscribe_anime", "data": mikan_id})
+
+    # m_addAnimeTask.getAllAnimeTask()
+    # totalTorrentInfos = m_addqbTask.getTotalTorrentInfos(m_addAnimeTask.anime_task)
+
+    # for mikan_id, torrentInfos in totalTorrentInfos.items():
+    #     anime_name = m_addAnimeTask.mikanIdToName(mikan_id)
+    #     print(anime_name, torrentInfos)
+    #     m_addqbTask.addTorrents(anime_name, torrentInfos)
+
 
 # # 测试插入方法insert_data_to_anime_list_new的默认参数
 # @bp.route("/test1")
