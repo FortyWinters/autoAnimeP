@@ -13,3 +13,18 @@ runTask：
    6.2 下载失败，重复下载两次  
      6.2.1 下载成功，跳转 6.1  
      6.2.2 下载失败，回写 anime_task 失败标记位  
+
+qb:
+1. task_status（新字段）代表视频下载任务状态；
+2. qb下载后回写
+
+db:
+- anime_list
+  - Spider生产
+  - 共享
+- anime_seed
+  - Spider生产
+  - AddAnimeTask消费
+- anime_task
+  - AddAnimeTask生产
+  - AddqbTask消费

@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/anime_list.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/anime.css') }}">
     <script src="{{ url_for('static', filename='jquery/jquery.3.7.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/anime_list.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anime.js') }}"></script>
     <title>番剧列表</title>
 </head>
 <body>
     <div class="container">
-    <button class="update-button" id="3060">列表更新</button>
-    <button class="download-button">download</button>
+    <button class="anime-button">列表更新</button>
     {% for anime in anime_list %}
     <ul>
         <li>
@@ -19,9 +18,14 @@
                 <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url.split('/')[4]) }}" alt="" height="280px" width="210px">
                 <div class="anime-info">
                     <div class="anime-name">{{ anime.anime_name }}</div>
-                    <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="{{ 'background-color:red;' if anime.subscribe_status==1 }}">
-                        <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
-                    </button>
+                    <div class="button-container">
+                        <button class="update-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="{{ 'background-color:orange;' if anime.subscribe_status==1 }}">
+                            <img src="{{ url_for('static', filename='img/icon/update.svg') }}" alt="" width="20px" height="20px">
+                        </button>
+                        <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="{{ 'background-color:red;' if anime.subscribe_status==1 }}">
+                            <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
+                        </button>
+                    </div>
                 </div>
             </div>
         </li>
