@@ -3,6 +3,7 @@ from flask import request
 from flask import Blueprint
 from flask import jsonify, render_template
 from exts import mikan, logger, addqbTask, addAnimeTask
+import time
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 
@@ -97,8 +98,33 @@ def insert_anime_seed():
                     logger.warning("[BP][ANIME] insert_anime_seed_list, insert_data_to_anime_seed failed, mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
                     continue
                 update_number += 1
-    logger.info("[BP][ANIME] insert_anime_seed_list success, mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
+    logger.info("[BP][ANIME] insert_anime_seed success, mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
     return jsonify({"code": 200, "message": "insert_anime_seed", "data": None})
+
+# 更新种子with多线程
+@bp.route("/insert_anime_seed_thread", methods=['POST'])
+def insert_anime_seed_thread():
+    start_time = time.time()
+    mikan_id = request.args.get("mikan_id")
+    update_number = 0
+    fail_number = 0
+    seed_set = set()
+    seed_list_old = query_anime_seed_by_condition(mikan_id=mikan_id)
+    for s in seed_list_old:
+        seed_set.add(s["seed_url"])
+
+    subgroup_list = mikan.get_subgroup_list(mikan_id)
+    seed_list = mikan.get_seed_list_thread_task(mikan_id, subgroup_list)
+
+    for s in seed_list:
+        if s.seed_url not in seed_set:
+            if not insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name):
+                fail_number += 1
+                logger.warning("[BP][ANIME] insert_anime_seed_list_thread, insert_data_to_anime_seed failed, mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
+                continue
+            update_number += 1
+    logger.info("[BP][ANIME] insert_anime_seed_list_thread success, mikan_id: {}, update number: {}, fail_number: {}, time cost: {}".format(mikan_id, update_number, fail_number, time.time()-start_time))
+    return jsonify({"code": 200, "message": "insert_anime_seed_thread", "data": None})
 
 # 删除种子
 @bp.route("/delete_anime_seed", methods=['POST'])

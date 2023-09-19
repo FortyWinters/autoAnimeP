@@ -7,6 +7,7 @@ from lxml import etree
 from lib.logManager import m_LogManager
 from fake_useragent import UserAgent
 from lib.common import Anime, Seed, Subgroup
+import threading
 
 class Mikan:
     def __init__(self, logger):
@@ -14,6 +15,7 @@ class Mikan:
         self.url = "https://mikanime.tv"   # 墙内
         self.ua = UserAgent()
         self.logger = logger
+        self.seed = []
 
     def request_html(self, url):
         try:
@@ -170,6 +172,23 @@ class Mikan:
         if len(str_list) == 0:
             return False
         return True
+    
+    def get_seed_list_thread(self, mikan_id, subgroup_id):
+        seed_list = self.get_seed_list(mikan_id, subgroup_id)
+        for s in seed_list:
+            self.seed_list.append(s)
+    
+    def get_seed_list_thread_task(self, mikan_id, subgroup_list):
+        self.seed_list = []
+        threads = []
+        for sub in subgroup_list:
+            t = threading.Thread(target=self.get_seed_list_thread, args=(mikan_id, sub.subgroup_id,))
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join()
+        return self.seed_list
 
 logger = m_LogManager.getLogObj(sys.argv[0])
 m_mikan = Mikan(logger)
@@ -182,3 +201,8 @@ if __name__ == '__main__':
 
     # print(mikan.download_seed("/Download/20230913/dfe6eb7c5f780e90f74244a498949375c67143b0.torrent", "seed/"))
     # print(mikan.download_img("/images/Bangumi/202307/f94fdb7f.jpg", "static/img/anime_list"))
+
+    # subgroup_list = mikan.get_subgroup_list(3060)
+    
+
+

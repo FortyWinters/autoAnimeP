@@ -63,7 +63,7 @@ $(function() {
         console.log(mikan_id);
 
         // 种子更新
-        fetch("/anime/insert_anime_seed?mikan_id="+mikan_id, {method: 'POST'})
+        fetch("/anime/insert_anime_seed_thread?mikan_id="+mikan_id, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             console.log(data)
