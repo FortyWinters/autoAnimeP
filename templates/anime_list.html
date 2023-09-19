@@ -19,12 +19,18 @@
                 <div class="anime-info">
                     <div class="anime-name">{{ anime.anime_name }}</div>
                     <div class="button-container">
-                        <button class="update-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="{{ 'background-color:orange;' if anime.subscribe_status==1 }}">
+                    {% if anime.subscribe_status==1 %}
+                        <button class="update-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:orange;">
                             <img src="{{ url_for('static', filename='img/icon/update.svg') }}" alt="" width="20px" height="20px">
                         </button>
-                        <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="{{ 'background-color:red;' if anime.subscribe_status==1 }}">
+                        <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:red;">
                             <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
                         </button>
+                    {% else %}
+                        <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}">
+                            <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
+                        </button>
+                    {% endif %}   
                     </div>
                 </div>
             </div>

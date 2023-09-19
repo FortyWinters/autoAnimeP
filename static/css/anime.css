@@ -36,7 +36,6 @@ li {
     border-radius: 5px;
     width: 30px;
     height: 30px;
-    margin-right: 5px;
 }
 .subscribe-button:hover {
     background-color: red;
@@ -48,9 +47,7 @@ li {
     border-radius: 5px;
     width: 30px;
     height: 30px;
-}
-.update-button:hover {
-    background-color: orange;
+    margin-left: 5px;
 }
 .anime-button {
     background-color: #d6d6d6;
