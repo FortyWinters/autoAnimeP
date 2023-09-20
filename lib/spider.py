@@ -11,8 +11,8 @@ import threading
 
 class Mikan:
     def __init__(self, logger):
-        # self.url = "https://mikanani.me" # 墙外
-        self.url = "https://mikanime.tv"   # 墙内
+        self.url = "https://mikanani.me" # 墙外
+        # self.url = "https://mikanime.tv"   # 墙内
         self.ua = UserAgent()
         self.logger = logger
         self.seed = []
