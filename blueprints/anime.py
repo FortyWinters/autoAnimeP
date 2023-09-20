@@ -2,7 +2,7 @@ from lib.models import *
 from flask import request
 from flask import Blueprint
 from flask import jsonify, render_template
-from exts import mikan, logger, addqbTask, addAnimeTask
+from exts import mikan, logger, config, addqbTask, addAnimeTask
 import time
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
@@ -29,7 +29,7 @@ def index():
     logger.info("[BP][ANIME] index success, url: /anime/")
     return render_template("anime_list.html", anime_list=anime_order_list)
 
-# 更新番剧列表
+# 更新番剧列表(停用)
 @bp.route("/update_anime_list", methods=['GET'])
 def update_anime_list():
     img_path = "static/img/anime_list/"
@@ -55,6 +55,39 @@ def update_anime_list():
     logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
     return jsonify({"code": 200, "message": "update_anime_list", "data": None})
 
+# TODO 多线程更新番剧, 图片下载变为多线程
+@bp.route("/update_anime_list_thread", methods=['GET'])
+def update_anime_list_thread():
+    # img_path = "static/img/anime_list/"
+    img_path = config.get('DOWNLOAD')['IMG']
+    update_number = 0
+    fail_number = 0
+
+    anime_set = set()
+    anime_list_old = query_anime_list_by_condition()
+    for a in anime_list_old:
+        anime_set.add(a["mikan_id"])
+
+    anime_list_new = mikan.get_anime_list()
+    anime_list_update = []
+    for a in anime_list_new:
+        if a.mikan_id not in anime_set:
+            anime_list_update.append(a)
+
+    for a in anime_list_update:
+        if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
+            fail_number += 1
+            logger.warning("[BP][ANIME] update_anime_list, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
+            continue
+        update_number += 1
+
+    for a in anime_list_update:
+        if not mikan.download_img(a.img_url, img_path):
+            logger.warning("[BP][ANIME] update_anime_list, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
+
+    logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
+    return jsonify({"code": 200, "message": "update_anime_list", "data": None})
+
 # 订阅番剧
 @bp.route("/subscribe_anime", methods=['POST'])
 def subcribe_anime():
@@ -77,7 +110,7 @@ def cancel_subscribe_anime():
     logger.info("[BP][ANIME] cancel_subcribe_anime success, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
     return jsonify({"code": 200, "message": "cancel_subscribe_anime", "data": None})
 
-# 更新种子
+# 更新种子(停用)
 @bp.route("/insert_anime_seed", methods=['POST'])
 def insert_anime_seed():
     mikan_id = request.args.get("mikan_id")
@@ -101,7 +134,7 @@ def insert_anime_seed():
     logger.info("[BP][ANIME] insert_anime_seed success, mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
     return jsonify({"code": 200, "message": "insert_anime_seed", "data": None})
 
-# 更新种子with多线程
+# 多线程更新种子
 @bp.route("/insert_anime_seed_thread", methods=['POST'])
 def insert_anime_seed_thread():
     start_time = time.time()

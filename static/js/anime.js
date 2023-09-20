@@ -3,7 +3,7 @@ $(function() {
         this.disabled = true;
         
         // 番剧列表更新
-        fetch("/anime/update_anime_list", {method: 'GET'})
+        fetch("/anime/update_anime_list_thread", {method: 'GET'})
         .then(response => response.json())
         .then(data => {
             console.log(data)
