@@ -6,13 +6,13 @@ import urllib.request
 from lxml import etree
 from lib.logManager import m_LogManager
 from fake_useragent import UserAgent
+from lib.config import m_config
 from lib.common import Anime, Seed, Subgroup
 import threading
 
 class Mikan:
-    def __init__(self, logger):
-        self.url = "https://mikanani.me" # 墙外
-        # self.url = "https://mikanime.tv"   # 墙内
+    def __init__(self, logger, config):
+        self.url = config['URL']
         self.ua = UserAgent()
         self.logger = logger
         self.seed = []
@@ -178,7 +178,7 @@ class Mikan:
         for s in seed_list:
             self.seed_list.append(s)
     
-    def get_seed_list_thread_task(self, mikan_id, subgroup_list):
+    def get_seed_list_task(self, mikan_id, subgroup_list):
         self.seed_list = []
         threads = []
         for sub in subgroup_list:
@@ -190,8 +190,9 @@ class Mikan:
             t.join()
         return self.seed_list
 
+config = m_config.get('SPIDER')
 logger = m_LogManager.getLogObj(sys.argv[0])
-m_mikan = Mikan(logger)
+m_mikan = Mikan(logger, config)
 
 if __name__ == '__main__':
     mikan = m_mikan

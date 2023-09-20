@@ -114,7 +114,7 @@ def insert_anime_seed_thread():
         seed_set.add(s["seed_url"])
 
     subgroup_list = mikan.get_subgroup_list(mikan_id)
-    seed_list = mikan.get_seed_list_thread_task(mikan_id, subgroup_list)
+    seed_list = mikan.get_seed_list_task(mikan_id, subgroup_list)
 
     for s in seed_list:
         if s.seed_url not in seed_set:

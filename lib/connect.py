@@ -1,5 +1,5 @@
 import pymysql
-import lib.config as config
+import lib.cfg as cfg
 from dbutils.persistent_db import PersistentDB
 
 class DBconnect:
@@ -16,11 +16,11 @@ class DBconnect:
             ping = 0,
             closeable = False,
             threadlocal = None,
-            host = config.HOSTNAME,
-            port = int(config.PORT),
-            user = config.USERNAME,
-            password = config.PASSWORD,
-            database = config.DATABASE,
+            host = cfg.HOSTNAME,
+            port = int(cfg.PORT),
+            user = cfg.USERNAME,
+            password = cfg.PASSWORD,
+            database = cfg.DATABASE,
             charset = 'utf8',
         )
         return POOL

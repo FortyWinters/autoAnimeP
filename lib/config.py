@@ -1,12 +1,23 @@
-# flask
-DEBUG = True
-ENV   = 'developmet'
+import sys
+import yaml
+from lib.logManager import m_LogManager
 
-# mysql
-HOSTNAME                = '10.112.5.25'
-PORT                    = '3306'
-DATABASE                = 'auto_anime'
-USERNAME                = 'root'
-PASSWORD                = 'password'
-DB_URI                  = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(USERNAME, PASSWORD, HOSTNAME, PORT, DATABASE)
-SQLALCHEMY_DATABASE_URI = DB_URI
+class Config:
+    def __init__(self, config_file):
+        try:
+            with open(config_file, 'r') as f:
+                self.config_dict = yaml.safe_load(f)            
+        except Exception as e:
+            print("[CONFIG] config init failed, config_file: {}, error: {}".format(config_file, e))
+            sys.exit(0)
+
+    def get(self, key):
+        try:
+            value = self.config_dict[key]
+        except Exception as e:
+            print("[CONFIG] config failed, key error, key: {}".format(key))
+            sys.exit(0)
+        else:
+            return value
+
+m_config = Config("config_file/autoAnime.yaml")

@@ -1,0 +1,14 @@
+FLASK: 
+  DEBUG: True
+  ENV: 'developmet'
+  HOST: '0.0.0.0'
+  PORT: '5555'
+  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:password@10.112.5.25:3306/auto_anime?charset=utf8'
+SPIDER:
+  URL: 'https://mikanani.me' # 国际
+  # URL: 'https://mikanime.tv' # 国内
+QB:
+  host: '10.112.5.25'
+  port: '8081'
+  username: 'admin'
+  password: 'adminadmin'

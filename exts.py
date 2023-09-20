@@ -2,19 +2,15 @@ import sys
 from flask_sqlalchemy import SQLAlchemy
 from lib.addAnimeTask import AddAnimeTask
 from lib.addqbTask import AddqbTask
-from lib.spider import m_mikan
 from lib.logManager import m_LogManager
+from lib.config import m_config
+from lib.spider import m_mikan
+
+config = m_config
+qb_info = config.get('QB')
 
 db = SQLAlchemy()
-mikan = m_mikan
 logger = m_LogManager.getLogObj(sys.argv[0])
-
-conn_info = dict(
-    host = "10.112.5.25",
-    port = "8081",
-    username = "admin",
-    password = "adminadmin",
-)
-
-addqbTask = AddqbTask(conn_info, logger)
+mikan = m_mikan
+addqbTask = AddqbTask(qb_info, logger)
 addAnimeTask= AddAnimeTask(logger)
