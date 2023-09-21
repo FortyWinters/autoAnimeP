@@ -15,6 +15,15 @@ class Seed:
         self.subgroup_id  = subgroup_id
         self.seed_name    = seed_name
 
+    def __eq__(self, other):
+        return isinstance(other, Seed) and self.seed_url == other.seed_url
+    
+    def __hash__(self):
+        return hash(self.seed_url)
+    
+    def to_string(self):
+        return "({}, {}, '{}', {}, '{}')".format(self.mikan_id, self.episode, self.seed_url, self.subgroup_id, self.seed_name)
+    
 class Task:
     def __init__(self, mikan_id, episode, status, torrent_name):
         self.mikan_id     = mikan_id
