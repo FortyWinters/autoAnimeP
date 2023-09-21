@@ -184,6 +184,10 @@ def download_subscribe_anime():
     
     return jsonify({"code": 200, "message": "download_subscribe_anime", "data": mikan_id})
 
+@bp.route("/detail")
+def detail():
+    mikan_id = 3060
+    return render_template("detail.html", mikan_id=mikan_id)
     # m_addAnimeTask.getAllAnimeTask()
     # totalTorrentInfos = m_addqbTask.getTotalTorrentInfos(m_addAnimeTask.anime_task)
 
