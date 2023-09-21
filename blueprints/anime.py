@@ -2,7 +2,7 @@ from lib.models import *
 from flask import request
 from flask import Blueprint
 from flask import jsonify, render_template
-from exts import mikan, logger, config, addqbTask, addAnimeTask
+from exts import mikan, logger, config
 import time
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
@@ -27,7 +27,7 @@ def index():
     for a in unsubscribe_order_list:
         anime_order_list.append(a)
     logger.info("[BP][ANIME] index success, url: /anime/")
-    return render_template("anime_list.html", anime_list=anime_order_list)
+    return render_template("anime.html", anime_list=anime_order_list)
 
 # 更新番剧列表(停用)
 @bp.route("/update_anime_list", methods=['GET'])
@@ -175,12 +175,12 @@ def delete_anime_seed():
 def download_subscribe_anime():
     mikan_id = request.args.get("mikan_id")
     logger.info("[BP][ANIME] download_subscribe_anime, mikan_id: {}".format(mikan_id))
-    addAnimeTask.getAnimeTaskByMikanId(mikan_id)
-    totalTorrentInfos = addqbTask.getTotalTorrentInfos(addAnimeTask.anime_task)
-    for mikan_id, torrentInfos in totalTorrentInfos.items():
-        anime_name = addAnimeTask.mikanIdToName(mikan_id)
-        print((anime_name, torrentInfos))
-        addqbTask.addTorrents(anime_name, torrentInfos)
+    # addAnimeTask.getAnimeTaskByMikanId(mikan_id)
+    # totalTorrentInfos = addqbTask.getTotalTorrentInfos(addAnimeTask.anime_task)
+    # for mikan_id, torrentInfos in totalTorrentInfos.items():
+    #     anime_name = addAnimeTask.mikanIdToName(mikan_id)
+    #     print((anime_name, torrentInfos))
+    #     addqbTask.addTorrents(anime_name, torrentInfos)
     
     return jsonify({"code": 200, "message": "download_subscribe_anime", "data": mikan_id})
 
