@@ -3,14 +3,15 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
 from lib.connect import m_DBconnector
-from lib.spider import m_mikan
-from lib.logManager import LogManager
+from lib.logManager import m_LogManager
 from lib.addAnimeTask import AddAnimeTask
 from lib.addqbTask import AddqbTask
 from lib.db_task_executor import DbTaskExecutor
+from lib.spider_task import SpiderTask
+from lib.spider import Mikan
+from lib.config import m_config
 
-
-logger = LogManager().getLogObj(sys.argv[0])
+logger = m_LogManager.getLogObj(sys.argv[0])
 
 conn_info = dict(
     host = "10.112.5.25",
@@ -19,12 +20,24 @@ conn_info = dict(
     password = "adminadmin",
 )
 
-executor = ThreadPoolExecutor(max_workers=12)
+spider_config = m_config.get('SPIDER')
+mikan = Mikan(logger, spider_config)
+spider_task = SpiderTask(mikan, m_DBconnector, logger)
+
+executor = ThreadPoolExecutor(max_workers=5)
 m_addAnimeTask= AddAnimeTask(logger, executor)
 m_addqbTask = AddqbTask(conn_info,logger)
 m_db_task_executor = DbTaskExecutor(m_DBconnector)
 
-def run_schedule_task():
+
+def run_spider_schedule_task():
+    start_time = time.time()
+    spider_task.update_anime_seed()
+    end_time = time.time() - start_time
+    logger.info("[runTask][run_spider_schedule_task] spider_schedule_task cost time {}".format(end_time))
+
+def run_seed_schedule_task():
+    start_time = time.time()
     # 拿基础数据
     m_addAnimeTask.mikan_id_lists = m_db_task_executor.get_sub_mikan_id()
     logger.debug("[runtask] mikan_id_lists: {}".format(m_addAnimeTask.mikan_id_lists))
@@ -55,10 +68,14 @@ def run_schedule_task():
     for mikan_id, torrentInfos in totalTorrentInfos.items():
         anime_name = m_addAnimeTask.mikan_id_to_name(mikan_id)
         m_addqbTask.addTorrents(anime_name, torrentInfos)
-
+    end_time = time.time() - start_time
+    logger.info("[runTask][run_seed_schedule_task] seed_schedule_task cost time {}".format(end_time))
 
 if __name__ == '__main__':
     # m_db_task_executor.delete_anime_task_by_mikan_id(3071)
     # m_db_task_executor.delete_anime_task_by_mikan_id(3080)
     # m_db_task_executor.delete_anime_task_by_mikan_id(3060)
-    run_schedule_task()
+    logger.info("[runtask] Begin Task at {}".format(time.time()))
+    run_spider_schedule_task()
+    run_seed_schedule_task()
+    logger.info("[runtask] Finish Task at {}".format(time.time()))
