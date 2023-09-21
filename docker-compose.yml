@@ -22,6 +22,7 @@ services:
     restart: always
     container_name: mysql
     environment:
+      MYSQL_DATABASE: auto_anime
       MYSQL_ROOT_PASSWORD: password
       TZ: Asia/Shanghai
     ports:
@@ -29,8 +30,21 @@ services:
     volumes:
       - ./docker/mysql/data:/var/lib/mysql
       - ./docker/mysql/config/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     command:
       --max_connections=1000
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
       --default-authentication-plugin=mysql_native_password
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flask
+    ports:
+      - 5555:5555
+    volumes:
+      - .:/autoAnime
+    depends_on:
+      - mysql
+      - qbittorrent

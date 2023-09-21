@@ -8,5 +8,6 @@ mkdir -p docker/mysql/data
 mkdir -p docker/mysql/config
 
 cp config_file/my.cnf docker/mysql/config/my.cnf
+cp init.sql docker/mysql/init.sql
 
 docker-compose up -d
