@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}番剧详情{% endblock %}
+{% block title %}{{ anime.anime_name }}{% endblock %}
 
-{% block head %}{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}">
+{% endblock %}
 
 {% block body %}
 <div>
-    {{ mikan_id }}
+    <div class="anime-info-container">
+        <div class="anime-img">
+            <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url.split('/')[4]) }}" alt="" height="280px" width="210px">
+        </div>
+        <div class="anime-info">
+            <ul>
+                <li>{{ anime.anime_name }}</li>
+            </ul>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,12 @@
+.anime-info-container {
+    margin-left: 45px;
+}
+.anime-img {
+    float: left;
+}
+.anime-info {
+    float: left;
+}
+li {
+    list-style-type: none;
+}

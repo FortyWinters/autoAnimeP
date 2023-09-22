@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-    <title>启动!</title>
-</head>
+{% extends "base.html" %}
+
+{% block title %}启动!{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
 <style>
     .container {
         display: flex;
@@ -13,9 +12,12 @@
         height: 100vh; /* 100% of the viewport height */
     }
 </style>
-<body>
-    <div class="container">
-    <img src="{{ url_for('static', filename='img/genshin.jpg') }}" alt="" width="800px" height="600px"> 
+{% endblock %}
+
+{% block body %}
+<div>
+    <a href="/anime">
+        <img src="{{ url_for('static', filename='img/genshin.jpg') }}" alt="" width="800px" height="600px"> 
+    </a>
 </div>
-</body>
-</html>
+{% endblock %}

@@ -184,7 +184,7 @@ def download_subscribe_anime():
     logger.info("[BP][ANIME] download_subscribe_anime success, mikan_id : {}, update_task_number: {}".format(mikan_id, len(seed_list_download)))
     return jsonify({"code": 200, "message": "download_subscribe_anime", "data": mikan_id})
 
-@bp.route("/detail")
-def detail():
-    mikan_id = 3060
-    return render_template("detail.html", mikan_id=mikan_id)
+@bp.route("/detail/<int:mikan_id>", methods=['GET'])
+def detail(mikan_id):
+    anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
+    return render_template("detail.html", anime=anime)

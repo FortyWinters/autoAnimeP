@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     {% block head %}{% endblock %}
     <title>{% block title %}{% endblock %}</title>
 </head>
+{% block style %}{% endblock %}
 <body>
+    <div class="logo">
+        <a href="/anime">
+            <img src="{{ url_for('static', filename='img/auto_anime.png') }}" alt="" height="100px" style="margin-left: 45px;"> 
+        </a>
+    </div>
     <div class="container">
         {% block body %}{% endblock %}
     </div>
