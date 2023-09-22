@@ -20,4 +20,4 @@ class Config:
         else:
             return value
 
-m_config = Config("config_file/autoAnime.yaml")
+m_config = Config("config_file/auto_anime.yaml")

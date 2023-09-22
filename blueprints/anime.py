@@ -1,10 +1,8 @@
-from lib.models import *
-from flask import request
-from flask import Blueprint
-from flask import jsonify, render_template
-from exts import mikan, logger, config, qb
-import time
 import os
+import time
+from flask import request, jsonify, render_template, Blueprint
+from exts import mikan, logger, config, qb
+from lib.models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 
@@ -30,36 +28,7 @@ def index():
     logger.info("[BP][ANIME] index success, url: /anime/")
     return render_template("anime.html", anime_list=anime_order_list)
 
-# 更新番剧列表(停用)
-@bp.route("/update_anime_list", methods=['GET'])
-def update_anime_list():
-    img_path = "static/img/anime_list/"
-    if not os.path.exists(img_path):
-        os.makedirs(img_path)
-        
-    update_number = 0
-    fail_number = 0
-    anime_set = set()
-    anime_list_old = query_anime_list_by_condition()
-    for a in anime_list_old:
-        anime_set.add(a["mikan_id"])
-
-    anime_list_new = mikan.get_anime_list()
-    for a in anime_list_new:
-        if a.mikan_id not in anime_set:
-            if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
-                fail_number += 1
-                logger.warning("[BP][ANIME] update_anime_list, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
-                continue
-            update_number += 1
-
-            if not mikan.download_img(a.img_url, img_path):
-                logger.warning("[BP][ANIME] update_anime_list, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
-                return jsonify({"code": 400, "message": "update_anime_list", "data": None})
-    logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
-    return jsonify({"code": 200, "message": "update_anime_list", "data": None})
-
-# 多线程更新番剧, 图片下载变为多线程
+# 更新番剧列表, 图片下载变为多线程
 @bp.route("/update_anime_list_thread", methods=['GET'])
 def update_anime_list_thread():
     img_path = config.get('DOWNLOAD')['IMG']
@@ -125,30 +94,6 @@ def cancel_subscribe_anime():
     
     logger.info("[BP][ANIME] cancel_subcribe_anime success, mikan_id: {}, subscribe_status: {}".format(mikan_id, 1))
     return jsonify({"code": 200, "message": "cancel_subscribe_anime", "data": None})
-
-# 更新种子(停用)
-@bp.route("/insert_anime_seed", methods=['POST'])
-def insert_anime_seed():
-    mikan_id = request.args.get("mikan_id")
-    update_number = 0
-    fail_number = 0
-    seed_set = set()
-    seed_list_old = query_anime_seed_by_condition(mikan_id=mikan_id)
-    for s in seed_list_old:
-        seed_set.add(s["seed_url"])
-
-    subgroup_list = mikan.get_subgroup_list(mikan_id)
-    for sub in subgroup_list:
-        seed_list = mikan.get_seed_list(mikan_id, sub.subgroup_id)
-        for s in seed_list:
-            if s.seed_url not in seed_set:
-                if not insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name):
-                    fail_number += 1
-                    logger.warning("[BP][ANIME] insert_anime_seed_list, insert_data_to_anime_seed failed, mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
-                    continue
-                update_number += 1
-    logger.info("[BP][ANIME] insert_anime_seed success, mikan_id: {}, update number: {}, fail_number: {}".format(mikan_id, update_number, fail_number))
-    return jsonify({"code": 200, "message": "insert_anime_seed", "data": None})
 
 # 多线程更新种子
 @bp.route("/insert_anime_seed_thread", methods=['POST'])
@@ -243,37 +188,3 @@ def download_subscribe_anime():
 def detail():
     mikan_id = 3060
     return render_template("detail.html", mikan_id=mikan_id)
-    # m_addAnimeTask.getAllAnimeTask()
-    # totalTorrentInfos = m_addqbTask.getTotalTorrentInfos(m_addAnimeTask.anime_task)
-
-    # for mikan_id, torrentInfos in totalTorrentInfos.items():
-    #     anime_name = m_addAnimeTask.mikanIdToName(mikan_id)
-    #     print(anime_name, torrentInfos)
-    #     m_addqbTask.addTorrents(anime_name, torrentInfos)
-
-
-# # 测试插入方法insert_data_to_anime_list_new的默认参数
-# @bp.route("/test1")
-# def test1():
-#     result = insert_data_to_anime_list_new(mikan_id=683)
-#     if result:
-#         return "Yes"
-#     else:
-#         return "NO"
-
-
-# # 测试条件删除
-# @bp.route("/test2")
-# def test2():
-#     result = delete_anime_list_by_condition(update_day=0)
-#     if result:
-#         return "Yes"
-#     else:
-#         return "No"
-
-
-# # 测试条件查询
-# @bp.route("/test3")
-# def test3():
-#     result = query_list_by_anime_name_new(subscribe_status=0, update_day=3)
-#     return result
