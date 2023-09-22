@@ -60,6 +60,13 @@ def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_nam
     db.session.add_all([anime_seed])
     return session_commit()
 
+def insert_data_to_anime_task(mikan_id, status, episode, torrent_name):
+    logger.info("[MODELS] insert_data_to_anime_task info, mikan_id: {}, status: {}, episode: {}, torrent_name: {}".format(mikan_id, status, episode, torrent_name))
+
+    anime_task = AnimeTask(mikan_id=mikan_id, status=status, episode=episode, torrent_name=torrent_name)
+    db.session.add_all([anime_task])
+    return session_commit()
+
 
 def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1, subscribe_status=-1):
     logger.info("[MODELS] query_anime_list_by_condition, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
@@ -116,6 +123,31 @@ def query_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_
             "episode"     : data.episode,
             "seed_name"   : data.seed_name,
             "seed_url"    : data.seed_url
+        }
+        list.append(dic)
+    return list
+
+def query_anime_task_by_condition(mikan_id=-1, status=-1, episode=-1, torrent_name=''):
+    logger.info("[MODELS] query_anime_task_by_condition info, mikan_id: {}, status: {}, episode: {}, torrent_name: {}".format(mikan_id, status, episode, torrent_name))
+
+    session = db.session.query(AnimeTask)
+    if mikan_id != -1:
+        session = session.filter_by(mikan_id=mikan_id)
+    if status != -1:
+        session = session.filter_by(status_id=status)
+    if episode != -1:
+        session = session.filter_by(episode=episode)
+    if torrent_name != '':
+        session = session.filter_by(torrent_name=torrent_name)
+    result = session.all()
+    list = []
+    for data in result:
+        dic = {
+            "index"        : data.index,
+            "mikan_id"     : data.mikan_id,
+            "status"       : data.status,
+            "episode"      : data.episode,
+            "torrent_name" : data.torrent_name
         }
         list.append(dic)
     return list

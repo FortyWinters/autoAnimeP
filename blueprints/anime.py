@@ -2,8 +2,9 @@ from lib.models import *
 from flask import request
 from flask import Blueprint
 from flask import jsonify, render_template
-from exts import mikan, logger, config
+from exts import mikan, logger, config, qb
 import time
+import os
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 
@@ -33,6 +34,9 @@ def index():
 @bp.route("/update_anime_list", methods=['GET'])
 def update_anime_list():
     img_path = "static/img/anime_list/"
+    if not os.path.exists(img_path):
+        os.makedirs(img_path)
+        
     update_number = 0
     fail_number = 0
     anime_set = set()
@@ -55,10 +59,9 @@ def update_anime_list():
     logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
     return jsonify({"code": 200, "message": "update_anime_list", "data": None})
 
-# TODO 多线程更新番剧, 图片下载变为多线程
+# 多线程更新番剧, 图片下载变为多线程
 @bp.route("/update_anime_list_thread", methods=['GET'])
 def update_anime_list_thread():
-    # img_path = "static/img/anime_list/"
     img_path = config.get('DOWNLOAD')['IMG']
     update_number = 0
     fail_number = 0
@@ -81,9 +84,22 @@ def update_anime_list_thread():
             continue
         update_number += 1
 
+    img_list = []
     for a in anime_list_update:
-        if not mikan.download_img(a.img_url, img_path):
-            logger.warning("[BP][ANIME] update_anime_list, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(a.mikan_id, a.img_url, img_path))
+        img_info = {}
+        img_info['mikan_id'] = a.mikan_id
+        img_info['img_url'] = a.img_url
+        img_info['path'] = img_path
+        img_list.append(img_info)
+
+    img_list_download = mikan.download_img_task(img_list)
+    
+    img_set = {tuple(d.items()) for d in img_list}
+    img_set_download = {tuple(d.items()) for d in img_list_download}
+    img_set_download_failed = img_set - img_set_download
+
+    for img in img_set_download_failed:
+        logger.warning("[BP][ANIME] update_anime_list, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(img['mikan_id'], img['img_url'], img['path']))
 
     logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
     return jsonify({"code": 200, "message": "update_anime_list", "data": None})
@@ -174,14 +190,53 @@ def delete_anime_seed():
 @bp.route("/download_subscribe_anime", methods=['POST'])
 def download_subscribe_anime():
     mikan_id = request.args.get("mikan_id")
-    logger.info("[BP][ANIME] download_subscribe_anime, mikan_id: {}".format(mikan_id))
-    # addAnimeTask.getAnimeTaskByMikanId(mikan_id)
-    # totalTorrentInfos = addqbTask.getTotalTorrentInfos(addAnimeTask.anime_task)
-    # for mikan_id, torrentInfos in totalTorrentInfos.items():
-    #     anime_name = addAnimeTask.mikanIdToName(mikan_id)
-    #     print((anime_name, torrentInfos))
-    #     addqbTask.addTorrents(anime_name, torrentInfos)
+    subcribe_anime = query_anime_list_by_condition(mikan_id=mikan_id)
+    anime_name = subcribe_anime[0]['anime_name']
+
+    seed_list = query_anime_seed_by_condition(mikan_id=mikan_id)
+    if len(seed_list) == 0:
+        logger.warning("[BP][ANIME] download_subscribe_anime failed, no seed in db, mikan_id: {}".format(mikan_id))
+        return jsonify({"code": 200, "message": "download_subscribe_anime, no new seed", "data": mikan_id})
+
+    anime_seed = dict()
+    for s in seed_list:
+        anime_seed[s['episode']] = s
+    seed_list_unique = list(anime_seed.values())
+
+    task_list = query_anime_task_by_condition(mikan_id=mikan_id)
+    task_set = set()
+    for t in task_list:
+        task_set.add(t['episode'])
+
+    seed_list_update = []
+    for s in seed_list_unique:
+        if s['episode'] not in task_set:
+            seed_list_update.append(s)
     
+    path = "{}{}/".format(config.get('DOWNLOAD')['SEED'], mikan_id)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    seed_list_download = []
+    for s in seed_list_update:
+        if insert_data_to_anime_task(s['mikan_id'], 0, s['episode'], s['seed_url'].split('/')[3]):
+            s['path'] = path
+            seed_list_download.append(s)
+
+    seed_list_downloaded = mikan.download_seed_task(seed_list_download)
+
+    torrent_infos = dict()
+    for s in seed_list_downloaded:
+        torrent_info = dict()
+        torrent_name = s['seed_url'].split('/')[3]
+        torrent_path = "{}{}".format(path, torrent_name)
+        torrent_info['name']     = torrent_name
+        torrent_info['path']     = torrent_path
+        
+        torrent_infos[s['episode']] = torrent_info
+
+    qb.addTorrents(anime_name, torrent_infos)
+    logger.info("[BP][ANIME] download_subscribe_anime success, mikan_id : {}, update_task_number: {}".format(mikan_id, len(seed_list_download)))
     return jsonify({"code": 200, "message": "download_subscribe_anime", "data": mikan_id})
 
 @bp.route("/detail")

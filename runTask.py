@@ -20,11 +20,12 @@ conn_info = dict(
     password = "adminadmin",
 )
 
+executor = ThreadPoolExecutor(max_workers=5)
+
 spider_config = m_config.get('SPIDER')
-mikan = Mikan(logger, spider_config)
+mikan = Mikan(logger, spider_config, executor)
 spider_task = SpiderTask(mikan, m_DBconnector, logger)
 
-executor = ThreadPoolExecutor(max_workers=5)
 m_addAnimeTask= AddAnimeTask(logger, executor)
 m_addqbTask = AddqbTask(conn_info,logger)
 m_db_task_executor = DbTaskExecutor(m_DBconnector)

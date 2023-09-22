@@ -16,3 +16,4 @@ QB:
   password: 'adminadmin'
 DOWNLOAD:
   IMG: 'static/img/anime_list/'
+  SEED: 'seed/'

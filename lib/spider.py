@@ -1,21 +1,26 @@
 import sys
+import os
 import ssl
 import re
 import requests
+import threading
 import urllib.request
 from lxml import etree
 from lib.logManager import m_LogManager
 from fake_useragent import UserAgent
 from lib.config import m_config
 from lib.common import Anime, Seed, Subgroup
-import threading
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 
 class Mikan:
-    def __init__(self, logger, config):
+    def __init__(self, logger, config, executor):
         self.url = config['URL']
         self.ua = UserAgent()
         self.logger = logger
+        self.executor = executor
         self.seed = []
+        self.seed_list_download = []
+        self.img_list_download = []
 
     def request_html(self, url):
         try:
@@ -173,26 +178,70 @@ class Mikan:
             return False
         return True
     
-    def get_seed_list_thread(self, mikan_id, subgroup_id):
-        seed_list = self.get_seed_list(mikan_id, subgroup_id)
-        for s in seed_list:
-            self.seed_list.append(s)
+    def get_seed_list_thread(self, args):        
+        mikan_id, subgroup_id = args
+        try:
+            seed_list = self.get_seed_list(mikan_id, subgroup_id)
+        except Exception as e:
+            logger.warning("[SPIDER] get_seed_list_thread failed, mikan_id: {}, subgroup_id: {}, error: {}".format(mikan_id, subgroup_id, e))
+        else:
+            for s in seed_list:
+                self.seed_list.append(s)
     
     def get_seed_list_task(self, mikan_id, subgroup_list):
         self.seed_list = []
-        threads = []
+        task_list = []
         for sub in subgroup_list:
-            t = threading.Thread(target=self.get_seed_list_thread, args=(mikan_id, sub.subgroup_id,))
-            threads.append(t)
-            t.start()
-
-        for t in threads:
-            t.join()
+            subgroup_id = sub.subgroup_id
+            task = self.executor.submit(self.get_seed_list_thread, (mikan_id, subgroup_id))
+            task_list.append(task)
+        wait(task_list, return_when=ALL_COMPLETED)
         return self.seed_list
+    
+    def download_seed_thread(self, args):
+        seed = args
+        seed_url = seed['seed_url']
+        path = seed['path']
+        try:
+            self.download_seed(seed_url, path)
+        except Exception as e:
+            logger.warning("[SPIDER] download_seed_thread failed, seed_url: {}, path: {}".format(seed_url, path))
+        else:
+            self.seed_list_download.append(seed)
+ 
+    def download_seed_task(self, seed_list):
+        self.seed_list_download = []
+        task_list = []
+        for seed in seed_list:
+            task = self.executor.submit(self.download_seed_thread, seed)
+            task_list.append(task)
+        wait(task_list, return_when=ALL_COMPLETED)
+        return self.seed_list_download
+    
+    def download_img_thread(self, args):
+        img = args
+        img_url = img['img_url']
+        path = img['path']
+        try:
+            self.download_img(img_url, path)
+        except Exception as e:
+            logger.warning("[SPIDER] download_img_thread failed, img_url: {}, path: {}".format(img_url, path))
+        else:
+            self.img_list_download.append(img)
+    
+    def download_img_task(self, img_list):
+        self.img_list_download =  []
+        task_list = []
+        for img in img_list:
+            task = self.executor.submit(self.download_img_thread, img)
+            task_list.append(task)
+        wait(task_list, return_when=ALL_COMPLETED)
+        return self.img_list_download
 
 config = m_config.get('SPIDER')
 logger = m_LogManager.getLogObj(sys.argv[0])
-m_mikan = Mikan(logger, config)
+executor = ThreadPoolExecutor(max_workers=5)
+m_mikan = Mikan(logger, config, executor)
 
 if __name__ == '__main__':
     mikan = m_mikan
