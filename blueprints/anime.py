@@ -164,7 +164,7 @@ def download_subscribe_anime():
 
     seed_list_download = []
     for s in seed_list_update:
-        if insert_data_to_anime_task(s['mikan_id'], 0, s['episode'], s['seed_url'].split('/')[3]):
+        if insert_data_to_anime_task(s['mikan_id'], 0, s['episode'], s['seed_url'].split('/')[3], 0):
             s['path'] = path
             seed_list_download.append(s)
 
