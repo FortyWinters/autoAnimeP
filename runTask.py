@@ -76,7 +76,7 @@ def run_seed_schedule_task():
         if len(anime_task_status_lists['failed']) > 0:
             logger.info("[runTask][run_seed_schedule_task] Total {} new torrents of mikan_id {}, {} torrents fail to downloaded."\
                         .format(len(episode_lists_new), mikan_id, len(anime_task_status_lists['failed'])))
-            m_db_task_executor.update_torrent_status(mikan_id, anime_task_status_lists['failed'], True)
+            m_db_task_executor.update_torrent_status(mikan_id, anime_task_status_lists['failed'], False)
 
     totalTorrentInfos = m_addqbTask.getTotalTorrentInfos(m_addAnimeTask.anime_task)
     for mikan_id, torrentInfos in totalTorrentInfos.items():

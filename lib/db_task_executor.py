@@ -64,7 +64,8 @@ class DbTaskExecutor:
 
             if is_successed:
                 torrent_status = 1
-            sql = "INSERT INTO anime_task (mikan_id, torrent_status, qb_task_status, episode, torrent_name) VALUES ({}, {}, {}, {}, '{}')".format(mikan_id, torrent_status, 0, episode, torrent_name)
+            sql = "INSERT INTO anime_task (mikan_id, torrent_status, qb_task_status, episode, torrent_name) VALUES ({}, {}, {}, {}, '{}')".\
+                format(mikan_id, torrent_status, 0, episode, torrent_name)
             self.m_db_connector.execute(sql)
 
     

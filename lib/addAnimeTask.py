@@ -29,7 +29,7 @@ class AddAnimeTask:
         for mikan_id in self.mikan_id_lists:
             print(mikan_id, self.mikan_id_to_name(mikan_id))
 
-    # exist_anime_task_cur_mikan_id : {episode, torrent_name}
+    # exist_anime_task_cur_mikan_id : {episode, [torrent_name, torrent_status, qb_task_status]}
     # total_anime_seed_cur_mikan_id : {episode, torrent_name}
     def update_anime_tasks_by_mikan_id(self, mikan_id, 
                                        exist_anime_task_cur_mikan_id, 
@@ -84,7 +84,6 @@ class AddAnimeTask:
         anime_seed_task_attr.append(torrent_name)
 
         if self.m_mikan.download_seed(torrent_name, dir):
-
             anime_seed_task_list_suc.append(anime_seed_task_attr)
         else:
             anime_seed_task_list_failed.append(anime_seed_task_attr)
