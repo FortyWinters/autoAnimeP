@@ -1,8 +1,9 @@
 from lib.connect import DBconnect
 
 class DbTaskExecutor:
-    def __init__(self, m_db_connector):
+    def __init__(self, logger, m_db_connector):
         self.m_db_connector = m_db_connector
+        self.logger = logger
         self.sub_mikan_id_lists = []
         self.mika_id_to_name_map = dict()
 
@@ -20,18 +21,22 @@ class DbTaskExecutor:
     
     def get_exist_anime_task_by_mikan_id(self, mikan_id):
         exist_anime_task = dict()
-        sql = 'select episode,torrent_name from anime_task where mikan_id={}'.format(mikan_id)
+        sql = 'select episode,torrent_name,torrent_status,qb_task_status from anime_task where mikan_id={}'.\
+            format(mikan_id)
         anime_tasks = self.m_db_connector.execute(sql)
 
         for anime_task in anime_tasks:
             episode = anime_task[0]
             torrent_name = anime_task[1]
-            exist_anime_task[episode] = torrent_name
+            torrent_status = anime_task[2]
+            qb_task_status = anime_task[3]
+            exist_anime_task[episode] = [torrent_name, torrent_status, qb_task_status]
         
         return exist_anime_task
     
     def get_total_anime_seed_by_mikan_id(self, mikan_id):
         total_anime_seed = dict()
+        # TODO 添加 anime_seed 标记位，用来标识种子是否被消费过
         sql = 'select episode,seed_url from anime_seed where mikan_id={}'.format(mikan_id)
         anime_lists = self.m_db_connector.execute(sql)
 
@@ -45,11 +50,21 @@ class DbTaskExecutor:
     def delete_anime_task_by_mikan_id(self, mikan_id):
         sql = "DELETE FROM anime_task WHERE mikan_id={}".format(mikan_id)
         self.m_db_connector.execute(sql)
-    
-    # def update_status_to_task_db(self, args):
-    #     mikan_id, episode, seed_url, dir = args
-    #     torrent_name = seed_url.split('/')[3]
-    #     sql = "INSERT INTO anime_task (mikan_id, status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".format(mikan_id, 0, episode, torrent_name)
-    #     m_DBconnector.execute(sql)
+
+    def update_torrent_status(self,
+                              mikan_id,
+                              anime_task_status_lists, 
+                              is_successed):
+        
+        torrent_status = 0
+        for anime_seed_task_attr in anime_task_status_lists:
+            # torrent_name = torrent_name.split('/')[3]
+            episode = anime_seed_task_attr[0]
+            torrent_name = anime_seed_task_attr[1]
+
+            if is_successed:
+                torrent_status = 1
+            sql = "INSERT INTO anime_task (mikan_id, torrent_status, qb_task_status, episode, torrent_name) VALUES ({}, {}, {}, {}, '{}')".format(mikan_id, torrent_status, 0, episode, torrent_name)
+            self.m_db_connector.execute(sql)
 
     

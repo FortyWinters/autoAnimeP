@@ -1,17 +1,19 @@
 import os
 import sys
 from lib.connect import m_DBconnector
-from lib.spider import m_mikan
+
 from lib.logManager import m_LogManager
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
 
 
 class AddAnimeTask:
-    def __init__(self, logger, executor):
+    def __init__(self, logger, executor, m_mikan):
         self.logger = logger
         self.executor = executor
+        self.m_mikan = m_mikan
         self.mikan_id_lists = []
         self.mika_id_to_name_map = dict()
+
 
         # animeTask : {mikan_id, {episode, torrent_name}}
         self.anime_task = dict()
@@ -37,7 +39,11 @@ class AddAnimeTask:
 
         for anime_list in total_anime_seed_cur_mikan_id:
             episode = anime_list[0]
-            if episode in anime_task_cur_mikan_id or episode in exist_anime_task_cur_mikan_id:
+            # 跳过：
+            # 1. 已经添加过的种子
+            # 2. 下载成功的种子
+            if (episode in anime_task_cur_mikan_id) or \
+                (episode in exist_anime_task_cur_mikan_id and exist_anime_task_cur_mikan_id[episode][1] == 1) :
                 continue
             torrent_name = anime_list[1]
             anime_task_cur_mikan_id[episode] = torrent_name
@@ -55,8 +61,10 @@ class AddAnimeTask:
             os.makedirs(dir)
         
         for episode, torrent_name in episode_lists_new.items():
-            task = self.executor.submit(self.download_anime_seed_thread, 
-                                        (dir, torrent_name, 
+            task = self.executor.submit(self.download_anime_seed_thread,
+                                        (dir, 
+                                         episode,
+                                         torrent_name, 
                                          anime_seed_task_list_suc,  
                                          anime_seed_task_list_failed ))
             all_tasks.append(task)
@@ -69,12 +77,17 @@ class AddAnimeTask:
         return anime_task_status
     
     def download_anime_seed_thread(self, args):
-        dir, torrent_name, anime_seed_task_list_suc,  anime_seed_task_list_failed = args
+        dir, episode, torrent_name, anime_seed_task_list_suc, anime_seed_task_list_failed = args
         
-        if m_mikan.download_seed(torrent_name, dir):
-            anime_seed_task_list_suc.append(torrent_name)
+        anime_seed_task_attr = []
+        anime_seed_task_attr.append(episode)
+        anime_seed_task_attr.append(torrent_name)
+
+        if self.m_mikan.download_seed(torrent_name, dir):
+
+            anime_seed_task_list_suc.append(anime_seed_task_attr)
         else:
-            anime_seed_task_list_failed.append(torrent_name)
+            anime_seed_task_list_failed.append(anime_seed_task_attr)
             self.logger.warning("[addAnimeTask] download seed {} failed.".format(torrent_name))
     
     # def re_download__anime_seed_task
