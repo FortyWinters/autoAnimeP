@@ -130,7 +130,8 @@ class Mikan:
                 continue
 
             episode = int(episode_str)
-            seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name)
+            seed_status = 0
+            seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status)
             seed_list.append(seed)
         
         self.logger.info("[SPIDER] get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))   

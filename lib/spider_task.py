@@ -1,8 +1,8 @@
 from lib.common import Seed
 
 QUERY_ANIME_MIKAN_ID_BY_SUBSCRIBE_STATUS = "SELECT mikan_id FROM anime_list WHERE subscribe_status=1"
-QUERY_SEED_BY_MIKAN_ID = "SELECT mikan_id, episode, seed_url, subgroup_id, seed_name FROM anime_seed WHERE mikan_id={}"
-INSERT_SEED_INFO = "INSERT INTO anime_seed (mikan_id, episode, seed_url, subgroup_id, seed_name) VALUES {}"
+QUERY_SEED_BY_MIKAN_ID = "SELECT mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status FROM anime_seed WHERE mikan_id={}"
+INSERT_SEED_INFO = "INSERT INTO anime_seed (mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status) VALUES {}"
 
 class SpiderTask:
     def __init__(self, mikan, db, logger):
@@ -54,7 +54,7 @@ class SpiderTask:
         try:
             query_res = self.query_seed_list_by_mikan_id(mikan_id)
             for s in query_res:
-                seed = Seed(s[0], s[1], s[2], s[3], s[4],)
+                seed = Seed(s[0], s[1], s[2], s[3], s[4], s[5])
                 seed_list_old.append(seed)
         except Exception as e:
             self.logger.warning("[SPIDERTASK] get_seed_list_old failed, mikan_id: {}, error: {}".format(mikan_id, e))

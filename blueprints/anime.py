@@ -112,7 +112,7 @@ def insert_anime_seed_thread():
 
     for s in seed_list:
         if s.seed_url not in seed_set:
-            if not insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name):
+            if not insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name, s.seed_status):
                 fail_number += 1
                 logger.warning("[BP][ANIME] insert_anime_seed_list_thread, insert_data_to_anime_seed failed, mikan_id: {}, seed_name: {}, episode: {}, subgroup_id: {}, seed_url: {}".format(mikan_id, s.seed_name, s.episode, s.subgroup_id, s.seed_url))
                 continue

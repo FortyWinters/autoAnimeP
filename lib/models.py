@@ -55,10 +55,10 @@ def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="8
     db.session.add_all([anime_list])
     return session_commit()
 
-def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_name):
-    logger.info("[MODELS] insert_data_to_anime_seed info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url))
+def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status):
+    logger.info("[MODELS] insert_data_to_anime_seed info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}, seed_status: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url, seed_status))
 
-    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id, seed_name=seed_name)
+    anime_seed = AnimeSeed(mikan_id=mikan_id, episode=episode, seed_url=seed_url, subgroup_id=subgroup_id, seed_name=seed_name, seed_status=seed_status)
     db.session.add_all([anime_seed])
     return session_commit()
 
@@ -101,8 +101,8 @@ def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update
         list.append(dic)
     return list
 
-def query_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name='', seed_url=''):
-    logger.info("[MODELS] query_anime_seed_by_condition info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url))
+def query_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name='', seed_url='', seed_status=-1):
+    logger.info("[MODELS] query_anime_seed_by_condition info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}, seed_status: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url, seed_status))
 
     session = db.session.query(AnimeSeed)
     if mikan_id != -1:
@@ -115,6 +115,8 @@ def query_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_
         session = session.filter_by(seed_name=seed_name)
     if seed_url != '':
         session = session.filter_by(seed_url=seed_url)
+    if seed_status != -1:
+        session = session.filter_by(seed_status=seed_status)
     result = session.all()
     list = []
     for data in result:
@@ -124,7 +126,8 @@ def query_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_
             "subgroup_id" : data.subgroup_id,
             "episode"     : data.episode,
             "seed_name"   : data.seed_name,
-            "seed_url"    : data.seed_url
+            "seed_url"    : data.seed_url,
+            "seed_status" : data.seed_status
         }
         list.append(dic)
     return list
@@ -181,8 +184,8 @@ def delete_anime_list_by_condition(anime_name='', mikan_id=-1, update_day=-1, an
         return session_commit()
     return False
 
-def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name='', seed_url=''):
-    logger.info("[MODELS] delete_anime_seed_by_condition info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url))
+def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_name='', seed_url='', seed_status=-1):
+    logger.info("[MODELS] delete_anime_seed_by_condition info, mikan_id: {}, subgroup_id: {}, episode: {}, seed_name: {}, seed_url: {}, seed_status: {}".format(mikan_id, subgroup_id, episode, seed_name, seed_url, seed_status))
 
     session = db.session.query(AnimeSeed)
     if mikan_id != -1:
@@ -195,6 +198,8 @@ def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed
         session = session.filter_by(seed_name=seed_name)
     if seed_url != '':
         session = session.filter_by(seed_url=seed_url)
+    if seed_status != -1:
+        session = session.filter_by(seed_status=seed_status)
     query = session.all()
     count = 0
     for data in query:
