@@ -47,9 +47,10 @@ CREATE TABLE `anime_seed` (
   `episode` int NOT NULL,
   `seed_name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
   `seed_url` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `seed_status` int DEFAULT NULL COMMENT '0为未使用,1为已使用',
   PRIMARY KEY (`index`),
   UNIQUE KEY `seed_url` (`seed_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=434 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3260 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -60,10 +61,11 @@ DROP TABLE IF EXISTS `anime_task`;
 CREATE TABLE `anime_task` (
   `index` int NOT NULL AUTO_INCREMENT,
   `mikan_id` int NOT NULL,
-  `status` int DEFAULT NULL COMMENT '下载的状态 0表示还没有开始下载 1表示下载成功 2表示下载开始但是过程失败',
   `episode` int NOT NULL,
   `torrent_name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `torrent_status` int DEFAULT NULL COMMENT '种子状态 0表示待下载 1表示下载成功',
+  `qb_task_status` int DEFAULT NULL COMMENT 'qb任务状态 0表示待下载 1表示下载成功',
   PRIMARY KEY (`index`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=663 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

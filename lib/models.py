@@ -26,6 +26,7 @@ class AnimeSeed(db.Model):
     episode = db.Column(db.Integer, nullable=False)
     seed_name = db.Column(db.String(200), nullable=False)
     seed_url = db.Column(db.String(200), nullable=False, unique=True)
+    seed_status = db.Column(db.Integer, nullable=True, comment='0为未使用,1为已使用')
 
 
 class AnimeTask(db.Model):
