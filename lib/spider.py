@@ -14,7 +14,8 @@ class Mikan:
         self.logger = logger
         self.executor = executor
         self.seed_list = []
-        self.seed_list_download = []
+        self.seed_list_download_sucess = []
+        self.seed_list_download_failed = []
         self.img_list_download = []
 
     def request_html(self, url):
@@ -201,18 +202,20 @@ class Mikan:
         try:
             self.download_seed(seed_url, path)
         except Exception as e:
-            self.logger.warning("[SPIDER] download_seed_thread failed, seed_url: {}, path: {}".format(seed_url, path))
+            self.logger.warning("[SPIDER] download_seed_thread failed, seed_url: {}, path: {}, error: {}".format(seed_url, path, e))
+            self.seed_list_download_failed.append(seed)
         else:
-            self.seed_list_download.append(seed)
+            self.seed_list_download_sucess.append(seed)
  
     def download_seed_task(self, seed_list):
-        self.seed_list_download = []
+        self.seed_list_download_sucess = []
+        self.seed_list_download_failed = []
         task_list = []
         for seed in seed_list:
             task = self.executor.submit(self.download_seed_thread, seed)
             task_list.append(task)
         wait(task_list, return_when=ALL_COMPLETED)
-        return self.seed_list_download
+        return self.seed_list_download_sucess
     
     def download_img_thread(self, args):
         img = args

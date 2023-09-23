@@ -168,10 +168,10 @@ def download_subscribe_anime():
             s['path'] = path
             seed_list_download.append(s)
 
-    seed_list_downloaded = mikan.download_seed_task(seed_list_download)
+    seed_list_download_sucess = mikan.download_seed_task(seed_list_download)
 
     torrent_infos = dict()
-    for s in seed_list_downloaded:
+    for s in seed_list_download_sucess:
         torrent_info = dict()
         torrent_name = s['seed_url'].split('/')[3]
         torrent_path = "{}{}".format(path, torrent_name)

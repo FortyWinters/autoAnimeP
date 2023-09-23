@@ -4,17 +4,22 @@
 
 runTask：
 1. 读 anime_task 获取已经添加的任务；
-2. 读 anime_seed 获取可以添加的全部任务；
-3. anime_seed - anime_task 得到需要执行的新任务 anime_task_episode_lists_new；
-4. 从 anime_task 中筛选出已经存在的，但是需要重新执行的任务 anime_task_reload；
-5. anime_task_episode_lists_new + anime_task_reload 得到真正需要执行的任务animeTask;
-6. 根据 anime_task 下载种子  
-   6.1 下载成功，回写 anime_task 成功标记位  
-   6.2 下载失败，重复下载两次  
-     6.2.1 下载成功，跳转 6.1  
-     6.2.2 下载失败，回写 anime_task 失败标记位  
+2. 读 anime_seed 获取**可以添加**的全部任务；
+   1. 可以添加：mikan_id && seed_status == 0
+
+3. 根据 anime_task 和 anime_seed 进行**筛选**:
+   1. 筛选 : episode && (anime_seed - anime_task )；
+
+4. 按照 animeTask 更新 anime_seed 表标记位
+
+   1. seed_status == 1
+5. 根据 anime_task 下载种子 
+
+   1. 下载成功，得到 anime_task_status_lists，插入 anime_task;
+
 
 qb:
+
 1. task_status（新字段）代表视频下载任务状态；
 2. qb下载后回写
 
