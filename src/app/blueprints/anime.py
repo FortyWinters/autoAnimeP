@@ -32,6 +32,9 @@ def index():
 @bp.route("/update_anime_list_thread", methods=['GET'])
 def update_anime_list_thread():
     img_path = config.get('DOWNLOAD')['IMG']
+    if not os.path.exists(img_path):
+        os.makedirs(img_path)
+        
     update_number = 0
     fail_number = 0
 
