@@ -1,7 +1,7 @@
 import os
 import sys
 import qbittorrentapi
-from lib.logManager import m_LogManager
+from .logManager import m_LogManager
 
 class AddqbTask:
     def __init__(self, conn_info, logger, anime_config):
@@ -54,7 +54,6 @@ class AddqbTask:
     def pauseTorrent(self):
         # pause all torrents
         self.qbt_client.torrents.pause.all()
-
 
 
 # m_qBconnector.run()

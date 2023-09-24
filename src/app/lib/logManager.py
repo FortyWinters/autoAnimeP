@@ -1,3 +1,4 @@
+import os
 import sys
 import yaml
 import logging
@@ -77,5 +78,6 @@ class LogManager:
         self.progs[prog] = logger
 
         return logger
-    
+
+sys.path.append(os.getcwd())
 m_LogManager = LogManager()

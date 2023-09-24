@@ -5,7 +5,7 @@ import urllib.request
 from lxml import etree
 from fake_useragent import UserAgent
 from concurrent.futures import wait, ALL_COMPLETED
-from lib.common import Anime, Seed, Subgroup
+from .common import Anime, Seed, Subgroup
 
 class Mikan:
     def __init__(self, logger, config, executor):

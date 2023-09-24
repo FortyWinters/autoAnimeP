@@ -1,4 +1,4 @@
-from lib.common import Seed
+from .common import Seed
 
 QUERY_ANIME_MIKAN_ID_BY_SUBSCRIBE_STATUS = "SELECT mikan_id FROM anime_list WHERE subscribe_status=1"
 QUERY_SEED_BY_MIKAN_ID = "SELECT mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status FROM anime_seed WHERE mikan_id={}"

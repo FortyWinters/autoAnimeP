@@ -2,14 +2,14 @@ import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
-from lib.connect import m_DBconnector
-from lib.logManager import m_LogManager
-from lib.addAnimeTask import AddAnimeTask
-from lib.addqbTask import AddqbTask
-from lib.db_task_executor import DbTaskExecutor
-from lib.spider_task import SpiderTask
-from lib.spider import Mikan
-from lib.config import m_config
+from app.lib.connect import m_DBconnector
+from app.lib.logManager import m_LogManager
+from app.lib.addAnimeTask import AddAnimeTask
+from app.lib.addqbTask import AddqbTask
+from app.lib.db_task_executor import DbTaskExecutor
+from app.lib.spider_task import SpiderTask
+from app.lib.spider import Mikan
+from app.lib.config import m_config
 
 logger = m_LogManager.getLogObj(sys.argv[0])
 executor = ThreadPoolExecutor(max_workers=12)

@@ -1,6 +1,7 @@
+import os
 import sys
 import yaml
-from lib.logManager import m_LogManager
+from .logManager import m_LogManager
 
 class Config:
     def __init__(self, config_file):
@@ -20,4 +21,5 @@ class Config:
         else:
             return value
 
+sys.path.append(os.getcwd())
 m_config = Config("config_file/auto_anime.yaml")

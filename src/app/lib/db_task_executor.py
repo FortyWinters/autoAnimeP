@@ -1,4 +1,4 @@
-from lib.connect import DBconnect
+from .connect import DBconnect
 
 class DbTaskExecutor:
     def __init__(self, logger, m_db_connector):
