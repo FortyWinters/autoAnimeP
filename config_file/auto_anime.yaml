@@ -3,7 +3,7 @@ FLASK:
   ENV: 'developmet'
   HOST: '0.0.0.0'
   PORT: '5555'
-  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:password@10.112.5.25:3306/auto_anime?charset=utf8'
+  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:password@172.172.0.3:3306/auto_anime?charset=utf8'
   #SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:password@mysql:3306/auto_anime?charset=utf8' 
 SPIDER:
   URL: 'https://mikanani.me' # 国际
