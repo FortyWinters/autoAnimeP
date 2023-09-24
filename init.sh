@@ -2,12 +2,19 @@
 
 # sudo usermod -aG docker $USER
 
-mkdir -p docker/qBittorrent/config
-mkdir -p docker/qBittorrent/download
-mkdir -p docker/mysql/data
-mkdir -p docker/mysql/config
+mkdir -p var/qBittorrent/config
+mkdir -p var/qBittorrent/download
+mkdir -p var/mysql/data
+mkdir -p var/mysql/config
 
-cp config_file/my.cnf docker/mysql/config/my.cnf
-cp init.sql docker/mysql/init.sql
+mkdir -p var/autoAnime/config_file
+mkdir -p var/autoAnime/src
 
-docker-compose up -d
+cp config_file/my.cnf var/mysql/config/my.cnf
+cp config_file/init.sql var/mysql/init.sql
+
+cp -rf config_file/* var/autoAnime/config_file
+cp -rf src/* var/autoAnime/src
+cp -rf requirements.txt var/autoAnime
+
+# docker-compose up -d

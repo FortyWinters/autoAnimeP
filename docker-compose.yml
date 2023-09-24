@@ -10,13 +10,16 @@ services:
       - UMASK_SET=022
       - WEBUI_PORT=8081 
     volumes:
-      - ./docker/qBittorrent/config:/config 
-      - ./docker/qBittorrent/downloads:/downloads 
+      - ./var/qBittorrent/config:/config 
+      - ./var/qBittorrent/downloads:/downloads 
     ports:
       - 6881:6881
       - 6881:6881/udp
       - 8081:8081
     restart: unless-stopped
+    networks:
+      animeNetwork:
+        ipv4_address: 172.172.0.2
   mysql:
     image: mysql
     restart: always
@@ -28,23 +31,37 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./docker/mysql/data:/var/lib/mysql
-      - ./docker/mysql/config/my.cnf:/etc/mysql/my.cnf
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./var/mysql/data:/var/lib/mysql
+      - ./var/mysql/config/my.cnf:/etc/mysql/my.cnf
+      - ./var/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     command:
       --max_connections=1000
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
       --default-authentication-plugin=mysql_native_password
-  flask:
+    networks:
+      animeNetwork:
+        ipv4_address: 172.172.0.3
+  autoanime:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: flask
+    container_name: autoAnime
     ports:
       - 5555:5555
     volumes:
-      - .:/autoAnime
+      - .var/autoAnime :/autoAnime
+      - ./log :/autoAnime/log
+      - ./seed :/autoAnime/seed
     depends_on:
       - mysql
       - qbittorrent
+    networks:
+      animeNetwork:
+        ipv4_address: 172.172.0.4
+
+networks:
+  animeNetwork:
+    ipam:
+      config:
+        - subnet: 172.172.0.0/16

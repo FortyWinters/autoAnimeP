@@ -10,8 +10,6 @@ __pycache__
 
 migrations
 
-docker
-
 static/img/anime_list/*.jpg
 
 src/test.py
