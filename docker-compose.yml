@@ -50,9 +50,9 @@ services:
     ports:
       - 5555:5555
     volumes:
-      - .var/autoAnime :/autoAnime
-      - ./log :/autoAnime/log
-      - ./seed :/autoAnime/seed
+      - ./log:/autoAnime/log
+      - ./seed:/autoAnime/seed
+      - ./config_file:/autoAnime/config_file
     depends_on:
       - mysql
       - qbittorrent

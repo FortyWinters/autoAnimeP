@@ -15,7 +15,7 @@ class AddqbTask:
         try:
              qbt_client.auth_log_in()
         except Exception as e:
-            self.logger.error("Login failed .")
+            self.logger.error("[AddqbTask] Login failed.")
             sys.exit()
         return qbt_client
     
@@ -49,7 +49,7 @@ class AddqbTask:
             try:
                 self.qbt_client.torrents_add(torrent_files=path,save_path=local_save_path)
             except Exception as e:
-                self.logger.warning("Failed to add torrent seed:", torrent_info['name'])
+                self.logger.warning("[AddqbTask] Failed to add torrent seed:", torrent_info['name'])
 
     def pauseTorrent(self):
         # pause all torrents

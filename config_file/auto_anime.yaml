@@ -10,7 +10,7 @@ SPIDER:
   # URL: 'https://mikanime.tv' # 国内
   THREAD_POOL_SIZE_LIMIT: 5
 QB:
-  host: '10.112.5.25'
+  host: '172.172.0.2'
   #host: 'qbittorrent'
   port: '8081'
   username: 'admin'
@@ -19,7 +19,7 @@ DOWNLOAD:
   IMG: 'static/img/anime_list/'
   SEED: 'seed/'
 MySQL:
-  HOSTNAME: '10.112.5.25'
+  HOSTNAME: '172.172.0.3'
   PORT: '3306'
   DATABASE: 'auto_anime'
   USERNAME: 'root'

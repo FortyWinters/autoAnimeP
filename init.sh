@@ -13,8 +13,4 @@ mkdir -p var/autoAnime/src
 cp config_file/my.cnf var/mysql/config/my.cnf
 cp config_file/init.sql var/mysql/init.sql
 
-cp -rf config_file/* var/autoAnime/config_file
-cp -rf src/* var/autoAnime/src
-cp -rf requirements.txt var/autoAnime
-
 # docker-compose up -d
