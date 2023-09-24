@@ -4,17 +4,18 @@ import qbittorrentapi
 from lib.logManager import m_LogManager
 
 class AddqbTask:
-    def __init__(self, conn_info, logger):
+    def __init__(self, conn_info, logger, anime_config):
         self.conn_info = conn_info
-        self.qbt_client = self.connectqB()
+        self.config = anime_config
         self.logger = logger
+        self.qbt_client = self.connectqB()
 
     def connectqB(self):
         qbt_client = qbittorrentapi.Client(**self.conn_info)
         try:
              qbt_client.auth_log_in()
         except Exception as e:
-            logger.error("Login failed .")
+            self.logger.error("Login failed .")
             sys.exit()
         return qbt_client
     
@@ -34,7 +35,7 @@ class AddqbTask:
             torrent_info = dict()
 
             torrent_name = seed_url.split('/')[3]
-            path = "seed/" + str(mikan_id) + '/' + torrent_name
+            path = self.config['SEED'] + str(mikan_id) + '/' + torrent_name
             torrent_info['name']     = torrent_name
             torrent_info['path']     = path
     
@@ -48,21 +49,11 @@ class AddqbTask:
             try:
                 self.qbt_client.torrents_add(torrent_files=path,save_path=local_save_path)
             except Exception as e:
-                logger.warning("Failed to add torrent seed:", torrent_info['name'])
+                self.logger.warning("Failed to add torrent seed:", torrent_info['name'])
 
     def pauseTorrent(self):
         # pause all torrents
         self.qbt_client.torrents.pause.all()
-
-conn_info = dict(
-    host = "10.112.5.25",
-    port = "8081",
-    username = "admin",
-    password = "adminadmin",
-)
-
-logger = m_LogManager.getLogObj(sys.argv[0])
-m_addqbTask = AddqbTask(conn_info, logger)
 
 
 

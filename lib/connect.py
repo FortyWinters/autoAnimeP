@@ -1,10 +1,10 @@
 import pymysql
-import lib.cfg as cfg
+from lib.config import m_config
 from dbutils.persistent_db import PersistentDB
 
 class DBconnect:
-    
-    def __init__(self):
+    def __init__(self, db_config):
+        self.config = db_config
         self.POOL = self.initPool()
         self.conn = self.createConnection()
     
@@ -16,11 +16,11 @@ class DBconnect:
             ping = 0,
             closeable = False,
             threadlocal = None,
-            host = cfg.HOSTNAME,
-            port = int(cfg.PORT),
-            user = cfg.USERNAME,
-            password = cfg.PASSWORD,
-            database = cfg.DATABASE,
+            host = self.config['HOSTNAME'],
+            port = int(self.config['PORT']),
+            user = self.config['USERNAME'],
+            password = self.config['PASSWORD'],
+            database = self.config['DATABASE'],
             charset = 'utf8',
         )
         return POOL
@@ -47,7 +47,8 @@ class DBconnect:
         self.commit()
         return result
 
-m_DBconnector = DBconnect()
+db_config = m_config.get('MySQL')
+m_DBconnector = DBconnect(db_config)
 
 # if __name__ == '__main__':
 #     sql2 = "insert into anime_list (mikan_id,img_url) values (3,'ok')"

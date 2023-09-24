@@ -12,22 +12,16 @@ from lib.spider import Mikan
 from lib.config import m_config
 
 logger = m_LogManager.getLogObj(sys.argv[0])
-
-conn_info = dict(
-    host = "10.112.5.25",
-    port = "8081",
-    username = "admin",
-    password = "adminadmin",
-)
-
-executor = ThreadPoolExecutor(max_workers=5)
+executor = ThreadPoolExecutor(max_workers=12)
 
 spider_config = m_config.get('SPIDER')
 mikan = Mikan(logger, spider_config, executor)
 spider_task = SpiderTask(mikan, m_DBconnector, logger)
 
-m_addAnimeTask= AddAnimeTask(logger, executor, mikan)
-m_addqbTask = AddqbTask(conn_info,logger)
+anime_config = m_config.get('DOWNLOAD')
+qb_cinfig = m_config.get('QB')
+m_addAnimeTask= AddAnimeTask(logger, executor, mikan, anime_config)
+m_addqbTask = AddqbTask(qb_cinfig,logger, anime_config)
 m_db_task_executor = DbTaskExecutor(logger, m_DBconnector)
 
 
@@ -76,7 +70,7 @@ def run_seed_schedule_task():
         if len(anime_task_status_lists['failed']) > 0:
             logger.info("[runTask][run_seed_schedule_task] Total {} new torrents of mikan_id {}, {} torrents fail to downloaded."\
                         .format(len(episode_lists_new), mikan_id, len(anime_task_status_lists['failed'])))
-            m_db_task_executor.update_torrent_status(mikan_id, anime_task_status_lists['failed'], False)
+            # m_db_task_executor.update_torrent_status(mikan_id, anime_task_status_lists['failed'], True)
 
     totalTorrentInfos = m_addqbTask.getTotalTorrentInfos(m_addAnimeTask.anime_task)
     for mikan_id, torrentInfos in totalTorrentInfos.items():

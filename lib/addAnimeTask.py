@@ -1,16 +1,14 @@
 import os
 import sys
-from lib.connect import m_DBconnector
-
-from lib.logManager import m_LogManager
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
 
 
 class AddAnimeTask:
-    def __init__(self, logger, executor, m_mikan):
+    def __init__(self, logger, executor, m_mikan, anime_task_config):
         self.logger = logger
         self.executor = executor
         self.m_mikan = m_mikan
+        self.config = anime_task_config
         self.mikan_id_lists = []
         self.mika_id_to_name_map = dict()
 
@@ -51,7 +49,7 @@ class AddAnimeTask:
         self.anime_task[mikan_id] = anime_task_cur_mikan_id
 
     def download_anime_seed_by_mikan_id_task(self, mikan_id, episode_lists_new):
-        dir = "seed/" + str(mikan_id) + "/"
+        dir = self.config['SEED'] + str(mikan_id) + "/"
         anime_task_status = dict()
         anime_seed_task_list_suc = []
         anime_seed_task_list_failed = []
