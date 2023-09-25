@@ -37,11 +37,11 @@ class AddAnimeTask:
 
         for anime_list in total_anime_seed_cur_mikan_id:
             episode = anime_list[0]
+            seed_status = anime_list[2]
             # 跳过：
             # 1. 已经添加过的种子
             # 2. 下载成功的种子
-            if (episode in anime_task_cur_mikan_id) or \
-                (episode in exist_anime_task_cur_mikan_id and exist_anime_task_cur_mikan_id[episode][1] == 1) :
+            if (episode in anime_task_cur_mikan_id) or (seed_status == 1) :
                 continue
             torrent_name = anime_list[1]
             anime_task_cur_mikan_id[episode] = torrent_name

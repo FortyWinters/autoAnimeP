@@ -10,6 +10,6 @@ __pycache__
 
 migrations
 
-static/img/anime_list/*.jpg
+src/app/static/img/anime_list/*.jpg
 
 src/test.py

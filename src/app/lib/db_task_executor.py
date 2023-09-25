@@ -37,13 +37,18 @@ class DbTaskExecutor:
     def get_total_anime_seed_by_mikan_id(self, mikan_id):
         total_anime_seed = dict()
         # TODO 添加 anime_seed 标记位，用来标识种子是否被消费过
-        sql = 'select episode,seed_url from anime_seed where mikan_id={}'.format(mikan_id)
+        sql = 'select episode,seed_url,seed_status from anime_seed where mikan_id={}'.format(mikan_id)
         anime_lists = self.m_db_connector.execute(sql)
 
         for anime_list in anime_lists:
             episode = anime_list[0]
             seed_url = anime_list[1]
-            total_anime_seed[episode] = seed_url
+            seed_status = anime_list[2]
+            
+            seed_info = []
+            seed_info.append(seed_url)
+            seed_info.append(seed_status)
+            total_anime_seed[episode] = seed_info
         
         return anime_lists
 
@@ -53,19 +58,17 @@ class DbTaskExecutor:
 
     def update_torrent_status(self,
                               mikan_id,
-                              anime_task_status_lists, 
-                              is_successed):
+                              anime_task_status_lists):
         
-        torrent_status = 0
         for anime_seed_task_attr in anime_task_status_lists:
             # torrent_name = torrent_name.split('/')[3]
             episode = anime_seed_task_attr[0]
             torrent_name = anime_seed_task_attr[1]
 
-            if is_successed:
-                torrent_status = 1
-            sql = "INSERT INTO anime_task (mikan_id, torrent_status, qb_task_status, episode, torrent_name) VALUES ({}, {}, {}, {}, '{}')".\
-                format(mikan_id, torrent_status, 0, episode, torrent_name)
+            sql = "INSERT INTO anime_task (mikan_id, qb_task_status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".\
+                format(mikan_id, 0, episode, torrent_name)
             self.m_db_connector.execute(sql)
 
-    
+    def update_seed_status(self, seed_url):
+        sql = "UPDATE anime_seed SET seed_status=1 WHERE seed_url='{}'".format(seed_url)
+        self.m_db_connector.execute(sql)

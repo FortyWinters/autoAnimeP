@@ -57,6 +57,14 @@ def run_seed_schedule_task():
     
     logger.info("[runtask][run_seed_schedule_task] anime_task: {}".format(m_addAnimeTask.anime_task))
 
+    # 标记使用过的seed
+    for mikan_id, anime_task_cur_mikan_id in m_addAnimeTask.anime_task.items():
+        if len(anime_task_cur_mikan_id) == 0:
+            continue
+        for eposide, torrent_name in anime_task_cur_mikan_id.items():
+            m_db_task_executor.update_seed_status(torrent_name)
+            logger.info("[runTask][run_seed_schedule_task] update seed: {} status to 1".format(torrent_name))
+
     # 下载
     for mikan_id, episode_lists_new in m_addAnimeTask.anime_task.items():
         anime_task_status_lists = m_addAnimeTask.download_anime_seed_by_mikan_id_task(mikan_id, episode_lists_new)
@@ -64,13 +72,12 @@ def run_seed_schedule_task():
         if len(anime_task_status_lists['suc']) > 0:
             logger.info("[runTask][run_seed_schedule_task] Total {} new torrents of mikan_id {}, {} torrents downloaded."\
                         .format(len(episode_lists_new), mikan_id, len(anime_task_status_lists['suc'])))
-            m_db_task_executor.update_torrent_status(mikan_id, anime_task_status_lists['suc'], True)
+            m_db_task_executor.update_torrent_status(mikan_id, anime_task_status_lists['suc'])
         
         # 失败列表
         if len(anime_task_status_lists['failed']) > 0:
             logger.info("[runTask][run_seed_schedule_task] Total {} new torrents of mikan_id {}, {} torrents fail to downloaded."\
                         .format(len(episode_lists_new), mikan_id, len(anime_task_status_lists['failed'])))
-            # m_db_task_executor.update_torrent_status(mikan_id, anime_task_status_lists['failed'], True)
 
     totalTorrentInfos = m_addqbTask.getTotalTorrentInfos(m_addAnimeTask.anime_task)
     for mikan_id, torrentInfos in totalTorrentInfos.items():
