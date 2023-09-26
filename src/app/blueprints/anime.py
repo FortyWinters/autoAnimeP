@@ -141,7 +141,8 @@ def download_subscribe_anime():
     subcribe_anime = query_anime_list_by_condition(mikan_id=mikan_id)
     anime_name = subcribe_anime[0]['anime_name']
 
-    seed_list = query_anime_seed_by_condition(mikan_id=mikan_id)
+    # anime_seed中的种子
+    seed_list = query_anime_seed_by_condition(mikan_id=mikan_id, seed_status=0)
     if len(seed_list) == 0:
         logger.warning("[BP][ANIME] download_subscribe_anime failed, no seed in db, mikan_id: {}".format(mikan_id))
         return jsonify({"code": 200, "message": "download_subscribe_anime, no new seed", "data": mikan_id})
@@ -151,35 +152,46 @@ def download_subscribe_anime():
         anime_seed[s['episode']] = s
     seed_list_unique = list(anime_seed.values())
 
+    # anime_task中的种子
     task_list = query_anime_task_by_condition(mikan_id=mikan_id)
     task_set = set()
     for t in task_list:
         task_set.add(t['episode'])
 
+    # 候选种子
     seed_list_update = []
     for s in seed_list_unique:
         if s['episode'] not in task_set:
             seed_list_update.append(s)
-    
+
     path = "{}{}/".format(config.get('DOWNLOAD')['SEED'], mikan_id)
     if not os.path.exists(path):
         os.makedirs(path)
 
+    # 更新种子状态
     seed_list_download = []
     for s in seed_list_update:
-        if insert_data_to_anime_task(s['mikan_id'], 0, s['episode'], s['seed_url'].split('/')[3], 0):
+        if update_anime_seed_seed_status_by_seed_url(s['seed_url'], 1):
             s['path'] = path
             seed_list_download.append(s)
 
+    # 下载种子
     seed_list_download_sucess = mikan.download_seed_task(seed_list_download)
 
-    torrent_infos = dict()
+    # 插入anime_task
+    seed_list_task = []
     for s in seed_list_download_sucess:
+        if insert_data_to_anime_task(s['mikan_id'], s['episode'], s['seed_url'].split('/')[3], 0):
+            seed_list_task.append(s)
+
+    # qb
+    torrent_infos = dict()
+    for s in seed_list_task:
         torrent_info = dict()
         torrent_name = s['seed_url'].split('/')[3]
         torrent_path = "{}{}".format(path, torrent_name)
-        torrent_info['name']     = torrent_name
-        torrent_info['path']     = torrent_path
+        torrent_info['name'] = torrent_name
+        torrent_info['path'] = torrent_path
         
         torrent_infos[s['episode']] = torrent_info
 

@@ -211,3 +211,9 @@ def update_anime_list_subscribe_status_by_mikan_id(mikan_id, subscribe_status):
 
     db.session.query(AnimeList).filter_by(mikan_id=mikan_id).update({"subscribe_status": subscribe_status})
     return session_commit()
+
+def update_anime_seed_seed_status_by_seed_url(seed_url, seed_status):
+    logger.info("[MODELS] update_anime_seed_seed_status_by_seed_url info, seed_url: {}, seed_status: {}".format(seed_url, seed_status))
+
+    db.session.query(AnimeSeed).filter_by(seed_url=seed_url).update({"seed_status": seed_status})
+    return session_commit()
