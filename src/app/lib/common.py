@@ -26,10 +26,9 @@ class Seed:
         return "({}, {}, '{}', {}, '{}', {})".format(self.mikan_id, self.episode, self.seed_url, self.subgroup_id, self.seed_name, self.seed_status)
     
 class Task:
-    def __init__(self, mikan_id, episode, torrent_status, torrent_name, qb_task_status):
+    def __init__(self, mikan_id, episode, torrent_name, qb_task_status):
         self.mikan_id       = mikan_id
         self.episode        = episode
-        self.torrent_status = torrent_status
         self.torrent_name   = torrent_name
         self.qb_task_status = qb_task_status
 

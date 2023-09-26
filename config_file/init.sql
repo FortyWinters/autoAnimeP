@@ -63,9 +63,8 @@ CREATE TABLE `anime_task` (
   `mikan_id` int NOT NULL,
   `episode` int NOT NULL,
   `torrent_name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
-  `torrent_status` int DEFAULT NULL COMMENT '种子状态 0表示待下载 1表示下载成功',
   `qb_task_status` int DEFAULT NULL COMMENT 'qb任务状态 0表示待下载 1表示下载成功',
   PRIMARY KEY (`index`)
-) ENGINE=InnoDB AUTO_INCREMENT=663 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=818 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

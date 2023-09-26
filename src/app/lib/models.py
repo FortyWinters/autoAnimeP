@@ -33,7 +33,6 @@ class AnimeTask(db.Model):
     __tablename__ = "anime_task"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
     mikan_id = db.Column(db.Integer, nullable=False)
-    torrent_status = db.Column(db.Integer,comment='种子状态 0表示待下载 1表示下载成功')
     qb_task_status = db.Column(db.Integer,comment='qb任务状态 0表示待下载 1表示下载成功')
     episode = db.Column(db.Integer, nullable=False)
     torrent_name = db.Column(db.String(200), nullable=False)
@@ -62,10 +61,10 @@ def insert_data_to_anime_seed(mikan_id, episode, seed_url, subgroup_id, seed_nam
     db.session.add_all([anime_seed])
     return session_commit()
 
-def insert_data_to_anime_task(mikan_id, torrent_status, episode, torrent_name, qb_task_status):
-    logger.info("[MODELS] insert_data_to_anime_task info, mikan_id: {}, torrent_status: {}, episode: {}, torrent_name: {}, qb_task_status".format(mikan_id, torrent_status, episode, torrent_name, qb_task_status))
+def insert_data_to_anime_task(mikan_id, episode, torrent_name, qb_task_status):
+    logger.info("[MODELS] insert_data_to_anime_task info, mikan_id: {}, episode: {}, torrent_name: {}, qb_task_status".format(mikan_id, episode, torrent_name, qb_task_status))
 
-    anime_task = AnimeTask(mikan_id=mikan_id, torrent_status=torrent_status, episode=episode, torrent_name=torrent_name, qb_task_status=qb_task_status)
+    anime_task = AnimeTask(mikan_id=mikan_id, episode=episode, torrent_name=torrent_name, qb_task_status=qb_task_status)
     db.session.add_all([anime_task])
     return session_commit()
 
@@ -132,14 +131,12 @@ def query_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed_
         list.append(dic)
     return list
 
-def query_anime_task_by_condition(mikan_id=-1, torrent_status=-1, episode=-1, torrent_name='', qb_task_status=-1):
-    logger.info("[MODELS] query_anime_task_by_condition info, mikan_id: {}, torrent_status: {}, episode: {}, torrent_name: {}, qb_task_status".format(mikan_id, torrent_status, episode, torrent_name, qb_task_status))
+def query_anime_task_by_condition(mikan_id=-1, episode=-1, torrent_name='', qb_task_status=-1):
+    logger.info("[MODELS] query_anime_task_by_condition info, mikan_id: {}, episode: {}, torrent_name: {}, qb_task_status".format(mikan_id, episode, torrent_name, qb_task_status))
 
     session = db.session.query(AnimeTask)
     if mikan_id != -1:
         session = session.filter_by(mikan_id=mikan_id)
-    if torrent_status != -1:
-        session = session.filter_by(torrent_status=torrent_status)
     if episode != -1:
         session = session.filter_by(episode=episode)
     if torrent_name != '':
@@ -152,7 +149,6 @@ def query_anime_task_by_condition(mikan_id=-1, torrent_status=-1, episode=-1, to
         dic = {
             "index"          : data.index,
             "mikan_id"       : data.mikan_id,
-            "torrent_status" : data.torrent_status,
             "episode"        : data.episode,
             "torrent_name"   : data.torrent_name,
             "qb_task_status" : data.qb_task_status,
