@@ -244,8 +244,11 @@ class Mikan:
             seasonStr ='%E5%A4%8F'
         elif broadcast_season == 3:
             seasonStr = '%E7%A7%8B'
-        else: 
+        elif broadcast_season == 4:
             seasonStr = '%E5%86%AC'
+        else:
+            self.logger.warning("[SPIDER] get_anime_list_by_conditon failed, year: {}, broadcast_season: {}".format(year, broadcast_season))
+            return
         
         url = "{}/Home/BangumiCoverFlowByDayOfWeek?year={}&seasonStr={}".format(self.url, year, seasonStr)
         html_doc = self.request_html(url)

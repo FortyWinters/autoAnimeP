@@ -24,11 +24,13 @@ DROP TABLE IF EXISTS `anime_list`;
 CREATE TABLE `anime_list` (
   `index` int NOT NULL AUTO_INCREMENT,
   `mikan_id` int DEFAULT NULL,
-  `anime_name` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `anime_name` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `update_day` int DEFAULT NULL COMMENT '剧场版和ova为8',
   `img_url` varchar(40) COLLATE utf8mb4_general_ci NOT NULL,
   `anime_type` int DEFAULT NULL COMMENT '0为番剧,1为剧场版,2为ova',
   `subscribe_status` int DEFAULT NULL COMMENT '0为未订阅,1为已订阅',
+  `year` int DEFAULT NULL COMMENT '播出年份',
+  `broadcast_season` int DEFAULT NULL COMMENT '播出季度',
   PRIMARY KEY (`index`),
   UNIQUE KEY `anime_name` (`anime_name`),
   UNIQUE KEY `mikan_id` (`mikan_id`)
@@ -50,7 +52,7 @@ CREATE TABLE `anime_seed` (
   `seed_status` int DEFAULT NULL COMMENT '0为未使用,1为已使用',
   PRIMARY KEY (`index`),
   UNIQUE KEY `seed_url` (`seed_url`)
-) ENGINE=InnoDB AUTO_INCREMENT=3260 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -65,6 +67,6 @@ CREATE TABLE `anime_task` (
   `torrent_name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
   `qb_task_status` int DEFAULT NULL COMMENT 'qb任务状态 0表示待下载 1表示下载成功',
   PRIMARY KEY (`index`)
-) ENGINE=InnoDB AUTO_INCREMENT=818 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

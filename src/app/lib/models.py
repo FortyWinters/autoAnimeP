@@ -10,12 +10,14 @@ logger = m_LogManager.getLogObj(sys.argv[0])
 class AnimeList(db.Model):
     __tablename__ = "anime_list"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    anime_name = db.Column(db.String(40), nullable=True, unique=True)
+    anime_name = db.Column(db.String(80), nullable=True, unique=True)
     mikan_id = db.Column(db.Integer, nullable=True, unique=True)
     update_day = db.Column(db.Integer, nullable=True, comment='剧场版和ova为8')
     img_url = db.Column(db.String(40), nullable=False)
     anime_type = db.Column(db.Integer, nullable=True, comment='0为番剧,1为剧场版,2为ova')
     subscribe_status = db.Column(db.Integer, nullable=True, comment='0为未订阅,1为已订阅')
+    year = db.Column(db.Integer, nullable=True, comment='播出年份')
+    broadcast_season = db.Column(db.Integer, nullable=True, comment='播出季度,春夏秋冬对应1234')
 
 
 class AnimeSeed(db.Model):
@@ -69,8 +71,8 @@ def insert_data_to_anime_task(mikan_id, episode, torrent_name, qb_task_status):
     return session_commit()
 
 
-def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1, subscribe_status=-1):
-    logger.info("[MODELS] query_anime_list_by_condition, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
+def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1, subscribe_status=-1, year=-1, broadcast_season=-1):
+    logger.info("[MODELS] query_anime_list_by_condition, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}, year: {}, broadcast_season: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status, year, broadcast_season))
 
     session = db.session.query(AnimeList)
     if anime_name != '':
@@ -85,6 +87,10 @@ def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update
         session = session.filter_by(anime_type=anime_type)
     if subscribe_status != -1:
         session = session.filter_by(subscribe_status=subscribe_status)
+    if year != -1:
+        session = session.filter_by(year=year)
+    if broadcast_season != -1:
+        session = session.filter_by(broadcast_season=broadcast_season)
     result = session.all()
     list = []
     for data in result:
@@ -95,7 +101,9 @@ def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update
             "img_url"          : data.img_url,
             "update_day"       : data.update_day,
             "anime_type"       : data.anime_type,
-            "subscribe_status" : data.subscribe_status
+            "subscribe_status" : data.subscribe_status,
+            "year"             : data.year,
+            "broadcast_season" : data.broadcast_season
         }
         list.append(dic)
     return list
