@@ -52,7 +52,7 @@ def update_anime_list_thread():
     for a in anime_list_update:
         if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
             fail_number += 1
-            logger.warning("[BP][ANIME] update_anime_list, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
+            logger.warning("[BP][ANIME] update_anime_list_thread, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
             continue
         update_number += 1
 
@@ -71,10 +71,10 @@ def update_anime_list_thread():
     img_set_download_failed = img_set - img_set_download
 
     for img in img_set_download_failed:
-        logger.warning("[BP][ANIME] update_anime_list, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(img['mikan_id'], img['img_url'], img['path']))
+        logger.warning("[BP][ANIME] update_anime_list_thread, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(img['mikan_id'], img['img_url'], img['path']))
 
-    logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
-    return jsonify({"code": 200, "message": "update_anime_list", "data": None})
+    logger.info("[BP][ANIME] update_anime_list_thread success, update number: {}, fail number: {}".format(update_number, fail_number))
+    return jsonify({"code": 200, "message": "update_anime_list_thread", "data": None})
 
 # 订阅番剧
 @bp.route("/subscribe_anime", methods=['POST'])
@@ -203,3 +203,41 @@ def download_subscribe_anime():
 def detail(mikan_id):
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
     return render_template("detail.html", anime=anime)
+
+@bp.route("/update_anime_list", methods=['POST'])
+def update_anime_list():
+    year = request.args.get("mikan_id")
+    broadcast_season = request.args.get("broadcast_season")
+    anime_list = mikan.get_anime_list_by_conditon(year, broadcast_season)
+    if len(anime_list) == 0:
+        return jsonify({"code": 200, "message": "update_anime_list", "data": None})
+    
+    img_path = "{}{}/{}/".format(config.get('DOWNLOAD')['IMG'], year, broadcast_season)
+    if not os.path.exists(img_path):
+        os.makedirs(img_path)
+    
+    update_number = 0
+    fail_number = 0
+    img_list = []
+    for a in anime_list:
+        img_info = {}
+        if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status, a.year, a.broadcast_season):
+            logger.warning("[BP][ANIME] update_anime_list, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
+            fail_number += 1
+            continue
+        img_info['mikan_id'] = a.mikan_id
+        img_info['img_url'] = a.img_url
+        img_info['path'] = img_path
+        img_list.append(img_info)
+
+    img_list_download = mikan.download_img_task(img_list)
+    
+    img_set = {tuple(d.items()) for d in img_list}
+    img_set_download = {tuple(d.items()) for d in img_list_download}
+    img_set_download_failed = img_set - img_set_download
+
+    for img in img_set_download_failed:
+        logger.warning("[BP][ANIME] update_anime_list, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(img['mikan_id'], img['img_url'], img['path']))
+
+    logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
+    return jsonify({"code": 200, "message": "update_anime_list", "data": None})

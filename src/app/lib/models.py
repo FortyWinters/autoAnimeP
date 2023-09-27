@@ -47,10 +47,10 @@ def session_commit():
     else:
         return True
 
-def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="8", anime_type="0", subscribe_status="0"):
-    logger.info("[MODELS] insert_data_to_anime_list, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
+def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="8", anime_type="0", subscribe_status="0", year="", broadcast_season=""):
+    logger.info("[MODELS] insert_data_to_anime_list, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}, year: {}, broadcast_season: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status, year, broadcast_season))
 
-    anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day, anime_type=anime_type, subscribe_status=subscribe_status)
+    anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day, anime_type=anime_type, subscribe_status=subscribe_status, year=year, broadcast_season=broadcast_season)
     db.session.add_all([anime_list])
     return session_commit()
 

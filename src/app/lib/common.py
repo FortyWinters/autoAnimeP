@@ -1,11 +1,13 @@
 class Anime:
-    def __init__(self, anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status):
+    def __init__(self, anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status, year, broadcast_season):
         self.anime_name       = anime_name
         self.mikan_id         = mikan_id
         self.img_url          = img_url
         self.update_day       = update_day
         self.anime_type       = anime_type
         self.subscribe_status = subscribe_status
+        self.year             = year
+        self.broadcast_season = broadcast_season
 
 class Seed:
     def __init__(self, mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status):

@@ -236,6 +236,55 @@ class Mikan:
             task_list.append(task)
         wait(task_list, return_when=ALL_COMPLETED)
         return self.img_list_download
+    
+    def get_anime_list_by_conditon(self, year, broadcast_season):
+        if broadcast_season == 1:
+            seasonStr = '%E6%98%A5'
+        elif broadcast_season == 2:
+            seasonStr ='%E5%A4%8F'
+        elif broadcast_season == 3:
+            seasonStr = '%E7%A7%8B'
+        else: 
+            seasonStr = '%E5%86%AC'
+        
+        url = "{}/Home/BangumiCoverFlowByDayOfWeek?year={}&seasonStr={}".format(self.url, year, seasonStr)
+        html_doc = self.request_html(url)
+        if html_doc == None:
+            self.logger.warning("[SPIDER] get_anime_list failed, request_html failed, url: {}".format(self.url))
+            return
+        
+        anime_list = []
+        for info in html_doc.xpath('//div[@class="sk-bangumi"]'):
+            update_day_ = info.xpath('.//@data-dayofweek')
+            anime_info = info.xpath('.//li')
+            for a in anime_info:
+                anime_name_ = a.xpath('.//@title')[0]
+                mikan_id_ = a.xpath('.//@data-bangumiid')[0]
+                img_url_ = a.xpath('.//@data-src')
+                
+                anime_name = self.lxml_result_to_str(anime_name_)
+                mikan_id = int(self.lxml_result_to_str(mikan_id_))
+                img_url = self.lxml_result_to_str(img_url_)
+                update_day = int(self.lxml_result_to_str(update_day_))
+
+                if update_day == 7:   # movie
+                    anime_type = 1
+                    update_day = 8
+                elif update_day == 8: # ova
+                    anime_type = 2
+                    update_day = 8
+                elif update_day == 0: # update on sunday
+                    anime_type = 0
+                    update_day = 7
+                else:
+                    anime_type = 0
+
+                subscribe_status = 0
+                anime = Anime(anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status, year, broadcast_season)
+                anime_list.append(anime)
+        self.logger.info("[SPIDER] get_anime_list success, anime number: {}".format(len(anime_list)))
+        return anime_list
+
 
 # config = m_config.get('SPIDER')
 # logger = m_LogManager.getLogObj(sys.argv[0])
