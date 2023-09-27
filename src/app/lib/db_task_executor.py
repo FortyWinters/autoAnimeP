@@ -21,16 +21,15 @@ class DbTaskExecutor:
     
     def get_exist_anime_task_by_mikan_id(self, mikan_id):
         exist_anime_task = dict()
-        sql = 'select episode,torrent_name,torrent_status,qb_task_status from anime_task where mikan_id={}'.\
+        sql = 'select episode,torrent_name,qb_task_status from anime_task where mikan_id={}'.\
             format(mikan_id)
         anime_tasks = self.m_db_connector.execute(sql)
 
         for anime_task in anime_tasks:
             episode = anime_task[0]
             torrent_name = anime_task[1]
-            torrent_status = anime_task[2]
-            qb_task_status = anime_task[3]
-            exist_anime_task[episode] = [torrent_name, torrent_status, qb_task_status]
+            qb_task_status = anime_task[2]
+            exist_anime_task[episode] = [torrent_name, qb_task_status]
         
         return exist_anime_task
     

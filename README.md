@@ -27,10 +27,15 @@ sudo apt install docker.io docker-compose -y
 
 ### 1. 启动！
 
+- Linux：
 ```
 sudo bash init.sh
 ```
 
+- Mac os
+```
+sh init.sh
+```
 
 
 ### 2. 访问服务
