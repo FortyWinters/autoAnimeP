@@ -1,7 +1,7 @@
 import os
 import time
 from flask import request, jsonify, render_template, Blueprint
-from exts import mikan, logger, config, qb
+from exts import mikan, logger, config, qb, executor
 from lib.models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
@@ -251,3 +251,31 @@ def update_anime_list():
 
     logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
     return jsonify({"code": 200, "message": "update_anime_list", "data": None})
+
+@bp.route("/start_main_task", methods=['POST'])
+def start_main_task():
+    from lib.connect import m_DBconnector
+    from lib.do_anime_task import doTask
+
+    anime_config = config.get('DOWNLOAD')
+    qb_cinfig = config.get('QB')
+    m_doTask = doTask(logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor)
+
+    pid = os.fork()
+    if pid > 0:
+        with open('config_file/daemon_pid.txt', 'w') as file:
+            file.write(str(pid))
+        logger.info("[BP][start_main_task] daemon process id is {} .".format(pid))
+        return jsonify({"code": 200, "message": "start_main_task", "data": None})
+    m_doTask.execAllTask()
+
+@bp.route("/stop_main_task", methods=['POST'])
+def stop_main_task():
+    import signal
+
+    with open('config_file/daemon_pid.txt', 'r') as file:
+        pid = int(file.read())
+    logger.info("[BP][stop_main_task] m_pid is {}.".format(pid))
+    os.kill(pid, signal.SIGTERM)
+    os.remove('config_file/daemon_pid.txt')
+    return jsonify({"code": 200, "message": "stop_main_task", "data": None})
