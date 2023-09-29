@@ -84,13 +84,13 @@ class doTask(doAnimeTask, SpiderTask):
         end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info("[do_anime_task][doTask][createTask] Finish Task at {}".format(end_time))
 
-    def execAllTask(self):
+    def execAllTask(self, intervel):
         self.createTask()
-        schedule.every(1).minutes.do(self.createTask)
-        # schedule.every(5).seconds.do(job2)
+        intervel = int(intervel)
+        schedule.every(intervel).minutes.do(self.createTask)
+        self.logger.info("[do_anime_task][doTask][execAllTask] scheduled task created successfully.")
 
         while True:
-            self.logger.info("[do_anime_task][doTask][execAllTask] received value: {}".format(0))
+            self.logger.info("[do_anime_task][doTask][execAllTask] schedule task interval: {}".format(intervel))
             schedule.run_pending()
             time.sleep(2)
-
