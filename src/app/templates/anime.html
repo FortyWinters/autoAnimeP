@@ -15,7 +15,7 @@
         <li>
             <div class="anime-container">
                 <a href="/anime/detail/{{ anime.mikan_id }}">
-                    <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url.split('/')[4]) }}" alt="" height="280px" width="210px">
+                    <img src="{{ url_for('static', filename='img/anime_list/' + anime.year | string + '/' + anime.broadcast_season | string + '/' + anime.img_url.split('/')[4]) }}" alt="" height="280px" width="210px">
                 </a>
                 <div class="anime-info">
                     <div class="anime-name">{{ anime.anime_name }}</div>
