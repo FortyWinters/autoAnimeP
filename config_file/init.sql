@@ -29,8 +29,6 @@ CREATE TABLE `anime_list` (
   `img_url` varchar(40) COLLATE utf8mb4_general_ci NOT NULL,
   `anime_type` int DEFAULT NULL COMMENT '0为番剧,1为剧场版,2为ova',
   `subscribe_status` int DEFAULT NULL COMMENT '0为未订阅,1为已订阅',
-  `year` int DEFAULT NULL COMMENT '播出年份',
-  `broadcast_season` int DEFAULT NULL COMMENT '播出季度',
   PRIMARY KEY (`index`),
   UNIQUE KEY `anime_name` (`anime_name`),
   UNIQUE KEY `mikan_id` (`mikan_id`)
@@ -68,5 +66,19 @@ CREATE TABLE `anime_task` (
   `qb_task_status` int DEFAULT NULL COMMENT 'qb任务状态 0表示待下载 1表示下载成功',
   PRIMARY KEY (`index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for anime_broadcast
+-- ----------------------------
+DROP TABLE IF EXISTS `anime_broadcast`;
+CREATE TABLE `anime_broadcast` (
+  `index` int NOT NULL AUTO_INCREMENT,
+  `mikan_id` int NOT NULL,
+  `year` int NOT NULL,
+  `season` int NOT NULL,
+  PRIMARY KEY (`index`)
+) ENGINE=InnoDB AUTO_INCREMENT=1132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

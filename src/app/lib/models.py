@@ -16,8 +16,6 @@ class AnimeList(db.Model):
     img_url = db.Column(db.String(40), nullable=False)
     anime_type = db.Column(db.Integer, nullable=True, comment='0为番剧,1为剧场版,2为ova')
     subscribe_status = db.Column(db.Integer, nullable=True, comment='0为未订阅,1为已订阅')
-    year = db.Column(db.Integer, nullable=True, comment='播出年份')
-    broadcast_season = db.Column(db.Integer, nullable=True, comment='播出季度,春夏秋冬对应1234')
 
 
 class AnimeSeed(db.Model):
@@ -39,6 +37,14 @@ class AnimeTask(db.Model):
     episode = db.Column(db.Integer, nullable=False)
     torrent_name = db.Column(db.String(200), nullable=False)
 
+
+class AnimeBroadcast(db.Model):
+    __tablename__ = "anime_broadcast"
+    index = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    mikan_id = db.Column(db.Integer, nullable=True)
+    year = db.Column(db.Integer, nullable=True, comment='播出年份')
+    season = db.Column(db.Integer, nullable=True, comment='播出季度,春夏秋冬对应1234')
+
 def session_commit():
     try:
         db.session.commit()
@@ -49,10 +55,10 @@ def session_commit():
     else:
         return True
 
-def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="8", anime_type="0", subscribe_status="0", year="", broadcast_season=""):
-    logger.info("[MODELS] insert_data_to_anime_list, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}, year: {}, broadcast_season: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status, year, broadcast_season))
+def insert_data_to_anime_list(mikan_id, anime_name="", img_url="", update_day="8", anime_type="0", subscribe_status="0"):
+    logger.info("[MODELS] insert_data_to_anime_list, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
 
-    anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day, anime_type=anime_type, subscribe_status=subscribe_status, year=year, broadcast_season=broadcast_season)
+    anime_list = AnimeList(anime_name=anime_name, mikan_id=mikan_id, img_url=img_url, update_day=update_day, anime_type=anime_type, subscribe_status=subscribe_status)
     db.session.add_all([anime_list])
     return session_commit()
 
@@ -70,9 +76,15 @@ def insert_data_to_anime_task(mikan_id, episode, torrent_name, qb_task_status):
     db.session.add_all([anime_task])
     return session_commit()
 
+def insert_data_to_anime_broadcast(mikan_id, year="", season=""):
+    logger.info("[MODELS] insert_data_to_anime_broadcast, mikan_id: {}, year: {}, season: {}".format(mikan_id, year, season))
 
-def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1, subscribe_status=-1, year=-1, broadcast_season=-1):
-    logger.info("[MODELS] query_anime_list_by_condition, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}, year: {}, broadcast_season: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status, year, broadcast_season))
+    anime_broadcast = AnimeBroadcast(mikan_id=mikan_id, year=year, season=season)
+    db.session.add_all([anime_broadcast])
+    return session_commit()
+
+def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1, subscribe_status=-1):
+    logger.info("[MODELS] query_anime_list_by_condition, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))
 
     session = db.session.query(AnimeList)
     if anime_name != '':
@@ -87,10 +99,6 @@ def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update
         session = session.filter_by(anime_type=anime_type)
     if subscribe_status != -1:
         session = session.filter_by(subscribe_status=subscribe_status)
-    if year != -1:
-        session = session.filter_by(year=year)
-    if broadcast_season != -1:
-        session = session.filter_by(broadcast_season=broadcast_season)
     result = session.all()
     list = []
     for data in result:
@@ -102,8 +110,6 @@ def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update
             "update_day"       : data.update_day,
             "anime_type"       : data.anime_type,
             "subscribe_status" : data.subscribe_status,
-            "year"             : data.year,
-            "broadcast_season" : data.broadcast_season
         }
         list.append(dic)
     return list
@@ -164,6 +170,27 @@ def query_anime_task_by_condition(mikan_id=-1, episode=-1, torrent_name='', qb_t
         list.append(dic)
     return list
 
+def query_anime_broadcast_by_condition(mikan_id=-1, year=-1, season=-1):
+    logger.info("[MODELS] query_anime_broadcast_by_condition, mikan_id: {}, year: {}, season: {}".format(mikan_id, year, season))
+
+    session = db.session.query(AnimeBroadcast)
+    if mikan_id != -1:
+        session = session.filter_by(mikan_id=mikan_id)
+    if year != -1:
+        session = session.filter_by(year=year)
+    if season != -1:
+        session = session.filter_by(season=season)
+    result = session.all()
+    list = []
+    for data in result:
+        dic = {
+            "index"    : data.index,
+            "mikan_id" : data.mikan_id,
+            "year"     : data.year,
+            "season"   : data.season
+        }
+        list.append(dic)
+    return list
 
 def delete_anime_list_by_condition(anime_name='', mikan_id=-1, update_day=-1, anime_type=-1, subscribe_status=-1):
     logger.info("[MODELS] delete_anime_list_by_condition info, anime_name :{}, mikan_id: {}, update_day: {}, anime_type: {}, subscribe_status: {}".format(anime_name, mikan_id, update_day, anime_type, subscribe_status))

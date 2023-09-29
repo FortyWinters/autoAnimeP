@@ -18,7 +18,7 @@ def index():
             subscribe_list.append(a)
         else:
             unsubscribe_list.append(a)
-    
+
     subscribe_order_list = sorted(subscribe_list, key=lambda x: x['update_day'])
     unsubscribe_order_list = sorted(unsubscribe_list, key=lambda x: x['update_day'])
     for a in subscribe_order_list:
@@ -28,7 +28,7 @@ def index():
     logger.info("[BP][ANIME] index success, url: /anime/")
     return render_template("anime.html", anime_list=anime_order_list)
 
-# 更新番剧列表, 图片下载变为多线程
+# 更新番剧列表, 图片下载变为多线程(停止使用, 切换到update_anime_list)
 @bp.route("/update_anime_list_thread", methods=['GET'])
 def update_anime_list_thread():
     img_path = config.get('DOWNLOAD')['IMG']
@@ -204,24 +204,29 @@ def detail(mikan_id):
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
     return render_template("detail.html", anime=anime)
 
+# 按照年份和季度更新番剧 
 @bp.route("/update_anime_list", methods=['POST'])
 def update_anime_list():
     year = request.args.get("year")
-    broadcast_season = request.args.get("broadcast_season")
+    season = request.args.get("season")
     
-    anime_set = set()
-    # 剧场版和ova有多个播出季度的情况, 暂时按年过滤
-    anime_list_old = query_anime_list_by_condition(year=year)
+    anime_list_set = set()
+    anime_list_old = query_anime_list_by_condition()
     for a in anime_list_old:
-        anime_set.add(a["mikan_id"])
+        anime_list_set.add(a["mikan_id"])
 
-    anime_list_new = mikan.get_anime_list_by_conditon(int(year), int(broadcast_season))
+    anime_broadcast_set = set()
+    anime_broadcast_old = query_anime_broadcast_by_condition(year=year, season=season)
+    for a in anime_broadcast_old:
+        anime_broadcast_set.add(a["mikan_id"])
+
+    anime_list_new = mikan.get_anime_list_by_conditon(int(year), int(season))
     anime_list_update = []
     for a in anime_list_new:
-        if a.mikan_id not in anime_set:
+        if a.mikan_id not in anime_broadcast_set:
             anime_list_update.append(a)
     
-    img_path = "{}{}/{}/".format(config.get('DOWNLOAD')['IMG'], year, broadcast_season)
+    img_path = config.get('DOWNLOAD')['IMG']
     if not os.path.exists(img_path):
         os.makedirs(img_path)
     
@@ -230,15 +235,21 @@ def update_anime_list():
     img_list = []
     for a in anime_list_update:
         img_info = {}
-        if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status, a.year, a.broadcast_season):
-            logger.warning("[BP][ANIME] update_anime_list, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
+        if not insert_data_to_anime_broadcast(a.mikan_id, year, season):
+            logger.warning("[BP][ANIME] update_anime_list error, insert_data_to_anime_broadcast failed, mikan_id: {}, year: {}, season: {}".format(a.mikan_id, year, season))
             fail_number += 1
             continue
-        img_info['mikan_id'] = a.mikan_id
-        img_info['img_url'] = a.img_url
-        img_info['path'] = img_path
-        img_list.append(img_info)
-        update_number += 1
+        else:
+            if a.mikan_id not in anime_list_set:
+                if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
+                    logger.warning("[BP][ANIME] update_anime_list error, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
+                    fail_number += 1
+                    continue
+                img_info['mikan_id'] = a.mikan_id
+                img_info['img_url'] = a.img_url
+                img_info['path'] = img_path
+                img_list.append(img_info)
+                update_number += 1
 
     img_list_download = mikan.download_img_task(img_list)
     
@@ -251,3 +262,30 @@ def update_anime_list():
 
     logger.info("[BP][ANIME] update_anime_list success, update number: {}, fail number: {}".format(update_number, fail_number))
     return jsonify({"code": 200, "message": "update_anime_list", "data": None})
+
+# 按照年份和季度查看番剧列表
+@bp.route("/<int:year>/<int:season>", methods=['GET'])
+def anime_list_by_broadcast(year, season):
+    broadcast_list = query_anime_broadcast_by_condition(year=year, season=season)
+    anime_list = []
+    for b in broadcast_list:
+        anime = query_anime_list_by_condition(mikan_id=b["mikan_id"])[0]
+        anime_list.append(anime)
+    
+    subscribe_list = []
+    unsubscribe_list = []
+    anime_order_list = []
+    for a in anime_list:
+        if a['subscribe_status'] == 1:
+            subscribe_list.append(a)
+        else:
+            unsubscribe_list.append(a)
+    
+    subscribe_order_list = sorted(subscribe_list, key=lambda x: x['update_day'])
+    unsubscribe_order_list = sorted(unsubscribe_list, key=lambda x: x['update_day'])
+    for a in subscribe_order_list:
+        anime_order_list.append(a)
+    for a in unsubscribe_order_list:
+        anime_order_list.append(a)
+    logger.info("[BP][ANIME] index success, url: /anime/")
+    return render_template("anime.html", anime_list=anime_order_list)

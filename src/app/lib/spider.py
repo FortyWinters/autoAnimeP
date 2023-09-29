@@ -283,7 +283,7 @@ class Mikan:
                     anime_type = 0
 
                 subscribe_status = 0
-                anime = Anime(anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status, year, broadcast_season)
+                anime = Anime(anime_name, mikan_id, img_url, update_day, anime_type, subscribe_status)
                 anime_list.append(anime)
         self.logger.info("[SPIDER] get_anime_list success, anime number: {}".format(len(anime_list)))
         return anime_list
