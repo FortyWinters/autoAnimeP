@@ -1,0 +1,3 @@
+[submodule "autoAnime_web"]
+	path = autoAnime_web
+	url = https://github.com/FortyWinters/autoAnime_web.git
