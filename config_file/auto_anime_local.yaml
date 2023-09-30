@@ -2,14 +2,14 @@ FLASK:
   DEBUG: True
   ENV: 'developmet'
   HOST: '0.0.0.0'
-  PORT: '5555'
-  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:password@172.172.0.3:3306/auto_anime?charset=utf8'
+  PORT: '5556'
+  SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:password@127.0.0.1:3306/auto_anime?charset=utf8'
 SPIDER:
   URL: 'https://mikanani.me' # 国际
   # URL: 'https://mikanime.tv' # 国内
   THREAD_POOL_SIZE_LIMIT: 5
 QB:
-  host: '172.172.0.2'
+  host: '127.0.0.1'
   port: '8081'
   username: 'admin'
   password: 'adminadmin'
@@ -17,7 +17,7 @@ DOWNLOAD:
   IMG: 'src/app/static/img/anime_list/'
   SEED: 'seed/'
 MySQL:
-  HOSTNAME: '172.172.0.3'
+  HOSTNAME: '127.0.0.1'
   PORT: '3306'
   DATABASE: 'auto_anime'
   USERNAME: 'root'
