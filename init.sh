@@ -3,7 +3,7 @@
 # sudo usermod -aG docker $USER
 
 mkdir -p var/qBittorrent/config
-mkdir -p var/qBittorrent/downloads
+# mkdir -p var/qBittorrent/downloads
 mkdir -p var/mysql/data
 mkdir -p var/mysql/config
 

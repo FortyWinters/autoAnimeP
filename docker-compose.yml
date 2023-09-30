@@ -11,7 +11,7 @@ services:
       - WEBUI_PORT=8081 
     volumes:
       - ./var/qBittorrent/config:/config 
-      - ./var/qBittorrent/downloads:/downloads 
+      - ./downloads:/downloads 
     ports:
       - 6881:6881
       - 6881:6881/udp
