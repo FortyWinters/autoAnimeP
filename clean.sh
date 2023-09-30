@@ -30,4 +30,4 @@ else
     docker rmi mysql:latest
 fi
 
-rm -rf log var
+sudo rm -rf log var
