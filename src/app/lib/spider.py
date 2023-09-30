@@ -21,7 +21,7 @@ class Mikan:
     def request_html(self, url):
         try:
             headers = {'User-Agent': self.ua.random}
-            res = requests.get(url=url, headers=headers, timeout=10)
+            res = requests.get(url=url, headers=headers, timeout=5)
             res.raise_for_status()
             res.encoding = res.apparent_encoding
             html_doc = etree.HTML(res.text)
@@ -107,6 +107,7 @@ class Mikan:
         return subgroup_list
     
     def get_seed_list(self, mikan_id, subgroup_id):
+        self.logger.warning("NOooooooooooooooo")
         url = "{}/Home/ExpandEpisodeTable?bangumiId={}&subtitleGroupId={}&take=65".format(self.url, mikan_id, subgroup_id)
         html_doc = self.request_html(url)
         if html_doc == None:
