@@ -1,12 +1,13 @@
 import os
 import time
+from datetime import datetime
 from flask import request, jsonify, render_template, Blueprint
 from exts import mikan, logger, config, qb, executor
 from lib.models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 
-# 渲染番剧列表
+# 番剧列表
 @bp.route("/")
 def index():
     anime_list = query_anime_list_by_condition()
@@ -26,55 +27,26 @@ def index():
     for a in unsubscribe_order_list:
         anime_order_list.append(a)
     logger.info("[BP][ANIME] index success, url: /anime/")
-    return render_template("anime.html", anime_list=anime_order_list)
 
-# 更新番剧列表, 图片下载变为多线程(停止使用, 切换到update_anime_list)
-@bp.route("/update_anime_list_thread", methods=['GET'])
-def update_anime_list_thread():
-    img_path = config.get('DOWNLOAD')['IMG']
-    if not os.path.exists(img_path):
-        os.makedirs(img_path)
-        
-    update_number = 0
-    fail_number = 0
+    now = datetime.now()
+    current_year = now.year
+    current_month = now.month
+    broadcast_map = dict()
+    broadcast_map[2013] = [3]
+    for year in range(2014, current_year):
+        broadcast_map[year] = [4, 1, 2, 3]
 
-    anime_set = set()
-    anime_list_old = query_anime_list_by_condition()
-    for a in anime_list_old:
-        anime_set.add(a["mikan_id"])
+    if current_month > 0 and current_month < 3:
+        season_list = [4]
+    elif current_month >= 3 and current_month < 6:
+        season_list = [4, 1]
+    elif current_month >= 6 and current_month < 9:
+        season_list = [4, 1, 2]
+    else:
+        season_list = [4, 1, 2, 3]
+    broadcast_map[current_year] = season_list
 
-    anime_list_new = mikan.get_anime_list()
-    anime_list_update = []
-    for a in anime_list_new:
-        if a.mikan_id not in anime_set:
-            anime_list_update.append(a)
-
-    for a in anime_list_update:
-        if not insert_data_to_anime_list(a.mikan_id, a.anime_name, a.img_url, a.update_day, a.anime_type, a.subscribe_status):
-            fail_number += 1
-            logger.warning("[BP][ANIME] update_anime_list_thread, insert_data_to_anime_list failed, mikan_id: {}".format(a.mikan_id))
-            continue
-        update_number += 1
-
-    img_list = []
-    for a in anime_list_update:
-        img_info = {}
-        img_info['mikan_id'] = a.mikan_id
-        img_info['img_url'] = a.img_url
-        img_info['path'] = img_path
-        img_list.append(img_info)
-
-    img_list_download = mikan.download_img_task(img_list)
-    
-    img_set = {tuple(d.items()) for d in img_list}
-    img_set_download = {tuple(d.items()) for d in img_list_download}
-    img_set_download_failed = img_set - img_set_download
-
-    for img in img_set_download_failed:
-        logger.warning("[BP][ANIME] update_anime_list_thread, mikan.download_img failed, mikan_id: {}, img_url: {}, img_path: {}".format(img['mikan_id'], img['img_url'], img['path']))
-
-    logger.info("[BP][ANIME] update_anime_list_thread success, update number: {}, fail number: {}".format(update_number, fail_number))
-    return jsonify({"code": 200, "message": "update_anime_list_thread", "data": None})
+    return render_template("my_anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map)
 
 # 订阅番剧
 @bp.route("/subscribe_anime", methods=['POST'])
@@ -287,5 +259,24 @@ def anime_list_by_broadcast(year, season):
         anime_order_list.append(a)
     for a in unsubscribe_order_list:
         anime_order_list.append(a)
-    logger.info("[BP][ANIME] index success, url: /anime/")
-    return render_template("anime.html", anime_list=anime_order_list)
+
+    now = datetime.now()
+    current_year = now.year
+    current_month = now.month
+    broadcast_map = dict()
+    broadcast_map[2013] = [3]
+    for year in range(2014, current_year):
+        broadcast_map[year] = [4, 1, 2, 3]
+
+    if current_month > 0 and current_month < 3:
+        season_list = [4]
+    elif current_month >= 3 and current_month < 6:
+        season_list = [4, 1]
+    elif current_month >= 6 and current_month < 9:
+        season_list = [4, 1, 2]
+    else:
+        season_list = [4, 1, 2, 3]
+    broadcast_map[current_year] = season_list
+
+    logger.info("[BP][ANIME] anime_list_by_broadcast success, url: /anime/")
+    return render_template("anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map)

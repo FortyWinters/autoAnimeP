@@ -1,9 +1,14 @@
 $(function() {
     $('button.anime-button').on('click', function() {
         this.disabled = true;
+        this.style.backgroundColor = "#d6d6d6";
         
-        // 番剧列表更新
-        fetch("/anime/update_anime_list_thread", {method: 'GET'})
+        var path = window.location.pathname;
+        var parts = path.split('/');
+        var year = parts[2]; 
+        var season = parts[3];
+
+        fetch("/anime/update_anime_list?year=" + year +"&season=" + season, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             console.log(data)

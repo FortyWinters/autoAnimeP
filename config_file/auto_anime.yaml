@@ -7,7 +7,7 @@ FLASK:
 SPIDER:
   URL: 'https://mikanani.me' # 国际
   # URL: 'https://mikanime.tv' # 国内
-  THREAD_POOL_SIZE_LIMIT: 5
+  THREAD_POOL_SIZE_LIMIT: 12
 QB:
   host: '172.172.0.2'
   port: '8081'
