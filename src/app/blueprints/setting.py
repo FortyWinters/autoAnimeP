@@ -6,6 +6,10 @@ from lib.models import *
 
 bp = Blueprint("setting", __name__, url_prefix="/setting")
 
+@bp.route("/", methods=['GET'])
+def index():
+    return render_template("setting.html")
+
 @bp.route("/start_main_task", methods=['POST'])
 def start_main_task():
     from lib.connect import m_DBconnector

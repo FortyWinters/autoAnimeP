@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}设置{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/setting.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<button class="start-button">原神启动!</button>
+<button class="stop-button">原神关闭!</button>
+<button class="modify-button">修改间隔</button>
+{% endblock %}

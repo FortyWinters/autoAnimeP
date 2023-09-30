@@ -15,3 +15,5 @@ src/app/static/img/anime_list/*
 src/test.py
 
 var
+
+daemon_pid.txt
