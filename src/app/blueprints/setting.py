@@ -1,7 +1,6 @@
 import os
-import time
 from flask import request, jsonify, render_template, Blueprint
-from exts import mikan, logger, config, qb, executor
+from exts import logger
 from lib.models import *
 
 bp = Blueprint("setting", __name__, url_prefix="/setting")
@@ -12,15 +11,9 @@ def index():
 
 @bp.route("/start_main_task", methods=['POST'])
 def start_main_task():
-    from lib.connect import m_DBconnector
-    from lib.do_anime_task import doTask
-
-    interval = request.args.get("interval")
-    if interval is None:
-        interval = 2
-        logger.warning("[BP][start_main_task] failed to get interval, set interval to default: {} .".format(interval))
-    else:
-        logger.warning("[BP][start_main_task] set interval to: {} .".format(interval))
+    import os
+    import multiprocessing
+    from flask import jsonify
 
     if os.path.exists('config_file/daemon_pid.txt'):
         with open('config_file/daemon_pid.txt', 'r') as file:
@@ -28,17 +21,22 @@ def start_main_task():
         logger.info("[BP][start_main_task] daemon process has been started with pid: {} .".format(pid))
         return jsonify({"code": 200, "message": "daemon process has been started", "data": None})
     
-    anime_config = config.get('DOWNLOAD')
-    qb_cinfig = config.get('QB')
-    m_doTask = doTask(logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor)
+    interval = request.args.get("interval")
+    if interval is None:
+        interval = 2
+        logger.warning("[BP][start_main_task] failed to get interval, set interval to default: {} .".format(interval))
+    else:
+        logger.info("[BP][start_main_task] set interval to: {} .".format(interval))
 
-    pid = os.fork()
-    if pid > 0:
-        with open('config_file/daemon_pid.txt', 'w') as file:
-            file.write(str(pid))
-        logger.info("[BP][start_main_task] daemon process id is {} .".format(pid))
-        return jsonify({"code": 200, "message": "start_main_task", "data": None})
-    m_doTask.execAllTask(interval)
+    daemon = multiprocessing.Process(target=start_fn,args=interval)
+    daemon.daemon = True
+    daemon.start()
+    
+    daemon_pid = daemon.pid
+    with open('config_file/daemon_pid.txt', 'w') as file:
+        file.write(str(daemon_pid))
+    logger.info("[BP][start_main_task] strat new daemon process with pid  {} .".format(daemon_pid))
+    return jsonify({"code": 200, "message": "stop_main_task", "data": None})
 
 @bp.route("/stop_main_task", methods=['POST'])
 def stop_main_task():
@@ -63,35 +61,53 @@ def stop_main_task():
 
 @bp.route("/change_main_task_interval", methods=['POST'])
 def change_main_task_interval():
+    import os
     import signal
-    from lib.connect import m_DBconnector
-    from lib.do_anime_task import doTask
+    import multiprocessing
+    from flask import jsonify
     
     if os.path.exists('config_file/daemon_pid.txt'):
         with open('config_file/daemon_pid.txt', 'r') as file:
             pid = int(file.read())
         try:
             os.kill(pid, signal.SIGTERM)
-            logger.info("[BP][stop_main_task] successfully shut down daemon with pid: {} .".format(pid))
+            logger.info("[BP][change_main_task_interval] successfully shut down daemon with pid: {} .".format(pid))
         except Exception as e:
-            logger.error("[BP][stop_main_task] failed to shut down daemon with pid: {} .".format(pid))
-    
+            logger.error("[BP][change_main_task_interval] failed to shut down daemon with pid: {} .".format(pid))
+    else:
+        logger.warning("[BP][change_main_task_interval] daemon process not started ")
+
     interval = request.args.get("interval")
     if interval is None:
         interval = 2
-        logger.warning("[BP][start_main_task] failed to get interval, set interval to default: {} .".format(interval))
+        logger.warning("[BP][change_main_task_interval] failed to get interval, set interval to default: {} .".format(interval))
     else:
-        logger.warning("[BP][start_main_task] set interval to: {} .".format(interval))
+        logger.info("[BP][change_main_task_interval] set interval to: {} .".format(interval))
     
-    anime_config = config.get('DOWNLOAD')
-    qb_cinfig = config.get('QB')
-    m_doTask = doTask(logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor)
+    daemon = multiprocessing.Process(target=start_fn,args=interval)
+    daemon.daemon = True
+    daemon.start()
+    
+    daemon_pid = daemon.pid
+    with open('config_file/daemon_pid.txt', 'w') as file:
+        file.write(str(daemon_pid))
+    logger.info("[BP][change_main_task_interval] strat new daemon process with pid {} .".format(daemon_pid))
+    return jsonify({"code": 200, "message": "change_main_task_interval", "data": None})
 
-    pid = os.fork()
-    if pid > 0:
-        with open('config_file/daemon_pid.txt', 'w') as file:
-            file.write(str(pid))
-        logger.info("[BP][change_main_task_interval] new daemon process id is {} .".format(pid))
-        return jsonify({"code": 200, "message": "change_main_task_interval", "data": None})
+def start_fn(interval):
+    from lib.config import m_config
+    from lib.connect import m_DBconnector
+    from lib.spider import Mikan
+    from concurrent.futures import ThreadPoolExecutor
+    from lib.do_anime_task import doTask
+
+    anime_config = m_config.get('DOWNLOAD')
+    qb_config = m_config.get('QB')
+    spider_config = m_config.get('SPIDER')
+
+    executor = ThreadPoolExecutor(max_workers=12)
+    mikan = Mikan(logger, spider_config, executor)
+    m_doTask = doTask(logger, mikan, anime_config, qb_config, m_DBconnector, executor)
+
+    logger.info('Running daemon process')
     m_doTask.execAllTask(interval)
-
