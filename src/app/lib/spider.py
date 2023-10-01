@@ -107,7 +107,6 @@ class Mikan:
         return subgroup_list
     
     def get_seed_list(self, mikan_id, subgroup_id):
-        self.logger.warning("NOooooooooooooooo")
         url = "{}/Home/ExpandEpisodeTable?bangumiId={}&subtitleGroupId={}&take=65".format(self.url, mikan_id, subgroup_id)
         html_doc = self.request_html(url)
         if html_doc == None:

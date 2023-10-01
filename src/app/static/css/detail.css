@@ -6,7 +6,21 @@
 }
 .anime-info {
     float: left;
+    margin-left: 20px;
 }
 li {
     list-style-type: none;
+}
+.episode {
+    margin-top: 20px;
+    background-color: #d6d6d6;
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    float: left;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

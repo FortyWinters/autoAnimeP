@@ -174,7 +174,10 @@ def download_subscribe_anime():
 @bp.route("/detail/<int:mikan_id>", methods=['GET'])
 def detail(mikan_id):
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
-    return render_template("detail.html", anime=anime)
+    task_list = query_anime_task_by_condition(mikan_id=mikan_id)
+    
+    sorted_task_list = sorted(task_list, key=lambda x: x["episode"])
+    return render_template("detail.html", anime=anime, sorted_task_list=sorted_task_list)
 
 # 按照年份和季度更新番剧 
 @bp.route("/update_anime_list", methods=['POST'])

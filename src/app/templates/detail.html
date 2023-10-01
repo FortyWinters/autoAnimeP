@@ -13,9 +13,12 @@
             <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url.split('/')[4]) }}" alt="" height="280px" width="210px">
         </div>
         <div class="anime-info">
-            <ul>
-                <li>{{ anime.anime_name }}</li>
-            </ul>
+            <div>{{ anime.anime_name }}</div>
+            <div>
+                {% for task in sorted_task_list %}
+                <div class="episode">{{ task.episode }}</div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
