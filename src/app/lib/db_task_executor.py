@@ -71,3 +71,7 @@ class DbTaskExecutor:
     def update_seed_status(self, seed_url):
         sql = "UPDATE anime_seed SET seed_status=1 WHERE seed_url='{}'".format(seed_url)
         self.m_db_connector.execute(sql)
+    
+    def update_qb_task_status(self, torrent_hash):
+        sql = "UPDATE anime_task SET qb_task_status=1 WHERE torrent_name LIKE '%{}%'".format(torrent_hash)
+        self.m_db_connector.execute(sql)

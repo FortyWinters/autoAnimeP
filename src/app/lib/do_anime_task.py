@@ -71,6 +71,13 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
         end_time = time.time() - start_time
         self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] seed_schedule_task cost time {}".format(end_time))
 
+    def qb_status_schedule_task(self):
+        torrents = self.qbt_client.torrents_info(filter='completed')
+        for torrent in torrents:
+            self.logger.info("[do_anime_task][doAnimeTask][qb_status_schedule_task] Task {} has been completed".\
+                             format(torrent["name"]))
+            self.update_qb_task_status(torrent["hash"])
+
 class doTask(doAnimeTask, SpiderTask):
     def __init__(self, logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor):
         doAnimeTask.__init__(self, logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor)
@@ -79,6 +86,7 @@ class doTask(doAnimeTask, SpiderTask):
     def createTask(self):
         start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info("[do_anime_task][doTask][createTask] Begin Task at {}".format(start_time))
+        self.qb_status_schedule_task()
         self.update_anime_seed()
         self.seed_schedule_task()
         end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
