@@ -12,4 +12,4 @@ COPY requirements.txt /autoAnime/requirements.txt
 
 RUN pip install -r requirements.txt
 
-CMD ["python", "src/app/app.py"]
+CMD ["python", "src/app.py"]

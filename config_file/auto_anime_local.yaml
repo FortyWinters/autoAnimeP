@@ -14,7 +14,7 @@ QB:
   username: 'admin'
   password: 'adminadmin'
 DOWNLOAD:
-  IMG: 'src/app/static/img/anime_list/'
+  IMG: 'src/static/img/anime_list/'
   SEED: 'seed/'
 MySQL:
   HOSTNAME: '127.0.0.1'
