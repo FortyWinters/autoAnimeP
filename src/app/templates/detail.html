@@ -16,7 +16,11 @@
             <div>{{ anime.anime_name }}</div>
             <div>
                 {% for task in sorted_task_list %}
-                <div class="episode">{{ task.episode }}</div>
+                    {% if task.qb_task_status==1 %}
+                        <div class="episode" style="background-color:rgb(41, 207, 132);">{{ task.episode }}</div>
+                    {% else %}
+                        <div class="episode">{{ task.episode }}</div>
+                    {% endif %} 
                 {% endfor %}
             </div>
         </div>
