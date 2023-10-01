@@ -1,7 +1,5 @@
-import os
 import sys
 import qbittorrentapi
-from .logManager import m_LogManager
 
 class AddqbTask:
     def __init__(self, conn_info, logger, anime_config):
@@ -54,21 +52,3 @@ class AddqbTask:
     def pauseTorrent(self):
         # pause all torrents
         self.qbt_client.torrents.pause.all()
-
-
-# m_qBconnector.run()
-# m_qBconnector.getTorrentInfo()
-
-# display qBittorrent info
-# print(f"qBittorrent: {qbt_client.app.version}")
-# print(f"qBittorrent Web API: {qbt_client.app.web_api_version}")
-# for k, v in qbt_client.app.build_info.items():
-#     print(f"{k}: {v}")
-
-# # retrieve and show all torrents
-# for torrent in qbt_client.torrents_info():
-#     print(f"{torrent.hash[-6:]}: {torrent.name} ({torrent.state})")
-
-# if the Client will not be long-lived or many Clients may be created
-# in a relatively short amount of time, be sure to log out:
-# qbt_client.auth_log_out()

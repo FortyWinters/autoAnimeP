@@ -2,12 +2,12 @@ import sys
 import time
 import datetime
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
-from app.lib.connect import m_DBconnector
-from app.lib.logManager import m_LogManager
-from app.lib.config import m_config
-from app.lib.spider_task import SpiderTask
-from app.lib.spider import Mikan
-from app.lib.do_anime_task import doAnimeTask
+from lib.connect import m_DBconnector
+from lib.logManager import m_LogManager
+from lib.config import m_config
+from lib.spider_task import SpiderTask
+from lib.spider import Mikan
+from lib.do_anime_task import doAnimeTask
 
 logger = m_LogManager.getLogObj(sys.argv[0])
 executor = ThreadPoolExecutor(max_workers=12)

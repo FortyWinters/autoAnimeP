@@ -2,7 +2,7 @@ import os
 import time
 from datetime import datetime
 from flask import request, jsonify, render_template, Blueprint
-from exts import mikan, logger, config, qb, executor
+from exts import mikan, logger, config, qb
 from lib.models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")

@@ -1,7 +1,6 @@
 import os
 import sys
-from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_COMPLETED
-
+from concurrent.futures import wait, ALL_COMPLETED
 
 class AddAnimeTask:
     def __init__(self, logger, executor, m_mikan, anime_task_config):
@@ -11,7 +10,6 @@ class AddAnimeTask:
         self.config = anime_task_config
         self.mikan_id_lists = []
         self.mika_id_to_name_map = dict()
-
 
         # animeTask : {mikan_id, {episode, torrent_name}}
         self.anime_task = dict()
@@ -88,15 +86,3 @@ class AddAnimeTask:
         else:
             anime_seed_task_list_failed.append(anime_seed_task_attr)
             self.logger.warning("[addAnimeTask] download seed {} failed.".format(torrent_name))
-    
-    # def re_download__anime_seed_task
-
-# logger = m_LogManager.getLogObj(sys.argv[0])
-# m_addAnimeTask= AddAnimeTask(logger)
-
-# m_addAnimeTask.printAllSubscribeAnimeName()
-# m_addAnimeTask.getAnimeTaskByMikanId(3060)
-
-# m_addAnimeTask.run()
-# m_addAnimeTask.printAnimeTask()
-# m_addAnimeTask.deletAllTask()

@@ -1,5 +1,3 @@
-from .connect import DBconnect
-
 class DbTaskExecutor:
     def __init__(self, logger, m_db_connector):
         self.m_db_connector = m_db_connector

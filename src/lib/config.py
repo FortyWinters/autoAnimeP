@@ -1,7 +1,6 @@
 import os
 import sys
 import yaml
-from .logManager import m_LogManager
 
 class Config:
     def __init__(self, config_file):

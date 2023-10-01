@@ -1,7 +1,6 @@
 import os
 from flask import request, jsonify, render_template, Blueprint
 from exts import logger
-from lib.models import *
 
 bp = Blueprint("setting", __name__, url_prefix="/setting")
 
@@ -28,7 +27,7 @@ def start_main_task():
     else:
         logger.info("[BP][start_main_task] set interval to: {} .".format(interval))
 
-    daemon = multiprocessing.Process(target=start_fn,args=interval)
+    daemon = multiprocessing.Process(target=start_fn,args=(int(interval),))
     daemon.daemon = True
     daemon.start()
     
@@ -84,7 +83,7 @@ def change_main_task_interval():
     else:
         logger.info("[BP][change_main_task_interval] set interval to: {} .".format(interval))
     
-    daemon = multiprocessing.Process(target=start_fn,args=interval)
+    daemon = multiprocessing.Process(target=start_fn,args=(int(interval),))
     daemon.daemon = True
     daemon.start()
     
