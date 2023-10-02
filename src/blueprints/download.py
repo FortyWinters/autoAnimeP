@@ -23,6 +23,8 @@ def get():
         mikan_id = task['mikan_id']
         episode = task['episode']
         torrent_web_info = get_torrent_web_info(mikan_id, episode)
+        if torrent_web_info is None:
+            continue
         torrent_web_info_list.append(torrent_web_info)
     return jsonify({"code": 200, "message": "subcribe_anime", "data": torrent_web_info_list})
 
@@ -33,11 +35,12 @@ def get_torrent_web_info(mikan_id, episode):
     if len(torrent_name) == 0:
         logger.warning("[BP][get_torrent_web_info] can't find torrent_name by mikan_id: {}, episode: {}".\
                      format(mikan_id, episode))
+        return
     
     torrent_name = torrent_name[0][0]
     print(torrent_name)
     torrent_web_info = qb.get_torrent_web_info(torrent_name)
-    logger.info("[BP][get_torrent_web_info] get torrent_web_info: {} ".format(torrent_web_info))
+    logger.debug("[BP][get_torrent_web_info] get torrent_web_info: {} ".format(torrent_web_info))
     return torrent_web_info
 
 @bp.route("/delete_task", methods=['POST'])
