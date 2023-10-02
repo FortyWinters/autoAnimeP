@@ -17,3 +17,7 @@ src/test.py
 var
 
 daemon_pid.txt
+
+*.mp4
+
+*.mkv

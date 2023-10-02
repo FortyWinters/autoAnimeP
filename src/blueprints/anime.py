@@ -239,9 +239,9 @@ def update_anime_list():
     return jsonify({"code": 200, "message": "update_anime_list", "data": None})
 
 # 按照年份和季度查看番剧列表
-@bp.route("/<int:year>/<int:season>", methods=['GET'])
-def anime_list_by_broadcast(year, season):
-    broadcast_list = query_anime_broadcast_by_condition(year=year, season=season)
+@bp.route("/<int:url_year>/<int:url_season>", methods=['GET'])
+def anime_list_by_broadcast(url_year, url_season):
+    broadcast_list = query_anime_broadcast_by_condition(year=url_year, season=url_season)
     anime_list = []
     for b in broadcast_list:
         anime = query_anime_list_by_condition(mikan_id=b["mikan_id"])[0]
@@ -282,4 +282,4 @@ def anime_list_by_broadcast(year, season):
     broadcast_map[current_year] = season_list
 
     logger.info("[BP][ANIME] anime_list_by_broadcast success, url: /anime/")
-    return render_template("anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map)
+    return render_template("anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map, url_year=url_year, url_season=url_season)

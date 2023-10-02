@@ -11,28 +11,27 @@
 {% block body %}
     <div class="navi">
     {% for year, seasons in broadcast_map.items() %}
-        <div class="year">
-            {{ year }}
-                <div class="season">
-                {% for season in seasons %}
-                    <a href="/anime/{{ year }}/{{ season }}">
-                        {% if season == 1 %}
-                            春
-                        {% elif season == 2 %}
-                            夏
-                        {% elif season == 3 %}
-                            秋
-                        {% else %}
-                            冬
-                        {% endif %}
-                    </a>
-                {% endfor %}
-                </div>
-        </div>
+    <div class="broadcast">
+        <div class="year">{{ year }}</div>
+            {% for season in seasons %}
+            <div class="season">
+                <a href="/anime/{{ year }}/{{ season }}">
+                    {% if season == 1 %}
+                        春
+                    {% elif season == 2 %}
+                        夏
+                    {% elif season == 3 %}
+                        秋
+                    {% else %}
+                        冬
+                    {% endif %}
+                </a>
+            </div>
+            {% endfor %}
+    </div>
     {% endfor %}
     <button class="setting-button" onclick="window.location.href='/setting'">设置</button>
     </div>
-    
     <ul>
     {% for anime in anime_list %}
         <li>
