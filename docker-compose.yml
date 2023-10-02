@@ -43,6 +43,7 @@ services:
       animeNetwork:
         ipv4_address: 172.172.0.3
   autoanime:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile

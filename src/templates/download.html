@@ -3,11 +3,11 @@
 {% block title %}下载{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/download.css') }}">
     <script src="{{ url_for('static', filename='jquery/jquery.3.7.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/setting.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/download.js') }}"></script>
 {% endblock %}
 
 {% block body %}
-
+<div id="torrentInfo"></div>
 {% endblock %}
