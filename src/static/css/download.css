@@ -1,0 +1,21 @@
+#torrentInfo {
+    width: 1000px;
+}
+progress {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 250px;
+    height: 15px;
+}
+progress::-webkit-progress-bar{     
+    background-color:#EFEFF4;
+    border-radius: 5px;
+}
+progress::-webkit-progress-value{
+    background-color:rgb(88, 202, 255);
+    border-radius: 5px; 
+}
+td {
+    width: 300px;
+    text-align: center;
+}

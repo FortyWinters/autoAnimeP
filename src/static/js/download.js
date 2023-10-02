@@ -1,24 +1,30 @@
 function getTorrentInfo() {
-    fetch('/download/get_torrent_web_info?mikan_id=3141&episode=2', {method: 'POST'})
+    fetch('/download/get', {method: 'GET'})
         .then(response => response.json())
         .then(data => {
-            const info = data.data;
-            const done = Math.round(parseFloat(info.Done.trim()));
+            const info_list = data.data;
+            var string = '';
             const infoDiv = document.getElementById('torrentInfo');
-            infoDiv.innerHTML = `
-                <progress value=${done} max="100"></progress>
-                <p>Done: ${info.Done}</p>
-                <p>Download Speed: ${info.Download_speed}</p>
-                <p>ETA: ${info.ETA}</p>
-                <p>Name: ${info.Name}</p>
-                <p>Peers: ${info.Peers}</p>
-                <p>Seeds: ${info.Seeds}</p>
-                <p>Size: ${info.Size}</p>
-                <p>State: ${info.State}</p>
-            `;
+            info_list.forEach(function(info) {
+                const done = Math.round(parseFloat(info.Done.trim()));
+                string = string + `
+                    <tr>
+                    <td><progress value=${done} max="100"></progress></td>
+                    <td>${info.Done}</td>
+                    <td>${info.Download_speed}</td>
+                    <td>${info.ETA}</td>
+                    <td>${info.Peers}</td>
+                    <td>${info.Seeds}</td>
+                    <td>${info.Size}</td>
+                    <td>${info.State}</td>
+                    </tr>
+                `
+            });
+            console.log(string)
+            infoDiv.innerHTML = string;
             setTimeout(getTorrentInfo, 1000);
         })
         .catch(error => console.error('Error:', error));
 }
 
-getTorrentInfo(); // 启动轮询
+getTorrentInfo()

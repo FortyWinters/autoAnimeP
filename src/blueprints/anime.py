@@ -153,7 +153,7 @@ def download_subscribe_anime():
     # 插入anime_task
     seed_list_task = []
     for s in seed_list_download_sucess:
-        if insert_data_to_anime_task(s['mikan_id'], s['episode'], s['seed_url'].split('/')[3], 0):
+        if insert_data_to_anime_task(s['mikan_id'], s['episode'], s['seed_url'], 0):
             seed_list_task.append(s)
 
     # qb
