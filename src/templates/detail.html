@@ -4,6 +4,9 @@
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}">
+    <script src="{{ url_for('static', filename='jquery/jquery.3.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anime.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/detail.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -13,8 +16,24 @@
             <img src="{{ url_for('static', filename='img/anime_list/'+anime.img_url.split('/')[4]) }}" alt="" height="280px" width="210px">
         </div>
         <div class="anime-info">
-            <div>{{ anime.anime_name }}</div>
-            <div>
+            <div class="anime-name">
+                {{ anime.anime_name }}
+            </div>
+            <div class="button-container">
+                {% if anime.subscribe_status==1 %}
+                    <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:red;">
+                        <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                    <button class="update-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:orange;">
+                        <img src="{{ url_for('static', filename='img/icon/update.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                {% else %}
+                    <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}">
+                        <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                {% endif %}   
+            </div>
+            <div class="episode-container">
                 {% for task in sorted_task_list %}
                     {% if task.qb_task_status==1 %}
                         <div class="episode" style="background-color:rgb(41, 207, 132);">{{ task.episode }}</div>

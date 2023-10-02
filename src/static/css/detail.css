@@ -8,8 +8,16 @@
     float: left;
     margin-left: 20px;
 }
+.anime-name {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
 li {
     list-style-type: none;
+}
+.episode-container {
+    float: left;
+    margin-top: 20px;
 }
 .episode {
     margin-top: 20px;
@@ -24,4 +32,24 @@ li {
     justify-content: center;
     align-items: center;
     color: white;
+}
+.subscribe-button {
+    float: left;
+    background-color: #d6d6d6;
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+}
+.subscribe-button:hover {
+    background-color: red;
+}
+.update-button {
+    float: left;
+    background-color: #d6d6d6;
+    border: none;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
 }
