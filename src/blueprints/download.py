@@ -1,8 +1,7 @@
 import os
 from flask import request, jsonify, render_template, Blueprint
-from exts import logger, config, qb
+from exts import logger, config, qb, m_DBconnector
 # from lib.addqbTask import AddqbTask
-from lib.connect import m_DBconnector
 from lib.models import *
 
 anime_config = config.get('DOWNLOAD')
