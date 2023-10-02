@@ -1,5 +1,6 @@
 import sys
 import qbittorrentapi
+from datetime import timedelta
 
 class AddqbTask:
     def __init__(self, conn_info, logger, anime_config):
@@ -52,3 +53,55 @@ class AddqbTask:
     def pauseTorrent(self):
         # pause all torrents
         self.qbt_client.torrents.pause.all()
+
+    def get_torrent_web_info(self, torrent_name):
+        torrent_hash = torrent_name.split('/')[3][:-8]
+        torrent = self.qbt_client.torrents_info(hashes=torrent_hash)[0]
+
+        # Name
+        name = torrent["name"]
+        # print(f'Torrent Name: {name}')
+
+        # Size
+        size = torrent["size"] / (1024 * 1024)
+        if size > 1000:
+            size_str = str(round(size / 1024, 2)) + ' GB'
+        else:
+            size_str = str(round(size, 2)) + ' MB'
+        # print(f'Size: {size_str}')
+        
+        # State
+        state = torrent["state"]
+        # print(f'State: {state}')
+
+        # Done
+        done = str(torrent["progress"] * 100) + ' %'
+        # print(f'Done: {done}')
+        
+        # Seeds
+        seed = str(torrent["num_seeds"])
+        # print(f'Seed: {seed}')
+        
+        # Peers
+        peers = str(torrent["num_leechs"])
+        # print(f'Peers: {peers}')
+        
+        # Download Speed
+        download_speed = str(torrent["dlspeed"]) + 'bytes/s' 
+        # print(f'Download Speed: {download_speed}')
+
+        # ETA
+        eta_formatted = str(timedelta(seconds=torrent['eta']))
+        # print(f'ETA: {eta_formatted}')
+
+        torrent_web_info = dict(
+            Name           = name,
+            Size           = size_str,
+            State          = state,
+            Done           = done,
+            Seeds          = seed,
+            Peers          = peers,
+            Download_speed = download_speed,
+            ETA            = eta_formatted
+        )
+        return torrent_web_info

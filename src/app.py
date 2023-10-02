@@ -4,6 +4,7 @@ from exts import db, config
 from blueprints.index import bp as index_bp
 from blueprints.anime import bp as anime_bp
 from blueprints.setting import bp as setting_bp
+from blueprints.download import bp as download_bp
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ migrate = Migrate(app, db)
 app.register_blueprint(index_bp)
 app.register_blueprint(anime_bp)
 app.register_blueprint(setting_bp)
+app.register_blueprint(download_bp)
 
 if __name__ == "__main__":
     host = app_config['HOST']
