@@ -2,3 +2,25 @@
     display: flex;
     flex-direction: column;
 }
+a {
+    text-decoration: none;
+    color: inherit;
+}
+.lside-container {
+    float: left;
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+}
+.lside-button {
+    background-color: #d6d6d6;
+    color: white;
+    font-size: 20px;
+    border: none;
+    width: 80px;
+    height: 80px;
+    float: none;
+}
+.lside-button:hover {
+    background-color: rgb(15, 161, 115);
+}

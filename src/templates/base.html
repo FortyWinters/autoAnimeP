@@ -14,6 +14,12 @@
             <img src="{{ url_for('static', filename='img/auto_anime.png') }}" alt="" height="100px" style="margin-left: 45px;"> 
         </a>
     </div>
+    <div class="lside-container">
+        <button class="lside-button" onclick="window.location.href='/anime'">番剧</button>
+        <button class="lside-button" onclick="window.location.href='/anime'">下载</button>
+        <button class="lside-button" onclick="window.location.href='/setting'">设置</button>
+        <button class="lside-button" onclick="window.location.href='/anime'">日志</button>
+    </div>
     <div class="container">
         {% block body %}{% endblock %}
     </div>
