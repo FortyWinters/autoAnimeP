@@ -75,7 +75,8 @@ class AddqbTask:
         # print(f'State: {state}')
 
         # Done
-        done = str(torrent["progress"] * 100) + ' %'
+        done = round(torrent["progress"] * 100, 2)
+        done_str = str(done) + ' %'
         # print(f'Done: {done}')
         
         # Seeds
@@ -87,7 +88,11 @@ class AddqbTask:
         # print(f'Peers: {peers}')
         
         # Download Speed
-        download_speed = str(torrent["dlspeed"]) + 'bytes/s' 
+        download_speed = torrent["dlspeed"] / 1024
+        if download_speed > 1000:
+            download_speed_str = str(round(download_speed / 1024, 2)) + ' MBps'
+        else:
+            download_speed_str = str(round(download_speed, 2)) + ' KBps'
         # print(f'Download Speed: {download_speed}')
 
         # ETA
@@ -98,10 +103,18 @@ class AddqbTask:
             Name           = name,
             Size           = size_str,
             State          = state,
-            Done           = done,
+            Done           = done_str,
             Seeds          = seed,
             Peers          = peers,
-            Download_speed = download_speed,
+            Download_speed = download_speed_str,
             ETA            = eta_formatted
         )
         return torrent_web_info
+    
+    def del_torrent(self, torrent_name):
+        torrent_hash = torrent_name.split('/')[3][:-8]
+        try:
+            self.qbt_client.torrents_delete(hashes=torrent_hash)
+            self.logger.info("[AddqbTask][del_torrent] successfully delete torrent by torrent_name: {} ".format(torrent_name))
+        except Exception as e:
+            self.logger.error("[AddqbTask][del_torrent] failed to delete torrent by torrent_name: {}".format(torrent_name))
