@@ -174,15 +174,12 @@ def download_subscribe_anime():
 @bp.route("/detail/<int:mikan_id>", methods=['GET'])
 def detail(mikan_id):
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
-    if anime['subscribe_status'] == 1:
-        conpleted_torrent_list = qb.get_completed_torrent_list()
-        if conpleted_torrent_list is not None:
-            for torrent in conpleted_torrent_list:
-                update_anime_task_qb_task_status_by_torrent_name(torrent["hash"], 1)
-        task_list = query_anime_task_by_condition(mikan_id=mikan_id)
-        sorted_task_list = sorted(task_list, key=lambda x: x["episode"])
-    else:
-        sorted_task_list = []
+    completed_torrent_list = qb.get_completed_torrent_list()
+    if completed_torrent_list is not None:
+        for torrent in completed_torrent_list:
+            update_anime_task_qb_task_status_by_torrent_name(torrent["hash"], 1)
+    task_list = query_anime_task_by_condition(mikan_id=mikan_id)
+    sorted_task_list = sorted(task_list, key=lambda x: x["episode"])
 
     logger.info("[BP][ANIME] detail success, url: /anime/detail/{}".format(mikan_id))
     return render_template("detail.html", anime=anime, sorted_task_list=sorted_task_list)
