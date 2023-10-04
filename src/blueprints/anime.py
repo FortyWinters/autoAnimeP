@@ -121,7 +121,8 @@ def download_subscribe_anime():
 
     anime_seed = dict()
     for s in seed_list:
-        anime_seed[s['episode']] = s
+        if s['episode'] not in anime_seed:
+            anime_seed[s['episode']] = s
     seed_list_unique = list(anime_seed.values())
 
     # anime_task中的种子
@@ -173,16 +174,28 @@ def download_subscribe_anime():
 
 @bp.route("/detail/<int:mikan_id>", methods=['GET'])
 def detail(mikan_id):
-    anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
     completed_torrent_list = qb.get_completed_torrent_list()
     if completed_torrent_list is not None:
         for torrent in completed_torrent_list:
             update_anime_task_qb_task_status_by_torrent_name(torrent["hash"], 1)
+
+    anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
+    seed_list = query_anime_seed_by_condition(mikan_id=mikan_id)
     task_list = query_anime_task_by_condition(mikan_id=mikan_id)
-    sorted_task_list = sorted(task_list, key=lambda x: x["episode"])
+    
+    episode_map = dict()
+    for seed in seed_list:
+        if seed["episode"] not in episode_map:
+            episode_map[seed["episode"]] = -1
+    
+    for task in task_list:
+        if task["episode"] in episode_map:
+            episode_map[task["episode"]] = task["qb_task_status"]
+    
+    sorted_episode_list = [{k: v} for k, v in sorted(episode_map.items())]
 
     logger.info("[BP][ANIME] detail success, url: /anime/detail/{}".format(mikan_id))
-    return render_template("detail.html", anime=anime, sorted_task_list=sorted_task_list)
+    return render_template("detail.html", anime=anime, sorted_episode_list=sorted_episode_list)
 
 # 按照年份和季度更新番剧列表
 @bp.route("/update_anime_list", methods=['POST'])

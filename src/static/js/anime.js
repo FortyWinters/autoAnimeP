@@ -9,15 +9,15 @@ $(function() {
         var season = parts[3];
 
         fetch("/anime/update_anime_list?year=" + year +"&season=" + season, {method: 'POST'})
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            this.disabled = false;
-            window.location.reload();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                this.disabled = false;
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
 
     });
 
@@ -30,34 +30,33 @@ $(function() {
         if(subscribe_status == 0) {
             // 订阅番剧
             fetch("/anime/subscribe_anime?mikan_id="+mikan_id, {method: 'POST'})
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                this.disabled = false;
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    // 种子更新
+                    return fetch("/anime/insert_anime_seed_thread?mikan_id="+mikan_id, {method: 'POST'});
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    this.disabled = false;
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         } else {
             // 取消订阅番剧
             fetch("/anime/cancel_subscribe_anime?mikan_id="+mikan_id, {method: 'POST'})
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                // 删除种子
-                return fetch("/anime/delete_anime_seed?mikan_id="+mikan_id, {method: 'POST'});
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                this.disabled = false;
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    this.disabled = false;
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
     });
 
@@ -67,23 +66,16 @@ $(function() {
         this.disabled = true;
         console.log(mikan_id);
 
-        // 种子更新
-        fetch("/anime/insert_anime_seed_thread?mikan_id="+mikan_id, {method: 'POST'})
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            // 下载番剧
-            return fetch("/anime/download_subscribe_anime?mikan_id="+mikan_id, {method: 'POST'});
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            this.style.backgroundColor = "orange";
-            this.disabled = false;
-            window.location.reload();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        // 下载番剧
+        fetch("/anime/download_subscribe_anime?mikan_id="+mikan_id, {method: 'POST'})
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                this.disabled = false;
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     });
 })

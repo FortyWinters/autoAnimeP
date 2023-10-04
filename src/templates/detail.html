@@ -34,12 +34,18 @@
                 {% endif %}   
             </div>
             <div class="episode-container">
-                {% for task in sorted_task_list %}
-                    {% if task.qb_task_status==1 %}
-                        <div class="episode" style="background-color:rgb(41, 207, 132);">{{ task.episode }}</div>
-                    {% else %}
-                        <div class="episode">{{ task.episode }}</div>
-                    {% endif %} 
+                {% for item in sorted_episode_list %}
+                    {% for episode, status in item.items() %}
+                        {% if status == 1 %}
+                            <div class="episode" style="background-color:rgb(41, 207, 132);">{{ episode }}</div>
+                        {% elif status == 0 %}
+                            <a href="/download">
+                                <div class="episode" style="background-color:orange;">{{ episode }}</div>
+                            </a>
+                        {% else %}
+                            <div class="episode">{{ episode }}</div>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             </div>
         </div>
