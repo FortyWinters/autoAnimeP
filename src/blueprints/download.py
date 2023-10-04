@@ -15,17 +15,30 @@ bp = Blueprint("download", __name__, url_prefix="/download")
 def index():
     return render_template("download.html")
 
-@bp.route("/get", methods=['GET'])
-def get():
+@bp.route("/get_qb_download_progress", methods=['GET'])
+def get_qb_download_progress():
     torrent_web_info_list = []
     task_list = query_anime_task_by_condition(qb_task_status=0)
+    if len(task_list) == 0:
+        return jsonify({"code": 200, "message": "subcribe_anime", "data": torrent_web_info_list})
+    
+    anime_list = query_anime_list_by_condition(subscribe_status=1)
+    anime_id_to_name_map = dict()
+    for a in anime_list:
+        anime_id_to_name_map[a["mikan_id"]] = a["anime_name"]
+    
     for task in task_list:
         mikan_id = task['mikan_id']
+        anime_name = anime_id_to_name_map[mikan_id]
         episode = task['episode']
         torrent_web_info = get_torrent_web_info(mikan_id, episode)
-        if torrent_web_info is None:
+        if torrent_web_info is not None:
+            torrent_web_info['mikan_id'] = mikan_id
+            torrent_web_info['anime_name'] = anime_name
+            torrent_web_info['episode'] = episode
+            torrent_web_info_list.append(torrent_web_info)
+        else:
             continue
-        torrent_web_info_list.append(torrent_web_info)
     return jsonify({"code": 200, "message": "subcribe_anime", "data": torrent_web_info_list})
 
 def get_torrent_web_info(mikan_id, episode):   
@@ -38,7 +51,6 @@ def get_torrent_web_info(mikan_id, episode):
         return
     
     torrent_name = torrent_name[0][0]
-    print(torrent_name)
     torrent_web_info = qb.get_torrent_web_info(torrent_name)
     logger.debug("[BP][get_torrent_web_info] get torrent_web_info: {} ".format(torrent_web_info))
     return torrent_web_info

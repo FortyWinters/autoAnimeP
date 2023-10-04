@@ -174,6 +174,7 @@ def download_subscribe_anime():
 @bp.route("/detail/<int:mikan_id>", methods=['GET'])
 def detail(mikan_id):
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
+    # TODO task状态更新可以加入这里
     task_list = query_anime_task_by_condition(mikan_id=mikan_id)
     
     sorted_task_list = sorted(task_list, key=lambda x: x["episode"])

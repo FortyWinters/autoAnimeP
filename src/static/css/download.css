@@ -1,10 +1,11 @@
 #torrentInfo {
-    width: 1000px;
+    margin-left: 45px;
+    width: 1450px;
 }
 progress {
     -webkit-appearance: none;
     appearance: none;
-    width: 250px;
+    width: 260px;
     height: 15px;
 }
 progress::-webkit-progress-bar{     
@@ -15,7 +16,57 @@ progress::-webkit-progress-value{
     background-color:rgb(88, 202, 255);
     border-radius: 5px; 
 }
-td {
-    width: 300px;
+.column-name {
+    width: 210px;
     text-align: center;
+}
+.column-episode {
+    width: 70px;
+    text-align: center;
+}
+.column-progress {
+    width: 280px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.column-done {
+    width: 70px;
+    text-align: center;
+}
+.column-speed {
+    width: 140px;
+    text-align: center;
+}
+.column-eta {
+    width: 210px;
+    text-align: center;
+}
+.column-peers {
+    width: 70px;
+    text-align: center;
+}
+.column-seeds {
+    width: 70px;
+    text-align: center;
+}
+.column-size {
+    width: 140px;
+    text-align: center;
+}
+.column-state {
+    width: 140px;
+    text-align: center;
+}
+.column-button {
+    width: 50px;
+    text-align: center;
+}
+.task-del-button {
+    background-color: red;
+    border: none;
+    border-radius: 3px;
+    width: 50px;
+    height: 20px;
+    color: white;
 }
