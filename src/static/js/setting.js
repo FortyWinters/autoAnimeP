@@ -60,3 +60,22 @@ function submitForm(event) {
     };
     xhr.send(interval);
   }
+
+function getDaemonPid() {
+  fetch('/setting/get_daemon_pid', {method: 'GET'})
+      .then(response => response.json())
+      .then(data => {
+          const info_list = data.data;
+          const infoDiv = document.getElementById('daemon-pid');
+          var html_string = '定时任务pid: '
+          if (info_list != null) {
+              html_string += info_list;
+          } else {
+              html_string += "无"
+          }
+          infoDiv.innerHTML = html_string;
+      })
+      .catch(error => console.error('Error:', error));
+}
+
+getDaemonPid()

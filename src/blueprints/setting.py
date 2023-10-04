@@ -110,3 +110,14 @@ def start_fn(interval):
 
     logger.info('Running daemon process')
     m_doTask.execAllTask(interval)
+
+@bp.route("/get_daemon_pid", methods=['GET'])
+def get_daemon_pid():
+    try:
+        with open('config_file/daemon_pid.txt', 'r') as file:
+            pid = int(file.read())
+    except FileNotFoundError:
+        pid = None
+
+    logger.info("[BP][DOWNLOAD] get_daemon_pid success, pid: {}".format(pid))
+    return jsonify({"code": 200, "message": "get_daemon_pid", "data": pid})
