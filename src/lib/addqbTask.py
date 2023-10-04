@@ -118,3 +118,12 @@ class AddqbTask:
             self.logger.info("[AddqbTask][del_torrent] successfully delete torrent by torrent_name: {} ".format(torrent_name))
         except Exception as e:
             self.logger.error("[AddqbTask][del_torrent] failed to delete torrent by torrent_name: {}".format(torrent_name))
+    
+    def get_completed_torrent_list(self):
+        try:
+            completed_torrent_list = self.qbt_client.torrents_info(filter='completed')
+            self.logger.info("[AddqbTask][get_completed_torrent_list] successfully get completed torrent list")
+        except Exception as e:
+            self.logger.warning("[AddqbTask][get_completed_torrent_list] failed to get completed torrent list, error: {}".format(e))
+        else:
+            return completed_torrent_list

@@ -80,6 +80,7 @@ $(function() {
             console.log(data)
             this.style.backgroundColor = "orange";
             this.disabled = false;
+            window.location.reload();
         })
         .catch(error => {
             console.error('Error:', error);

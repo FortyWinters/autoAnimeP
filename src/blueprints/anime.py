@@ -26,7 +26,6 @@ def index():
         anime_order_list.append(a)
     for a in unsubscribe_order_list:
         anime_order_list.append(a)
-    logger.info("[BP][ANIME] index success, url: /anime/")
 
     now = datetime.now()
     current_year = now.year
@@ -46,6 +45,7 @@ def index():
         season_list = [4, 1, 2, 3]
     broadcast_map[current_year] = season_list
 
+    logger.info("[BP][ANIME] index success, url: /anime/")
     return render_template("my_anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map)
 
 # 订阅番剧
@@ -174,13 +174,20 @@ def download_subscribe_anime():
 @bp.route("/detail/<int:mikan_id>", methods=['GET'])
 def detail(mikan_id):
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
-    # TODO task状态更新可以加入这里
-    task_list = query_anime_task_by_condition(mikan_id=mikan_id)
-    
-    sorted_task_list = sorted(task_list, key=lambda x: x["episode"])
+    if anime['subscribe_status'] == 1:
+        conpleted_torrent_list = qb.get_completed_torrent_list()
+        if conpleted_torrent_list is not None:
+            for torrent in conpleted_torrent_list:
+                update_anime_task_qb_task_status_by_torrent_name(torrent["hash"], 1)
+        task_list = query_anime_task_by_condition(mikan_id=mikan_id)
+        sorted_task_list = sorted(task_list, key=lambda x: x["episode"])
+    else:
+        sorted_task_list = []
+
+    logger.info("[BP][ANIME] detail success, url: /anime/detail/{}".format(mikan_id))
     return render_template("detail.html", anime=anime, sorted_task_list=sorted_task_list)
 
-# 按照年份和季度更新番剧 
+# 按照年份和季度更新番剧列表
 @bp.route("/update_anime_list", methods=['POST'])
 def update_anime_list():
     year = request.args.get("year")

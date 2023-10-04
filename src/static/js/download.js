@@ -23,7 +23,9 @@ function getTorrentInfo() {
                     const done = Math.round(parseFloat(info.Done.trim()));
                     html_string += `
                         <tr>
-                            <td class="column-name">${info.anime_name}</td>
+                            <td class="column-name">
+                                <a href="/anime/detail/${info.mikan_id}">${info.anime_name}</a>
+                            </td>
                             <td class="column-episode">${info.episode}</td>
                             <td class="column-progress">
                                 <progress value=${done} max="100"></progress>
@@ -42,7 +44,7 @@ function getTorrentInfo() {
                 });
             }
             infoDiv.innerHTML = html_string;
-            setTimeout(getTorrentInfo, 1000);
+            setTimeout(getTorrentInfo, 2000);
         })
         .catch(error => console.error('Error:', error));
 }

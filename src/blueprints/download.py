@@ -13,6 +13,12 @@ bp = Blueprint("download", __name__, url_prefix="/download")
 
 @bp.route("/", methods=['GET'])
 def index():
+    completed_torrent_list = qb.get_completed_torrent_list()
+    if completed_torrent_list is not None:
+        for torrent in completed_torrent_list:
+            update_anime_task_qb_task_status_by_torrent_name(torrent["hash"], 1)
+
+    logger.info("[BP][DOWNLOAD] index success, url: /download/")
     return render_template("download.html")
 
 @bp.route("/get_qb_download_progress", methods=['GET'])

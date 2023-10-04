@@ -323,3 +323,10 @@ def update_anime_seed_seed_status_by_seed_url(seed_url, seed_status):
 
     db.session.query(AnimeSeed).filter_by(seed_url=seed_url).update({"seed_status": seed_status})
     return session_commit()
+
+def update_anime_task_qb_task_status_by_torrent_name(torrent_hash, qb_task_status):
+    logger.info("[MODELS] update_anime_task_qb_task_status_by_torrent_name, torrent_name: {}, qb_task_status: {}".format(torrent_hash, qb_task_status))
+
+    torrent_hash_string = "%" + torrent_hash + "%"
+    db.session.query(AnimeTask).filter(AnimeTask.torrent_name.like(torrent_hash_string)).update({"qb_task_status": qb_task_status})
+    return session_commit()
