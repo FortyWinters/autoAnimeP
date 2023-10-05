@@ -43,7 +43,7 @@
                                 <div class="episode" style="background-color:rgb(88, 202, 255);">{{ episode }}</div>
                             </a>
                         {% else %}
-                            <div class="episode">{{ episode }}</div>
+                            <div class="episode" onclick="downloadSingleEpisode('{{ anime.mikan_id }}', '{{ episode }}')">{{ episode }}</div>
                         {% endif %}
                     {% endfor %}
                 {% endfor %}

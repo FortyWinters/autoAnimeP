@@ -21,3 +21,7 @@ daemon_pid.txt
 *.mp4
 
 *.mkv
+
+*.ass
+
+*.ttf

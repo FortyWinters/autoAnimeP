@@ -7,21 +7,27 @@ from lib.models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
 
-# 番剧列表
+# 番剧列表: 订阅番剧+有单集下载的番剧
 @bp.route("/")
 def index():
-    anime_list = query_anime_list_by_condition()
+    task_list = query_anime_task_by_condition()
+    task_mikan_id_set = set()
+    for task in task_list:
+        task_mikan_id_set.add(task["mikan_id"])
+
     subscribe_list = []
     unsubscribe_list = []
-    anime_order_list = []
+    anime_list = query_anime_list_by_condition()
     for a in anime_list:
         if a['subscribe_status'] == 1:
             subscribe_list.append(a)
         else:
-            unsubscribe_list.append(a)
-
+            if a['mikan_id'] in task_mikan_id_set:
+                unsubscribe_list.append(a)
     subscribe_order_list = sorted(subscribe_list, key=lambda x: x['update_day'])
     unsubscribe_order_list = sorted(unsubscribe_list, key=lambda x: x['update_day'])
+
+    anime_order_list = []
     for a in subscribe_order_list:
         anime_order_list.append(a)
     for a in unsubscribe_order_list:
@@ -301,3 +307,46 @@ def anime_list_by_broadcast(url_year, url_season):
 
     logger.info("[BP][ANIME] anime_list_by_broadcast success, url: /anime/")
     return render_template("anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map, url_year=url_year, url_season=url_season)
+
+# 单集下载
+@bp.route("/download_single_episode", methods=['POST'])
+def download_single_episode():
+    mikan_id = request.args.get("mikan_id")
+    episode = request.args.get("episode")
+
+    anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
+    anime_name = anime["anime_name"]
+
+    seed_list = query_anime_seed_by_condition(mikan_id=mikan_id, episode=episode, seed_status=0)
+    if len(seed_list) == 0:
+        logger.warning("[BP][ANIME] download_single_episode error, no seed in db, mikan_id: {}, episode: {}".format(mikan_id, episode))
+        return jsonify({"code": 200, "message": "download_single_episode, no new seed", "data": None})
+    
+    seed = seed_list[0]
+    seed_url = seed["seed_url"]
+
+    path = "{}{}/".format(config.get('DOWNLOAD')['SEED'], mikan_id)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    update_anime_seed_seed_status_by_seed_url(seed_url, 1)
+
+    if not mikan.download_seed(seed_url, path):
+        logger.warning("[BP][ANIME] download_single_episode error, download seed failed, mikan_id: {}, episode: {}, seed_url".format(mikan_id, episode, seed_url))
+        return jsonify({"code": 200, "message": "download_single_episode, download seed failed", "data": None})
+
+    if not insert_data_to_anime_task(mikan_id, episode, seed_url, 0):
+        logger.warning("[BP][ANIME] download_single_episode error, insert task failed, mikan_id: {}, episode: {}, seed_url".format(mikan_id, episode, seed_url))
+        return jsonify({"code": 200, "message": "download_single_episode, insert task failed", "data": None}) 
+
+    torrent_name = seed_url.split('/')[3]
+    torrent_path = "{}{}".format(path, torrent_name)
+    torrent_info = dict()
+    torrent_info['name'] = torrent_name
+    torrent_info['path'] = torrent_path
+    torrent_infos = dict()
+    torrent_infos[episode] = torrent_info
+    qb.addTorrents(anime_name, torrent_infos)
+
+    logger.info("[BP][ANIME] download_single_episode success, mikan_id : {}, episode: {}".format(mikan_id, episode))
+    return jsonify({"code": 200, "message": "download_single_episode", "data": None})

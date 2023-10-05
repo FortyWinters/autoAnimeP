@@ -28,7 +28,7 @@ def get_qb_download_progress():
     if len(task_list) == 0:
         return jsonify({"code": 200, "message": "subcribe_anime", "data": torrent_web_info_list})
     
-    anime_list = query_anime_list_by_condition(subscribe_status=1)
+    anime_list = query_anime_list_by_condition()
     anime_id_to_name_map = dict()
     for a in anime_list:
         anime_id_to_name_map[a["mikan_id"]] = a["anime_name"]
