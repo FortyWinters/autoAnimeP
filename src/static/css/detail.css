@@ -32,27 +32,8 @@ li {
     align-items: center;
     color: white;
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 .episode:hover {
     background-color: rgb(41, 207, 132);
-}
-.subscribe-button {
-    float: left;
-    background-color: #d6d6d6;
-    border: none;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-}
-.subscribe-button:hover {
-    background-color: red;
-}
-.update-button {
-    float: left;
-    background-color: #d6d6d6;
-    border: none;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-    margin-left: 5px;
 }

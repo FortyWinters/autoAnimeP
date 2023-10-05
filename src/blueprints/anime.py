@@ -101,16 +101,35 @@ def insert_anime_seed_thread():
     logger.info("[BP][ANIME] insert_anime_seed_list_thread success, mikan_id: {}, update number: {}, fail_number: {}, time cost: {}".format(mikan_id, update_number, fail_number, time.time()-start_time))
     return jsonify({"code": 200, "message": "insert_anime_seed_thread", "data": None})
 
-# 删除种子
-@bp.route("/delete_anime_seed", methods=['POST'])
-def delete_anime_seed():
+# 删除番剧缓存, seed&task&qb
+@bp.route("/delete_anime_data", methods=['POST'])
+def delete_anime_data():
     mikan_id = request.args.get("mikan_id")
-    if not delete_anime_seed_by_condition(mikan_id=mikan_id):
-        logger.warning("[BP][ANIME] delete_anime_seed, delete_anime_seed_by_condition failed, mikan_id: {}".format(mikan_id))
-        return jsonify({"code": 400, "message": "delete_anime_seed", "data": mikan_id})
 
-    logger.info("[BP][ANIME] delete_anime_seed success, mikan_id: {}".format(mikan_id))
-    return jsonify({"code": 200, "message": "delete_anime_seed", "data": mikan_id})
+    seed_list = query_anime_seed_by_condition(mikan_id=mikan_id)
+    if len(seed_list) == 0:
+        logger.info("[BP][ANIME] delete_anime_data, no seed in anime_seed, mikan_id: {}".format(mikan_id))
+        return jsonify({"code": 200, "message": "delete_anime_data", "data": mikan_id})
+
+    if not delete_anime_seed_by_condition(mikan_id=mikan_id):
+        logger.warning("[BP][ANIME] delete_anime_data, delete_anime_seed_by_condition failed, mikan_id: {}".format(mikan_id))
+        return jsonify({"code": 400, "message": "delete_anime_data", "data": mikan_id})
+    
+    task_list = query_anime_task_by_condition(mikan_id=mikan_id)
+    if len(task_list) == 0:
+        logger.info("[BP][ANIME] delete_anime_data, no task in anime_task, mikan_id: {}".format(mikan_id))
+        return jsonify({"code": 200, "message": "delete_anime_data", "data": mikan_id})
+    
+    if not delete_anime_task_by_condition(mikan_id=mikan_id):
+        logger.warning("[BP][ANIME] delete_anime_data, delete_anime_task_by_condition failed, mikan_id: {}".format(mikan_id))
+        return jsonify({"code": 400, "message": "delete_anime_data", "data": mikan_id})
+
+    for task in task_list:
+        torrent_name = task["torrent_name"]
+        qb.del_torrent(torrent_name)
+    
+    logger.info("[BP][ANIME] delete_anime_data success, mikan_id: {}".format(mikan_id))
+    return jsonify({"code": 200, "message": "delete_anime_data", "data": mikan_id})
 
 # 订阅番剧下载
 @bp.route("/download_subscribe_anime", methods=['POST'])

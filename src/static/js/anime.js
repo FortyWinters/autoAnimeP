@@ -33,12 +33,6 @@ $(function() {
                 .then(response => response.json())
                 .then(data => {
                     console.log(data)
-                    // 种子更新
-                    return fetch("/anime/insert_anime_seed_thread?mikan_id="+mikan_id, {method: 'POST'});
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data)
                     this.disabled = false;
                     window.location.reload();
                 })
@@ -62,12 +56,47 @@ $(function() {
 
     $('button.update-button').on('click', function() {
         var mikan_id = $(this).attr('id');
+        this.disabled = true;
+        this.style.backgroundColor = "#d6d6d6";
+
+        // 抓取种子
+        fetch("/anime/insert_anime_seed_thread?mikan_id="+mikan_id, {method: 'POST'})
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                this.disabled = false;
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    $('button.download-button').on('click', function() {
+        var mikan_id = $(this).attr('id');
         this.style.backgroundColor = "#d6d6d6";
         this.disabled = true;
-        console.log(mikan_id);
 
         // 下载番剧
         fetch("/anime/download_subscribe_anime?mikan_id="+mikan_id, {method: 'POST'})
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                this.disabled = false;
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    $('button.clean-button').on('click', function() {
+        var mikan_id = $(this).attr('id');
+        this.style.backgroundColor = "#d6d6d6";
+        this.disabled = true;
+
+        // 下载番剧
+        fetch("/anime/delete_anime_data?mikan_id="+mikan_id, {method: 'POST'})
             .then(response => response.json())
             .then(data => {
                 console.log(data)

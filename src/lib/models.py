@@ -311,6 +311,35 @@ def delete_anime_seed_by_condition(mikan_id=-1, subgroup_id=-1, episode=-1, seed
         return session_commit()
     return False
 
+def delete_anime_task_by_condition(mikan_id=-1, qb_task_status=-1, episode=-1, torrent_name=''):
+    log_info_str = "[MODELS] delete_anime_task_by_condition,"
+    if mikan_id != -1:
+        log_info_str += " mikan_id: {},".format(mikan_id)
+    if qb_task_status != -1:
+        log_info_str += " qb_task_status: {},".format(qb_task_status)
+    if episode != -1:
+        log_info_str += " episode: {},".format(episode)
+    if torrent_name != '':
+        log_info_str += " torrent_name: {},".format(torrent_name)
+    logger.info(log_info_str[:-1])
+
+    session = db.session.query(AnimeTask)
+    if mikan_id != -1:
+        session = session.filter_by(mikan_id=mikan_id)
+    if qb_task_status != -1:
+        session = session.filter_by(qb_task_status=qb_task_status)
+    if episode != -1:
+        session = session.filter_by(episode=episode)
+    if torrent_name != '':
+        session = session.filter_by(torrent_name=torrent_name)
+    query = session.all()
+    count = 0
+    for data in query:
+        db.session.delete(data)
+        count = count + 1
+    if count > 0:
+        return session_commit()
+    return False
 
 def update_anime_list_subscribe_status_by_mikan_id(mikan_id, subscribe_status):
     logger.info("[MODELS] update_anime_list_subscribe_status_by_mikan_id, mikan_id: {}, subscribe_status: {}".format(mikan_id, subscribe_status))

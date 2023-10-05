@@ -4,6 +4,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/anime.css') }}">
     <script src="{{ url_for('static', filename='jquery/jquery.3.7.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/anime.js') }}"></script>
     <script src="{{ url_for('static', filename='js/detail.js') }}"></script>
@@ -24,12 +25,24 @@
                     <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:red;">
                         <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
                     </button>
-                    <button class="update-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:orange;">
+                    <button class="update-button" id="{{ anime.mikan_id }}">
                         <img src="{{ url_for('static', filename='img/icon/update.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                    <button class="download-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:orange;">
+                        <img src="{{ url_for('static', filename='img/icon/download.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                    <button class="clean-button" id="{{ anime.mikan_id }}">
+                        <img src="{{ url_for('static', filename='img/icon/clean.svg') }}" alt="" width="20px" height="20px">
                     </button>
                 {% else %}
                     <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}">
                         <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                    <button class="update-button" id="{{ anime.mikan_id }}">
+                        <img src="{{ url_for('static', filename='img/icon/update.svg') }}" alt="" width="20px" height="20px">
+                    </button>
+                    <button class="clean-button" id="{{ anime.mikan_id }}">
+                        <img src="{{ url_for('static', filename='img/icon/clean.svg') }}" alt="" width="20px" height="20px">
                     </button>
                 {% endif %}   
             </div>
