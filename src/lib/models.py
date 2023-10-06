@@ -45,6 +45,12 @@ class AnimeBroadcast(db.Model):
     year = db.Column(db.Integer, nullable=True, comment='播出年份')
     season = db.Column(db.Integer, nullable=True, comment='播出季度,春夏秋冬对应1234')
 
+class AnimeSubgroup(db.Model):
+    __tablename__ = "anime_subgroup"
+    index = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    subgroup_id = db.Column(db.Integer, nullable=True, unique=True)
+    subgroup_name = db.Column(db.String(40), nullable=True)
+
 def session_commit():
     try:
         db.session.commit()
@@ -81,6 +87,13 @@ def insert_data_to_anime_broadcast(mikan_id, year, season):
 
     anime_broadcast = AnimeBroadcast(mikan_id=mikan_id, year=year, season=season)
     db.session.add_all([anime_broadcast])
+    return session_commit()
+
+def insert_data_to_anime_subgroup(subgroup_id, subgroup_name):
+    logger.info("[MODELS] insert_data_to_anime_subgroup, subgroup_id: {}, subgroupo_name: {}".format(subgroup_id, subgroup_name))
+
+    anime_subgroup = AnimeSubgroup(subgroup_id=subgroup_id, subgroup_name=subgroup_name)
+    db.session.add_all([anime_subgroup])
     return session_commit()
 
 def query_anime_list_by_condition(anime_name='', mikan_id=-1, img_url='', update_day=-1, anime_type=-1, subscribe_status=-1):
@@ -230,6 +243,30 @@ def query_anime_broadcast_by_condition(mikan_id=-1, year=-1, season=-1):
             "mikan_id" : data.mikan_id,
             "year"     : data.year,
             "season"   : data.season
+        }
+        list.append(dic)
+    return list
+
+def query_anime_subgroup_by_condition(subgroup_id=-1, subgroup_name=''):
+    log_info_str = "[MODELS] query_anime_subgroup_by_condition,"
+    if subgroup_id != -1:
+        log_info_str += " subgroup_id: {},".format(subgroup_id)
+    if subgroup_name != '':
+        log_info_str += " subgroup_name: {},".format(subgroup_name)
+    logger.info(log_info_str[:-1])
+
+    session = db.session.query(AnimeSubgroup)
+    if subgroup_id != -1:
+        session = session.filter_by(subgroup_id=subgroup_id)
+    if subgroup_name != '':
+        session = session.filter_by(subgroup_name=subgroup_name)
+    result = session.all()
+    list = []
+    for data in result:
+        dic = {
+            "index"         : data.index,
+            "subgroup_id"   : data.subgroup_id,
+            "subgroup_name" : data.subgroup_name,
         }
         list.append(dic)
     return list

@@ -37,6 +37,9 @@ class Subgroup:
         self.subgroup_id   = subgroup_id
         self.subgroup_name = subgroup_name
 
+    def to_string(self):
+        return '({},  "{}")'.format(self.subgroup_id, self.subgroup_name)
+
 class Broadcast:
     def __init__(self, mikan_id, year, season):
         self.mikan_id = mikan_id

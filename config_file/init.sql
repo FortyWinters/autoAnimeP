@@ -82,3 +82,17 @@ CREATE TABLE `anime_broadcast` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for anime_subgroup
+-- ----------------------------
+DROP TABLE IF EXISTS `anime_subgroup`;
+CREATE TABLE `anime_subgroup` (
+  `index` int NOT NULL AUTO_INCREMENT,
+  `subgroup_id` int NOT NULL,
+  `subgroup_name` varchar(40) COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`index`),
+  UNIQUE KEY `subgroup_id` (`subgroup_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;

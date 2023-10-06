@@ -87,10 +87,20 @@ def insert_anime_seed_thread():
     seed_list_old = query_anime_seed_by_condition(mikan_id=mikan_id)
     for s in seed_list_old:
         seed_set.add(s["seed_url"])
+    
+    subgroup_list_old = query_anime_subgroup_by_condition()
+    subgroup_set = set()
+    for s in subgroup_list_old:
+        subgroup_id = s["subgroup_id"]
+        if subgroup_id not in subgroup_set:
+            subgroup_set.add(subgroup_id)
 
     subgroup_list = mikan.get_subgroup_list(mikan_id)
-    seed_list = mikan.get_seed_list_task(mikan_id, subgroup_list)
+    for s in subgroup_list:
+        if s.subgroup_id not in subgroup_set:
+            insert_data_to_anime_subgroup(s.subgroup_id, s.subgroup_name)
 
+    seed_list = mikan.get_seed_list_task(mikan_id, subgroup_list)
     for s in seed_list:
         if s.seed_url not in seed_set:
             if not insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name, s.seed_status):
