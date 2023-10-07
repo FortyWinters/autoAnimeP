@@ -11,8 +11,6 @@ li {
     float: left;
     height: 350px;
     width: 210px;
-    /* height: 450px;
-    width: 300px; */
     margin: 0 5px 10px 5px;
 }
 .anime-info {
@@ -24,6 +22,9 @@ li {
     width: 140px;
     float: left;
     font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .button-container {
     float: right;

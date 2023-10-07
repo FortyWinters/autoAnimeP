@@ -75,7 +75,7 @@
                     <img src="{{ url_for('static', filename='img/anime_list/' + anime.img_url.split('/')[4]) }}" alt="" height="280px" width="210px">
                 </a>
                 <div class="anime-info">
-                    <div class="anime-name">{{ anime.anime_name }}</div>
+                    <div class="anime-name" title="{{ anime.anime_name }}">{{ anime.anime_name }}</div>
                     <div class="button-container">
                     {% if anime.subscribe_status==1 %}
                         <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:red;">

@@ -47,19 +47,38 @@
                 {% endif %}   
             </div>
             <div class="episode-container">
-                {% for item in sorted_episode_list %}
-                    {% for episode, status in item.items() %}
-                        {% if status == 1 %}
-                            <div class="episode" style="background-color:rgb(41, 207, 132);">{{ episode }}</div>
-                        {% elif status == 0 %}
-                            <a href="/download">
-                                <div class="episode" style="background-color:rgb(88, 202, 255);">{{ episode }}</div>
-                            </a>
-                        {% else %}
-                            <div class="episode" onclick="downloadSingleEpisode('{{ anime.mikan_id }}', '{{ episode }}')">{{ episode }}</div>
-                        {% endif %}
+                <div class="subgroup-container">
+                    {% if sorted_episode_list|length != 0 %}
+                        <div class="subgroup" title="autoAnime" onclick="showSeeds('auto')">更新集数</div>
+                    {% endif %}
+                    {% for subgroup_id, seed_list in seed_group_by_subgroup.items() %}
+                        <div class="subgroup" title="{{ subgroup_map[subgroup_id] }}" onclick="showSeeds('{{ subgroup_id }}')">{{ subgroup_map[subgroup_id] }}。</div>
                     {% endfor %}
-                {% endfor %}
+
+                    <div class="subgroup-seed" id="auto" style="display: block;">
+                    {% for item in sorted_episode_list %}
+                        {% for episode, status in item.items() %}
+                            {% if status == 1 %}
+                                <div class="episode" style="background-color:rgb(41, 207, 132);">{{ episode }}</div>
+                            {% elif status == 0 %}
+                                <a href="/download">
+                                    <div class="episode" style="background-color:rgb(88, 202, 255);">{{ episode }}</div>
+                                </a>
+                            {% else %}
+                                <div class="episode" onclick="downloadSingleEpisode('{{ anime.mikan_id }}', '{{ episode }}')">{{ episode }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    </div>
+
+                    {% for subgroup_id, seed_list in seed_group_by_subgroup.items() %}
+                        <div class="subgroup-seed" id="{{ subgroup_id }}">
+                            {% for seed in seed_list %}
+                                <div class="episode" title="{{ seed.seed_name }}">{{ seed.episode }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

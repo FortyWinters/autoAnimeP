@@ -207,8 +207,14 @@ def download_subscribe_anime():
     logger.info("[BP][ANIME] download_subscribe_anime success, mikan_id : {}, update_task_number: {}".format(mikan_id, len(seed_list_download)))
     return jsonify({"code": 200, "message": "download_subscribe_anime", "data": mikan_id})
 
+# 番剧信息页面
 @bp.route("/detail/<int:mikan_id>", methods=['GET'])
 def detail(mikan_id):
+    subgroup_list = query_anime_subgroup_by_condition()
+    subgroup_map = dict()
+    for s in subgroup_list:
+        subgroup_map[s["subgroup_id"]] = s["subgroup_name"]
+
     completed_torrent_list = qb.get_completed_torrent_list()
     if completed_torrent_list is not None:
         for torrent in completed_torrent_list:
@@ -229,8 +235,10 @@ def detail(mikan_id):
     
     sorted_episode_list = [{k: v} for k, v in sorted(episode_map.items())]
 
+    seed_group_by_subgroup = get_anime_seed_group_by_subgroup(mikan_id)
+
     logger.info("[BP][ANIME] detail success, url: /anime/detail/{}".format(mikan_id))
-    return render_template("detail.html", anime=anime, sorted_episode_list=sorted_episode_list)
+    return render_template("detail.html", anime=anime, sorted_episode_list=sorted_episode_list, seed_group_by_subgroup=seed_group_by_subgroup, subgroup_map=subgroup_map)
 
 # 按照年份和季度更新番剧列表
 @bp.route("/update_anime_list", methods=['POST'])
@@ -379,3 +387,19 @@ def download_single_episode():
 
     logger.info("[BP][ANIME] download_single_episode success, mikan_id : {}, episode: {}".format(mikan_id, episode))
     return jsonify({"code": 200, "message": "download_single_episode", "data": None})
+
+# 按照字幕组分类所有种子
+def get_anime_seed_group_by_subgroup(mikan_id):
+    seed_map_group_by_subgroup = dict()
+    seed_list_all = query_anime_seed_by_condition(mikan_id=mikan_id)
+    for s in seed_list_all:
+        if s["subgroup_id"] not in seed_map_group_by_subgroup:
+            seed_map_group_by_subgroup[s["subgroup_id"]] = []
+        seed_map_group_by_subgroup[s["subgroup_id"]].append(s)
+    
+    for subgroup_id, seed_list in seed_map_group_by_subgroup.items():
+        seed_list_order = sorted(seed_list, key=lambda x: x['episode'])
+        seed_map_group_by_subgroup[subgroup_id] = seed_list_order
+    
+    logger.info("[BP][ANIME] get_anime_seed_group_by_subgroup, mikan_id: {}".format(mikan_id))
+    return seed_map_group_by_subgroup

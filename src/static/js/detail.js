@@ -7,3 +7,14 @@ function downloadSingleEpisode(mikan_id, episode) {
         })
         .catch(error => console.error('Error:', error));
 }
+
+function showSeeds(subgroupId) {
+    var allSubgroupSeedDivs = document.querySelectorAll('.subgroup-seed');
+    allSubgroupSeedDivs.forEach(function(div) {
+        if (div.id !== subgroupId) {
+            div.style.display = "none";
+        } else {
+            div.style.display = "block";
+        }
+    });
+}
