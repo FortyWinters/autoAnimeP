@@ -80,7 +80,9 @@
                                     {% if seed.qb_task_status == 1 %}
                                         <div class="episode" title="{{ seed.seed_name }}" style="background-color:rgb(41, 207, 132);">{{ seed.episode }}</div>
                                     {% elif seed.qb_task_status == 0 %}
-                                        <div class="episode" title="{{ seed.seed_name }}" style="background-color:rgb(88, 202, 255);">{{ seed.episode }}</div>
+                                        <a href="/download">
+                                            <div class="episode" title="{{ seed.seed_name }}" style="background-color:rgb(88, 202, 255);">{{ seed.episode }}</div>
+                                        </a>
                                     {% else %}
                                         <div class="episode" title="{{ seed.seed_name }}" style="background-color:grey;">{{ seed.episode }}</div>
                                     {% endif %}

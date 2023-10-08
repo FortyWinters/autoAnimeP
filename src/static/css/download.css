@@ -19,6 +19,10 @@ progress::-webkit-progress-value{
 .column-name {
     width: 210px;
     text-align: center;
+    float: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .column-episode {
     width: 70px;

@@ -148,6 +148,11 @@ def download_subscribe_anime():
     subcribe_anime = query_anime_list_by_condition(mikan_id=mikan_id)
     anime_name = subcribe_anime[0]['anime_name']
 
+    subgroup_list = query_anime_subgroup_by_condition()
+    subgroup_map = dict()
+    for s in subgroup_list:
+        subgroup_map[s["subgroup_id"]] = s["subgroup_name"]
+
     # anime_seed中的种子
     seed_list = query_anime_seed_by_condition(mikan_id=mikan_id, seed_status=0)
     if len(seed_list) == 0:
@@ -198,12 +203,15 @@ def download_subscribe_anime():
         torrent_info = dict()
         torrent_name = s['seed_url'].split('/')[3]
         torrent_path = "{}{}".format(path, torrent_name)
-        torrent_info['name'] = torrent_name
+        torrent_info['name'] = s['seed_url']
         torrent_info['path'] = torrent_path
+        torrent_info['subgroupname'] = subgroup_map[s['subgroup_id']]
         
         torrent_infos[s['episode']] = torrent_info
 
     qb.addTorrents(anime_name, torrent_infos)
+    qb.rename_torrent_file(anime_name, torrent_infos)
+    
     logger.info("[BP][ANIME] download_subscribe_anime success, mikan_id : {}, update_task_number: {}".format(mikan_id, len(seed_list_download)))
     return jsonify({"code": 200, "message": "download_subscribe_anime", "data": mikan_id})
 
@@ -352,6 +360,11 @@ def download_single_episode():
     mikan_id = request.args.get("mikan_id")
     episode = request.args.get("episode")
 
+    subgroup_list = query_anime_subgroup_by_condition()
+    subgroup_map = dict()
+    for s in subgroup_list:
+        subgroup_map[s["subgroup_id"]] = s["subgroup_name"]
+
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
     anime_name = anime["anime_name"]
 
@@ -362,6 +375,8 @@ def download_single_episode():
     
     seed = seed_list[0]
     seed_url = seed["seed_url"]
+    subgroup_id = seed["subgroup_id"]
+    subgroup_name = subgroup_map[subgroup_id]
 
     update_anime_seed_seed_status_by_seed_url(seed_url, 1)
 
@@ -380,11 +395,15 @@ def download_single_episode():
     torrent_name = seed_url.split('/')[3]
     torrent_path = "{}{}".format(path, torrent_name)
     torrent_info = dict()
-    torrent_info['name'] = torrent_name
+    torrent_info['name'] = seed_url
     torrent_info['path'] = torrent_path
+    torrent_info['subgroupname'] = subgroup_name
+
     torrent_infos = dict()
     torrent_infos[episode] = torrent_info
+
     qb.addTorrents(anime_name, torrent_infos)
+    qb.rename_torrent_file(anime_name, torrent_infos)
 
     logger.info("[BP][ANIME] download_single_episode success, mikan_id : {}, episode: {}".format(mikan_id, episode))
     return jsonify({"code": 200, "message": "download_single_episode", "data": None})
@@ -420,6 +439,11 @@ def get_anime_seed_group_by_subgroup(mikan_id):
 def download_single_episode_by_subgroup():
     seed_url = request.args.get("seed_url")
 
+    subgroup_list = query_anime_subgroup_by_condition()
+    subgroup_map = dict()
+    for s in subgroup_list:
+        subgroup_map[s["subgroup_id"]] = s["subgroup_name"]
+
     seed = query_anime_seed_by_condition(seed_url=seed_url)[0]
     if seed["seed_status"] == 1:
         logger.info("[BP][ANIME] download_single_episode_by_subgroup, seed status is 1, mikan_id: {}, seed_url: {}".format(mikan_id, seed_url))
@@ -429,6 +453,8 @@ def download_single_episode_by_subgroup():
     
     episode = seed["episode"]
     mikan_id = seed["mikan_id"]
+    subgroup_id = seed["subgroup_id"]
+    subgroup_name = subgroup_map[subgroup_id]
 
     anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
     anime_name = anime["anime_name"]
@@ -448,11 +474,15 @@ def download_single_episode_by_subgroup():
     torrent_name = seed_url.split('/')[3]
     torrent_path = "{}{}".format(path, torrent_name)
     torrent_info = dict()
-    torrent_info['name'] = torrent_name
+    torrent_info['name'] = seed_url
     torrent_info['path'] = torrent_path
+    torrent_info['subgroupname'] = subgroup_name
+
     torrent_infos = dict()
     torrent_infos[episode] = torrent_info
+
     qb.addTorrents(anime_name, torrent_infos)
+    qb.rename_torrent_file(anime_name, torrent_infos)
 
     logger.info("[BP][ANIME] download_single_episode_by_subgroup success, mikan_id : {}, episode: {}, seed_url: {}".format(mikan_id, episode, seed_url))
     return jsonify({"code": 200, "message": "download_single_episode_by_subgroup", "data": None})
