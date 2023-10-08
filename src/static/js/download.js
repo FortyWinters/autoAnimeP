@@ -38,13 +38,15 @@ function getTorrentInfo() {
                             <td class="column-size">${info.Size}</td>
                             <td class="column-state">${info.State}</td>
                             <td class="column-button">
-                                <button class="task-del-button" onclick="handleTaskDelete('${info.torrent_name}')">删除</button>
+                                <button class="task-button" id="resume" onclick="handleTaskResum('${info.torrent_name}')">恢复</button>
+                                <button class="task-button" id="stop" onclick="handleTaskStop('${info.torrent_name}')">暂停</button>
+                                <button class="task-button" id="delete" onclick="handleTaskDelete('${info.torrent_name}')">删除</button>
                             </td>
                         </tr>`
                 });
             }
             infoDiv.innerHTML = html_string;
-            setTimeout(getTorrentInfo, 2000);
+            // setTimeout(getTorrentInfo, 2000);
         })
         .catch(error => console.error('Error:', error));
 }
@@ -53,6 +55,39 @@ getTorrentInfo()
 
 function handleTaskDelete(torrent_name) {
     fetch("/download/delete_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+        .then(response => response.json())
+        .then(data => {
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function handleTaskStart(torrent_name) {
+    fetch("/download/start_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+        .then(response => response.json())
+        .then(data => {
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function handleTaskStop(torrent_name) {
+    fetch("/download/stop_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+        .then(response => response.json())
+        .then(data => {
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function handleTaskResume(torrent_name) {
+    fetch("/download/resum_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             window.location.reload();

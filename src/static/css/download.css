@@ -63,14 +63,24 @@ progress::-webkit-progress-value{
     text-align: center;
 }
 .column-button {
-    width: 50px;
+    width: 300px;
     text-align: center;
 }
-.task-del-button {
-    background-color: red;
+.task-button {
+    background-color: #d6d6d6;
     border: none;
     border-radius: 3px;
     width: 50px;
     height: 20px;
     color: white;
+    cursor: pointer;
+}
+#stop:hover {
+    background-color: orange;
+}
+#resume:hover {
+    background-color: green;
+}
+#delete {
+    background-color: red;
 }
