@@ -38,15 +38,15 @@ function getTorrentInfo() {
                             <td class="column-size">${info.Size}</td>
                             <td class="column-state">${info.State}</td>
                             <td class="column-button">
-                                <button class="task-button" id="resume" onclick="handleTaskResum('${info.torrent_name}')">恢复</button>
-                                <button class="task-button" id="stop" onclick="handleTaskStop('${info.torrent_name}')">暂停</button>
+                                <button class="task-button" id="resume" onclick="handleTaskResume('${info.torrent_name}')">恢复</button>
+                                <button class="task-button" id="pause" onclick="handleTaskPause('${info.torrent_name}')">暂停</button>
                                 <button class="task-button" id="delete" onclick="handleTaskDelete('${info.torrent_name}')">删除</button>
                             </td>
                         </tr>`
                 });
             }
             infoDiv.innerHTML = html_string;
-            // setTimeout(getTorrentInfo, 2000);
+            setTimeout(getTorrentInfo, 2000);
         })
         .catch(error => console.error('Error:', error));
 }
@@ -75,8 +75,8 @@ function handleTaskStart(torrent_name) {
         });
 }
 
-function handleTaskStop(torrent_name) {
-    fetch("/download/stop_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+function handleTaskPause(torrent_name) {
+    fetch("/download/pause_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             window.location.reload();
@@ -87,7 +87,7 @@ function handleTaskStop(torrent_name) {
 }
 
 function handleTaskResume(torrent_name) {
-    fetch("/download/resum_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+    fetch("/download/resume_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             window.location.reload();

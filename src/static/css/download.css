@@ -75,7 +75,7 @@ progress::-webkit-progress-value{
     color: white;
     cursor: pointer;
 }
-#stop:hover {
+#pause:hover {
     background-color: orange;
 }
 #resume:hover {
