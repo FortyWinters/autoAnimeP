@@ -33,10 +33,11 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
             exist_anime_task_cur_mikan_id = self.get_exist_anime_task_by_mikan_id(mikan_id)
             if len(total_anime_seed_cur_mikan_id) == 0:
                 self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] no anime tasks found by mikan_id: {}.".format(mikan_id))
-                
+            
+            # Get animeTask, animeTask : {mikan_id, {episode, [torrent_name, subgroupname]]}}
             self.update_anime_tasks_by_mikan_id(mikan_id, 
-                                        exist_anime_task_cur_mikan_id, 
-                                        total_anime_seed_cur_mikan_id)
+                                                exist_anime_task_cur_mikan_id, 
+                                                total_anime_seed_cur_mikan_id)
         
         self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] anime_task: {}".format(self.anime_task))
 
@@ -44,9 +45,9 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
         for mikan_id, anime_task_cur_mikan_id in self.anime_task.items():
             if len(anime_task_cur_mikan_id) == 0:
                 continue
-            for eposide, torrent_name in anime_task_cur_mikan_id.items():
-                self.update_seed_status(torrent_name)
-                self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] update seed: {} status to 1".format(torrent_name))
+            for eposide, torrent_info in anime_task_cur_mikan_id.items():
+                self.update_seed_status(torrent_info[0])
+                self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] update seed: {} status to 1".format(torrent_info[0]))
 
         # 下载
         for mikan_id, episode_lists_new in self.anime_task.items():
@@ -65,7 +66,11 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
         totalTorrentInfos = self.getTotalTorrentInfos(self.anime_task)
         for mikan_id, torrentInfos in totalTorrentInfos.items():
             anime_name = self.mikan_id_to_name(mikan_id)
+            for _, torrentInfo in torrentInfos.items():
+                subgroup_name = self.subgroup_id_to_name(torrentInfo['subgroup_id'])
+                torrentInfo['subgroupname'] = subgroup_name
             self.addTorrents(anime_name, torrentInfos)
+            self.rename_torrent_file(anime_name, torrentInfos)
 
         end_time = time.time() - start_time
         self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] seed_schedule_task cost time {}".format(end_time))

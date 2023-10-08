@@ -1,3 +1,4 @@
+import os
 import sys
 import qbittorrentapi
 from datetime import timedelta
@@ -19,24 +20,27 @@ class AddqbTask:
         return qbt_client
     
     # task_lists <- animeTask
-    # animeTask : {mikan_id, {episode, seed_url}}
+    # animeTask : {mikan_id, {episode, {torrent_name, path, subgroup_id}}}
     def getTotalTorrentInfos(self, task_lists):
         total_torrent_infos = dict()
         for mikan_id, task in task_lists.items():
             total_torrent_infos[mikan_id] = self.getTorrentInfosByTask(mikan_id, task)
         return total_torrent_infos
 
-    # task <- {episode, seed_url}
+    # task <- {episode, [torrent_name, subgroupname]}
     def getTorrentInfosByTask(self, mikan_id, task):
         torrent_infos = dict()
 
-        for episode,seed_url in task.items():
+        for episode, seed_info in task.items():
             torrent_info = dict()
+            seed_url = seed_info[0]
+            subgroup_id = seed_info[1]
 
             torrent_name = seed_url.split('/')[3]
             path = self.config['SEED'] + str(mikan_id) + '/' + torrent_name
-            torrent_info['name']     = torrent_name
-            torrent_info['path']     = path
+            torrent_info['name']         = torrent_name
+            torrent_info['path']         = path
+            torrent_info['subgroup_id'] = subgroup_id
     
             torrent_infos[episode] = torrent_info
         return torrent_infos
@@ -127,3 +131,21 @@ class AddqbTask:
             self.logger.warning("[AddqbTask][get_completed_torrent_list] failed to get completed torrent list, error: {}".format(e))
         else:
             return completed_torrent_list
+        
+    def rename_torrent_file(self, anime_name, torrent_infos):
+        for episode, torrent_info in torrent_infos.items():
+            torrent_name = torrent_info['path']
+            torrent_hash = torrent_name.split('/')[3][:-8]
+            subgroup_name = torrent_info['subgroupname']
+            # torrent = self.qbt_client.torrents_info(hashes=torrent_hash)[0]
+            
+            file = self.qbt_client.torrents_files(torrent_hash)
+            self.logger.info("[AddqbTask][get_completed_torrent_list] {}".format(file))
+            file_extension = os.path.splitext(file[0]['name'])[1]
+            new_name = anime_name + ' - ' + str(episode) + ' - ' + subgroup_name + file_extension
+
+            try:
+                self.qbt_client.torrents_rename_file(torrent_hash=torrent_hash, file_id=0, new_file_name=new_name)
+            except Exception as e:
+                self.logger.warning("[AddqbTask] Failed to rename torrent file with new name: {} ".format(new_name))
+            self.logger.info("[AddqbTask] successfully rename torrent file with new name: {} ".format(new_name))

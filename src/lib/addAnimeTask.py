@@ -11,7 +11,7 @@ class AddAnimeTask:
         self.mikan_id_lists = []
         self.mika_id_to_name_map = dict()
 
-        # animeTask : {mikan_id, {episode, torrent_name}}
+        # animeTask : {mikan_id, {episode, [torrent_name, subgroupname]]}}
         self.anime_task = dict()
     
     def mikan_id_to_name(self, mikan_id):
@@ -26,16 +26,18 @@ class AddAnimeTask:
             print(mikan_id, self.mikan_id_to_name(mikan_id))
 
     # exist_anime_task_cur_mikan_id : {episode, [torrent_name, qb_task_status]}
-    # total_anime_seed_cur_mikan_id : {episode, torrent_name}
+    # total_anime_seed_cur_mikan_id : {episode, [seed_url, seed_status, subgroup_id]}
     def update_anime_tasks_by_mikan_id(self, mikan_id, 
                                        exist_anime_task_cur_mikan_id, 
                                        total_anime_seed_cur_mikan_id):
 
         anime_task_cur_mikan_id = dict()
 
-        for anime_list in total_anime_seed_cur_mikan_id:
-            episode = anime_list[0]
-            seed_status = anime_list[2]
+        for episode, anime_list in total_anime_seed_cur_mikan_id.items():
+            torrent_name = anime_list[0]
+            seed_status = anime_list[1]
+            subgroup_id = anime_list[2]
+
             # 跳过：
             # 1. 已经添加过的种子
             # 2. 下载成功的种子
@@ -43,8 +45,8 @@ class AddAnimeTask:
                 (episode in exist_anime_task_cur_mikan_id) or \
                 (seed_status == 1) :
                 continue
-            torrent_name = anime_list[1]
-            anime_task_cur_mikan_id[episode] = torrent_name
+            seed_info_cur_mikanId_and_episode = [torrent_name, subgroup_id]
+            anime_task_cur_mikan_id[episode] = seed_info_cur_mikanId_and_episode
         
         self.anime_task[mikan_id] = anime_task_cur_mikan_id
 
@@ -58,11 +60,11 @@ class AddAnimeTask:
         if not os.path.exists(dir):
             os.makedirs(dir)
         
-        for episode, torrent_name in episode_lists_new.items():
+        for episode, torrent_info in episode_lists_new.items():
             task = self.executor.submit(self.download_anime_seed_thread,
                                         (dir, 
                                          episode,
-                                         torrent_name, 
+                                         torrent_info[0], 
                                          anime_seed_task_list_suc,  
                                          anime_seed_task_list_failed ))
             all_tasks.append(task)

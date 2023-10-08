@@ -34,20 +34,18 @@ class DbTaskExecutor:
     def get_total_anime_seed_by_mikan_id(self, mikan_id):
         total_anime_seed = dict()
         # TODO 添加 anime_seed 标记位，用来标识种子是否被消费过
-        sql = 'select episode,seed_url,seed_status from anime_seed where mikan_id={}'.format(mikan_id)
+        sql = 'select episode,seed_url,seed_status,subgroup_id from anime_seed where mikan_id={}'.format(mikan_id)
         anime_lists = self.m_db_connector.execute(sql)
 
         for anime_list in anime_lists:
             episode = anime_list[0]
             seed_url = anime_list[1]
             seed_status = anime_list[2]
+            subgroup_id = anime_list[3]
             
-            seed_info = []
-            seed_info.append(seed_url)
-            seed_info.append(seed_status)
-            total_anime_seed[episode] = seed_info
+            total_anime_seed[episode] = [seed_url, seed_status, subgroup_id]
         
-        return anime_lists
+        return total_anime_seed
 
     def delete_anime_task_by_mikan_id(self, mikan_id):
         sql = "DELETE FROM anime_task WHERE mikan_id={}".format(mikan_id)
@@ -73,3 +71,8 @@ class DbTaskExecutor:
     def update_qb_task_status(self, torrent_hash):
         sql = "UPDATE anime_task SET qb_task_status=1 WHERE torrent_name LIKE '%{}%'".format(torrent_hash)
         self.m_db_connector.execute(sql)
+
+    def subgroup_id_to_name(self, subgroup_id):
+        sql = "select subgroup_name from anime_subgroup WHERE subgroup_id={}".format(subgroup_id)
+        subgroup_name = self.m_db_connector.execute(sql)[0][0]
+        return subgroup_name
