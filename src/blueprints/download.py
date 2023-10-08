@@ -96,3 +96,15 @@ def delete_task_by_torrent_name():
     qb.del_torrent(torrent_name)
     delete_anime_task_by_condition(torrent_name=torrent_name)
     return jsonify({"code": 200, "message": "delete_task_by_torrent_name", "data": None})
+
+@bp.route("/pause_task_by_torrent_name", methods=['POST'])
+def pause_task_by_torrent_name():
+    torrent_name = request.args.get("torrent_name")
+    qb.pause_qb_task(torrent_name)
+    return jsonify({"code": 200, "message": "pause_task_by_torrent_name", "data": None})
+
+@bp.route("/resume_task_by_torrent_name", methods=['POST'])
+def resume_task_by_torrent_name():
+    torrent_name = request.args.get("torrent_name")
+    qb.resume_qb_task(torrent_name)
+    return jsonify({"code": 200, "message": "pause_task_by_torrent_name", "data": None})

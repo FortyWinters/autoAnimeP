@@ -149,3 +149,21 @@ class AddqbTask:
             except Exception as e:
                 self.logger.warning("[AddqbTask] Failed to rename torrent file with new name: {} ".format(new_name))
             self.logger.info("[AddqbTask] successfully rename torrent file with new name: {} ".format(new_name))
+    
+    def pause_qb_task(self, torrent_name):
+        torrent_hash = torrent_name.split('/')[3][:-8]
+
+        try:
+            self.qbt_client.torrents_pause(torrent_hashes=torrent_hash)
+        except Exception as e:
+            self.logger.error("[AddqbTask] Failed to pause torrent: {} ".format(torrent_name))
+        self.logger.info("[AddqbTask] Successfully pause torrent: {} ".format(torrent_name))
+    
+    def resume_qb_task(self, torrent_name):
+        torrent_hash = torrent_name.split('/')[3][:-8]
+
+        try:
+            self.qbt_client.torrents_resume(torrent_hashes=torrent_hash)
+        except Exception as e:
+            self.logger.error("[AddqbTask] Failed to resume torrent: {} ".format(torrent_name))
+        self.logger.info("[AddqbTask] Successfully resume torrent: {} ".format(torrent_name))
