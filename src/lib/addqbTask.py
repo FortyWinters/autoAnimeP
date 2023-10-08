@@ -38,7 +38,7 @@ class AddqbTask:
 
             torrent_name = seed_url.split('/')[3]
             path = self.config['SEED'] + str(mikan_id) + '/' + torrent_name
-            torrent_info['name']         = torrent_name
+            torrent_info['name']         = seed_url
             torrent_info['path']         = path
             torrent_info['subgroup_id'] = subgroup_id
     
@@ -134,7 +134,7 @@ class AddqbTask:
         
     def rename_torrent_file(self, anime_name, torrent_infos):
         for episode, torrent_info in torrent_infos.items():
-            torrent_name = torrent_info['path']
+            torrent_name = torrent_info['name']
             torrent_hash = torrent_name.split('/')[3][:-8]
             subgroup_name = torrent_info['subgroupname']
             # torrent = self.qbt_client.torrents_info(hashes=torrent_hash)[0]
