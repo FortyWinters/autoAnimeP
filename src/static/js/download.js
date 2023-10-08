@@ -23,7 +23,7 @@ function getTorrentInfo() {
                     const done = Math.round(parseFloat(info.Done.trim()));
                     html_string += `
                         <tr>
-                            <td class="column-name">
+                            <td class="column-name" title='${info.Name}'>
                                 <a href="/anime/detail/${info.mikan_id}">${info.anime_name}</a>
                             </td>
                             <td class="column-episode">${info.episode}</td>
@@ -38,7 +38,7 @@ function getTorrentInfo() {
                             <td class="column-size">${info.Size}</td>
                             <td class="column-state">${info.State}</td>
                             <td class="column-button">
-                                <button class="task-del-button" onclick="handleTaskDelete(${info.mikan_id}, ${info.episode})">删除</button>
+                                <button class="task-del-button" onclick="handleTaskDelete('${info.torrent_name}')">删除</button>
                             </td>
                         </tr>`
                 });
@@ -51,8 +51,8 @@ function getTorrentInfo() {
 
 getTorrentInfo()
 
-function handleTaskDelete(mikan_id, episode) {
-    fetch("/download/delete_task?mikan_id=" + mikan_id +"&episode=" + episode, {method: 'POST'})
+function handleTaskDelete(torrent_name) {
+    fetch("/download/delete_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             window.location.reload();

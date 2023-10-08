@@ -228,10 +228,11 @@ def detail(mikan_id):
     for seed in seed_list:
         if seed["episode"] not in episode_map:
             episode_map[seed["episode"]] = -1
-    
+
     for task in task_list:
         if task["episode"] in episode_map:
-            episode_map[task["episode"]] = task["qb_task_status"]
+            if episode_map[task["episode"]] != 1:
+                episode_map[task["episode"]] = task["qb_task_status"]
     
     sorted_episode_list = [{k: v} for k, v in sorted(episode_map.items())]
 
@@ -362,19 +363,19 @@ def download_single_episode():
     seed = seed_list[0]
     seed_url = seed["seed_url"]
 
+    update_anime_seed_seed_status_by_seed_url(seed_url, 1)
+
     path = "{}{}/".format(config.get('DOWNLOAD')['SEED'], mikan_id)
     if not os.path.exists(path):
         os.makedirs(path)
 
-    update_anime_seed_seed_status_by_seed_url(seed_url, 1)
-
     if not mikan.download_seed(seed_url, path):
         logger.warning("[BP][ANIME] download_single_episode error, download seed failed, mikan_id: {}, episode: {}, seed_url".format(mikan_id, episode, seed_url))
-        return jsonify({"code": 200, "message": "download_single_episode, download seed failed", "data": None})
+        return jsonify({"code": 400, "message": "download_single_episode, download seed failed", "data": None})
 
     if not insert_data_to_anime_task(mikan_id, episode, seed_url, 0):
         logger.warning("[BP][ANIME] download_single_episode error, insert task failed, mikan_id: {}, episode: {}, seed_url".format(mikan_id, episode, seed_url))
-        return jsonify({"code": 200, "message": "download_single_episode, insert task failed", "data": None}) 
+        return jsonify({"code": 400, "message": "download_single_episode, insert task failed", "data": None}) 
 
     torrent_name = seed_url.split('/')[3]
     torrent_path = "{}{}".format(path, torrent_name)
@@ -390,9 +391,19 @@ def download_single_episode():
 
 # 按照字幕组分类所有种子
 def get_anime_seed_group_by_subgroup(mikan_id):
+    task_list = query_anime_task_by_condition(mikan_id=mikan_id)
+    task_map = dict()
+    for task in task_list:
+        task_map[task["torrent_name"]] = task["qb_task_status"]
+
     seed_map_group_by_subgroup = dict()
     seed_list_all = query_anime_seed_by_condition(mikan_id=mikan_id)
     for s in seed_list_all:
+        s["qb_task_status"] = -1
+        if s["seed_status"] == 1:
+            if s["seed_url"] in task_map:
+                s["qb_task_status"] = task_map[s["seed_url"]]
+
         if s["subgroup_id"] not in seed_map_group_by_subgroup:
             seed_map_group_by_subgroup[s["subgroup_id"]] = []
         seed_map_group_by_subgroup[s["subgroup_id"]].append(s)
@@ -403,3 +414,47 @@ def get_anime_seed_group_by_subgroup(mikan_id):
     
     logger.info("[BP][ANIME] get_anime_seed_group_by_subgroup, mikan_id: {}".format(mikan_id))
     return seed_map_group_by_subgroup
+
+# 按照字幕组单集下载
+@bp.route("/download_single_episode_by_subgroup", methods=['POST'])
+def download_single_episode_by_subgroup():
+    seed_url = request.args.get("seed_url")
+
+    seed = query_anime_seed_by_condition(seed_url=seed_url)[0]
+    if seed["seed_status"] == 1:
+        logger.info("[BP][ANIME] download_single_episode_by_subgroup, seed status is 1, mikan_id: {}, seed_url: {}".format(mikan_id, seed_url))
+        return jsonify({"code": 200, "message": "download_single_episode_by_subgroup", "data": None})
+    
+    update_anime_seed_seed_status_by_seed_url(seed_url, 1)
+    
+    episode = seed["episode"]
+    mikan_id = seed["mikan_id"]
+
+    anime = query_anime_list_by_condition(mikan_id=mikan_id)[0]
+    anime_name = anime["anime_name"]
+
+    path = "{}{}/".format(config.get('DOWNLOAD')['SEED'], mikan_id)
+    if not os.path.exists(path):
+        os.makedirs(path)  
+    
+    if not mikan.download_seed(seed_url, path):
+        logger.warning("[BP][ANIME] download_single_episode_by_subgroup error, download seed failed, mikan_id: {}, episode: {}, seed_url".format(mikan_id, episode, seed_url))
+        return jsonify({"code": 400, "message": "download_single_episode_by_subgroup, download seed failed", "data": None})
+    
+    if not insert_data_to_anime_task(mikan_id, episode, seed_url, 0):
+        logger.warning("[BP][ANIME] download_single_episode_by_subgroup error, insert task failed, mikan_id: {}, episode: {}, seed_url".format(mikan_id, episode, seed_url))
+        return jsonify({"code": 400, "message": "download_single_episode_by_subgroup, insert task failed", "data": None}) 
+
+    torrent_name = seed_url.split('/')[3]
+    torrent_path = "{}{}".format(path, torrent_name)
+    torrent_info = dict()
+    torrent_info['name'] = torrent_name
+    torrent_info['path'] = torrent_path
+    torrent_infos = dict()
+    torrent_infos[episode] = torrent_info
+    qb.addTorrents(anime_name, torrent_infos)
+
+    logger.info("[BP][ANIME] download_single_episode_by_subgroup success, mikan_id : {}, episode: {}, seed_url: {}".format(mikan_id, episode, seed_url))
+    return jsonify({"code": 200, "message": "download_single_episode_by_subgroup", "data": None})
+
+    

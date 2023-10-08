@@ -74,7 +74,17 @@
                     {% for subgroup_id, seed_list in seed_group_by_subgroup.items() %}
                         <div class="subgroup-seed" id="{{ subgroup_id }}">
                             {% for seed in seed_list %}
-                                <div class="episode" title="{{ seed.seed_name }}">{{ seed.episode }}</div>
+                                {% if seed.seed_status == 0 %}
+                                    <div class="episode" title="{{ seed.seed_name }}" onclick="downloadSingleEpisodeBySubgroup('{{ seed.seed_url }}')">{{ seed.episode }}</div>
+                                {% else %}
+                                    {% if seed.qb_task_status == 1 %}
+                                        <div class="episode" title="{{ seed.seed_name }}" style="background-color:rgb(41, 207, 132);">{{ seed.episode }}</div>
+                                    {% elif seed.qb_task_status == 0 %}
+                                        <div class="episode" title="{{ seed.seed_name }}" style="background-color:rgb(88, 202, 255);">{{ seed.episode }}</div>
+                                    {% else %}
+                                        <div class="episode" title="{{ seed.seed_name }}" style="background-color:grey;">{{ seed.episode }}</div>
+                                    {% endif %}
+                                {% endif %}
                             {% endfor %}
                         </div>
                     {% endfor %}

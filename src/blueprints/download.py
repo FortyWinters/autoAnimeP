@@ -37,11 +37,13 @@ def get_qb_download_progress():
         mikan_id = task['mikan_id']
         anime_name = anime_id_to_name_map[mikan_id]
         episode = task['episode']
-        torrent_web_info = get_torrent_web_info(mikan_id, episode)
+        torrent_name = task['torrent_name']
+        torrent_web_info = qb.get_torrent_web_info(torrent_name)
         if torrent_web_info is not None:
             torrent_web_info['mikan_id'] = mikan_id
             torrent_web_info['anime_name'] = anime_name
             torrent_web_info['episode'] = episode
+            torrent_web_info['torrent_name'] = torrent_name
             torrent_web_info_list.append(torrent_web_info)
         else:
             continue
@@ -87,3 +89,10 @@ def delete_task():
     sql = 'DELETE FROM anime_task WHERE torrent_name="{}"'.format(torrent_name)
     m_DBconnector.execute(sql)
     return jsonify({"code": 200, "message": "delet torrent successfully", "data": None})
+
+@bp.route("/delete_task_by_torrent_name", methods=['POST'])
+def delete_task_by_torrent_name():
+    torrent_name = request.args.get("torrent_name")
+    qb.del_torrent(torrent_name)
+    delete_anime_task_by_condition(torrent_name=torrent_name)
+    return jsonify({"code": 200, "message": "delete_task_by_torrent_name", "data": None})
