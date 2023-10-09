@@ -126,19 +126,19 @@ class Mikan:
             if not self.if_1080(seed_name):
                 continue
 
-            if anime_type == 0:
+            if anime_type == '0':
                 episode_str = self.get_episode(seed_name)
                 if episode_str == "null":
                     continue
             else:
-                episode_str = 1
+                episode_str = "01"
 
             episode = int(episode_str)
             seed_status = 0
             seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status)
             seed_list.append(seed)
         
-        self.logger.info("[SPIDER] get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))   
+        self.logger.info("[SPIDER] get_seed_list success, mikan_id: {}, subgroup_id: {}, anime_type: {}, seed number: {}".format(mikan_id, subgroup_id, anime_type, len(seed_list)))   
         return seed_list
     
     # mikan.download_img("/images/Bangumi/202307/f94fdb7f.jpg", "static/img/anime_list")
@@ -168,14 +168,24 @@ class Mikan:
         return result_str
 
     def get_episode(self, seed_name):
+        # 排除掉了合集
+        str_list = re.findall(r'\d{2}-\d{2}', seed_name)
+        if len(str_list) != 0:
+            return "null"
+
         str_list = re.findall(r'\[\d{2}\]|\s\d{2}\s', seed_name)
         if len(str_list) == 0:
-            return "null"
+            str_list = re.findall(r'\[第\d+话\]', seed_name)
+            if len(str_list) == 0:
+                return "null"
+            else:
+                return str_list[0][2:-2]
         episode_str = str_list[0][1:-1] 
         return episode_str
 
     def if_1080(self, seed_name):
-        str_list = re.findall(r'1080p|x1080\s|\s1080\s|[1080P]', seed_name)
+        str_list = re.findall(r'1080', seed_name)
+        print(str_list)
         if len(str_list) == 0:
             return False
         return True
