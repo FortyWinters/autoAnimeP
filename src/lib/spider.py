@@ -185,7 +185,6 @@ class Mikan:
 
     def if_1080(self, seed_name):
         str_list = re.findall(r'1080', seed_name)
-        print(str_list)
         if len(str_list) == 0:
             return False
         return True
