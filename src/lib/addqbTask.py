@@ -8,6 +8,7 @@ class AddqbTask:
         self.conn_info = conn_info
         self.config = anime_config
         self.logger = logger
+
         self.qbt_client = self.connectqB()
 
     def connectqB(self):
@@ -52,7 +53,7 @@ class AddqbTask:
             try:
                 self.qbt_client.torrents_add(torrent_files=path,save_path=local_save_path)
             except Exception as e:
-                self.logger.warning("[AddqbTask] Failed to add torrent seed:", torrent_info['name'])
+                self.logger.error("[AddqbTask] Failed to add torrent seed:", torrent_info['name'])
 
     def pauseTorrent(self):
         # pause all torrents
@@ -64,7 +65,6 @@ class AddqbTask:
 
         # Name
         name = torrent["name"]
-        # print(f'Torrent Name: {name}')
 
         # Size
         size = torrent["size"] / (1024 * 1024)
@@ -72,24 +72,19 @@ class AddqbTask:
             size_str = str(round(size / 1024, 2)) + ' GB'
         else:
             size_str = str(round(size, 2)) + ' MB'
-        # print(f'Size: {size_str}')
         
         # State
         state = torrent["state"]
-        # print(f'State: {state}')
 
         # Done
         done = round(torrent["progress"] * 100, 2)
         done_str = str(done) + ' %'
-        # print(f'Done: {done}')
         
         # Seeds
         seed = str(torrent["num_seeds"])
-        # print(f'Seed: {seed}')
         
         # Peers
         peers = str(torrent["num_leechs"])
-        # print(f'Peers: {peers}')
         
         # Download Speed
         download_speed = torrent["dlspeed"] / 1024
@@ -97,11 +92,9 @@ class AddqbTask:
             download_speed_str = str(round(download_speed / 1024, 2)) + ' MBps'
         else:
             download_speed_str = str(round(download_speed, 2)) + ' KBps'
-        # print(f'Download Speed: {download_speed}')
 
         # ETA
         eta_formatted = str(timedelta(seconds=torrent['eta']))
-        # print(f'ETA: {eta_formatted}')
 
         torrent_web_info = dict(
             Name           = name,
@@ -118,7 +111,7 @@ class AddqbTask:
     def del_torrent(self, torrent_name):
         torrent_hash = torrent_name.split('/')[3][:-8]
         try:
-            self.qbt_client.torrents_delete(hashes=torrent_hash)
+            self.qbt_client.torrents_delete(hashes=torrent_hash, delete_files=True)
             self.logger.info("[AddqbTask][del_torrent] successfully delete torrent by torrent_name: {} ".format(torrent_name))
         except Exception as e:
             self.logger.error("[AddqbTask][del_torrent] failed to delete torrent by torrent_name: {}".format(torrent_name))
@@ -167,3 +160,26 @@ class AddqbTask:
         except Exception as e:
             self.logger.error("[AddqbTask] Failed to resume torrent: {} ".format(torrent_name))
         self.logger.info("[AddqbTask] Successfully resume torrent: {} ".format(torrent_name))
+    
+    def pause_seeding(self, torrent_name):
+        torrent_hash = torrent_name.split('/')[3][:-8]
+        try:
+            self.qbt_client.torrents_set_share_limits(torrent_hashes=torrent_hash, 
+                                                      ratio_limit=-2, 
+                                                      seeding_time_limit=0)
+        except Exception as e:
+            self.logger.error("[AddqbTask] Failed to pause seeding for torrent: {}.".format(torrent_name))
+        self.logger.info("[AddqbTask] Successfully pause seeding for torrent: {}.".format(torrent_name))
+
+    def pause_seeding_all(self):
+        torrents = self.qbt_client.torrents_info()
+        for torrent in torrents:
+            torrent_name = torrent['name']
+            torrent_hash = torrent['hash']
+            try:
+                self.qbt_client.torrents_set_share_limits(torrent_hashes=torrent_hash, 
+                                                        ratio_limit=-2, 
+                                                        seeding_time_limit=0)
+            except Exception as e:
+                self.logger.error("[AddqbTask] Failed to pause seeding for torrent: {}.".format(torrent_name))
+            self.logger.info("[AddqbTask] Successfully pause seeding for torrent: {}.".format(torrent_name))
