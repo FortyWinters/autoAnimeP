@@ -108,3 +108,14 @@ def resume_task_by_torrent_name():
     torrent_name = request.args.get("torrent_name")
     qb.resume_qb_task(torrent_name)
     return jsonify({"code": 200, "message": "pause_task_by_torrent_name", "data": None})
+
+@bp.route("/pause_seeding_by_torrent_name", methods=['POST'])
+def pause_seeding_by_torrent_name():
+    torrent_name = request.args.get("torrent_name")
+    qb.pause_seeding(torrent_name)
+    return jsonify({"code": 200, "message": "pause_seeding_task_by_torrent_name", "data": None})
+
+@bp.route("/pause_seeding_all", methods=['GET'])
+def pause_seeding_all():
+    qb.pause_seeding_all()
+    return jsonify({"code": 200, "message": "pause_seeding_all", "data": None})
