@@ -119,3 +119,14 @@ def pause_seeding_by_torrent_name():
 def pause_seeding_all():
     qb.pause_seeding_all()
     return jsonify({"code": 200, "message": "pause_seeding_all", "data": None})
+
+@bp.route("/get_max_active_downloads", methods=['GET'])
+def get_max_active_downloads():
+    max_active_downloads = qb.get_max_active_downloads()
+    return jsonify({"code": 200, "message": "max_active_downloads", "data": max_active_downloads})
+
+@bp.route("/modify_max_active_downloads", methods=['POST'])
+def modify_max_active_downloads():
+    nums = request.args.get("nums")
+    qb.modify_max_active_downloads(nums)
+    return jsonify({"code": 200, "message": "modify_max_active_downloads", "data": None})

@@ -183,3 +183,16 @@ class AddqbTask:
             except Exception as e:
                 self.logger.error("[AddqbTask] Failed to pause seeding for torrent: {}.".format(torrent_name))
             self.logger.info("[AddqbTask] Successfully pause seeding for torrent: {}.".format(torrent_name))
+    
+    def get_max_active_downloads(self):
+        preferences = self.qbt_client.app_preferences()
+        max_active_downloads = preferences['max_active_downloads']
+        self.logger.info("max_active_downloads: {}".format(max_active_downloads))
+        return max_active_downloads
+
+    def modify_max_active_downloads(self, nums):
+        try:
+            self.qbt_client.app_set_preferences({'max_active_downloads': nums})
+        except Exception as e:
+            self.logger.error("[AddqbTask] Failed to modify max active downloads: {}.".format(nums))
+        self.logger.info("[AddqbTask] Successfully modify max active downloads: {}.".format(nums))
