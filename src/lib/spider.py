@@ -106,7 +106,7 @@ class Mikan:
         self.logger.info("[SPIDER] get_subgroup_list success, mikan_id: {}, subgroup number: {}".format(mikan_id, len(subgroup_list)))
         return subgroup_list
     
-    def get_seed_list(self, mikan_id, subgroup_id):
+    def get_seed_list(self, mikan_id, subgroup_id, anime_type):
         url = "{}/Home/ExpandEpisodeTable?bangumiId={}&subtitleGroupId={}&take=65".format(self.url, mikan_id, subgroup_id)
         html_doc = self.request_html(url)
         if html_doc == None:
@@ -126,9 +126,12 @@ class Mikan:
             if not self.if_1080(seed_name):
                 continue
 
-            episode_str = self.get_episode(seed_name)
-            if episode_str == "null":
-                continue
+            if anime_type == 0:
+                episode_str = self.get_episode(seed_name)
+                if episode_str == "null":
+                    continue
+            else:
+                episode_str = 1
 
             episode = int(episode_str)
             seed_status = 0
@@ -138,6 +141,7 @@ class Mikan:
         self.logger.info("[SPIDER] get_seed_list success, mikan_id: {}, subgroup_id: {}, seed number: {}".format(mikan_id, subgroup_id, len(seed_list)))   
         return seed_list
     
+    # mikan.download_img("/images/Bangumi/202307/f94fdb7f.jpg", "static/img/anime_list")
     def download_img(self, img_url, path):
         url = "{}{}".format(self.url, img_url)
         img_name = img_url.split('/')[4]
@@ -147,6 +151,7 @@ class Mikan:
         self.logger.info("[SPIDER] download_img success, img_url: {}, path: {}".format(img_url, path))
         return True
 
+    # mikan.download_seed("/Download/20230913/dfe6eb7c5f780e90f74244a498949375c67143b0.torrent", "seed/")
     def download_seed(self, seed_url, path):
         url = "{}{}".format(self.url, seed_url)
         torrent_name = seed_url.split('/')[3]
@@ -170,27 +175,27 @@ class Mikan:
         return episode_str
 
     def if_1080(self, seed_name):
-        str_list = re.findall(r'1080p|x1080\s|\s1080\s', seed_name)
+        str_list = re.findall(r'1080p|x1080\s|\s1080\s|[1080P]', seed_name)
         if len(str_list) == 0:
             return False
         return True
     
     def get_seed_list_thread(self, args):        
-        mikan_id, subgroup_id = args
+        mikan_id, subgroup_id, anime_type = args
         try:
-            seed_list = self.get_seed_list(mikan_id, subgroup_id)
+            seed_list = self.get_seed_list(mikan_id, subgroup_id, anime_type)
         except Exception as e:
             self.logger.warning("[SPIDER] get_seed_list_thread failed, mikan_id: {}, subgroup_id: {}, error: {}".format(mikan_id, subgroup_id, e))
         else:
             for s in seed_list:
                 self.seed_list.append(s)
     
-    def get_seed_list_task(self, mikan_id, subgroup_list):
+    def get_seed_list_task(self, mikan_id, subgroup_list, anime_type):
         self.seed_list = []
         task_list = []
         for sub in subgroup_list:
             subgroup_id = sub.subgroup_id
-            task = self.executor.submit(self.get_seed_list_thread, (mikan_id, subgroup_id))
+            task = self.executor.submit(self.get_seed_list_thread, (mikan_id, subgroup_id, anime_type))
             task_list.append(task)
         wait(task_list, return_when=ALL_COMPLETED)
         return self.seed_list
@@ -287,13 +292,3 @@ class Mikan:
                 anime_list.append(anime)
         self.logger.info("[SPIDER] get_anime_list success, anime number: {}".format(len(anime_list)))
         return anime_list
-
-
-# config = m_config.get('SPIDER')
-# logger = m_LogManager.getLogObj(sys.argv[0])
-# executor = ThreadPoolExecutor(max_workers=config['THREAD_POOL_SIZE_LIMIT'])
-# m_mikan = Mikan(logger, config, executor)
-
-# if __name__ == '__main__':
-    # mikan.download_seed("/Download/20230913/dfe6eb7c5f780e90f74244a498949375c67143b0.torrent", "seed/")
-    # mikan.download_img("/images/Bangumi/202307/f94fdb7f.jpg", "static/img/anime_list")

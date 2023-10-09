@@ -25,3 +25,5 @@ daemon_pid.txt
 *.ass
 
 *.ttf
+
+src/test_*

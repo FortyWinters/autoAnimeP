@@ -81,6 +81,8 @@ def cancel_subscribe_anime():
 def insert_anime_seed_thread():
     start_time = time.time()
     mikan_id = request.args.get("mikan_id")
+    anime_type = request.args.get("anime_type")
+
     update_number = 0
     fail_number = 0
     seed_set = set()
@@ -100,7 +102,7 @@ def insert_anime_seed_thread():
         if s.subgroup_id not in subgroup_set:
             insert_data_to_anime_subgroup(s.subgroup_id, s.subgroup_name)
 
-    seed_list = mikan.get_seed_list_task(mikan_id, subgroup_list)
+    seed_list = mikan.get_seed_list_task(mikan_id, subgroup_list, anime_type)
     for s in seed_list:
         if s.seed_url not in seed_set:
             if not insert_data_to_anime_seed(s.mikan_id, s.episode, s.seed_url, s.subgroup_id, s.seed_name, s.seed_status):

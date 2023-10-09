@@ -25,7 +25,7 @@
                     <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:red;">
                         <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
                     </button>
-                    <button class="update-button" id="{{ anime.mikan_id }}">
+                    <button class="update-button" id="{{ anime.mikan_id }}" type="{{ anime.anime_type }}">
                         <img src="{{ url_for('static', filename='img/icon/update.svg') }}" alt="" width="20px" height="20px">
                     </button>
                     <button class="download-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}" style="background-color:orange;">
@@ -38,7 +38,7 @@
                     <button class="subscribe-button" id="{{ anime.mikan_id }}" subscribe_status="{{ anime.subscribe_status }}">
                         <img src="{{ url_for('static', filename='img/icon/subscribe.svg') }}" alt="" width="20px" height="20px">
                     </button>
-                    <button class="update-button" id="{{ anime.mikan_id }}">
+                    <button class="update-button" id="{{ anime.mikan_id }}" type="{{ anime.anime_type }}">
                         <img src="{{ url_for('static', filename='img/icon/update.svg') }}" alt="" width="20px" height="20px">
                     </button>
                     <button class="clean-button" id="{{ anime.mikan_id }}">

@@ -56,11 +56,12 @@ $(function() {
 
     $('button.update-button').on('click', function() {
         var mikan_id = $(this).attr('id');
+        var anime_type = $(this).attr('type');
         this.disabled = true;
         this.style.backgroundColor = "#d6d6d6";
 
         // 抓取种子
-        fetch("/anime/insert_anime_seed_thread?mikan_id="+mikan_id, {method: 'POST'})
+        fetch("/anime/insert_anime_seed_thread?mikan_id=" + mikan_id + '&anime_type=' + anime_type, {method: 'POST'})
             .then(response => response.json())
             .then(data => {
                 console.log(data)
