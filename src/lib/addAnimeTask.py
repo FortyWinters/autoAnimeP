@@ -26,17 +26,18 @@ class AddAnimeTask:
             print(mikan_id, self.mikan_id_to_name(mikan_id))
 
     # exist_anime_task_cur_mikan_id : {episode, [torrent_name, qb_task_status]}
-    # total_anime_seed_cur_mikan_id : {episode, [seed_url, seed_status, subgroup_id]}
+    # total_anime_seed_cur_mikan_id : [episode, seed_url, seed_status, subgroup_id]
     def update_anime_tasks_by_mikan_id(self, mikan_id, 
                                        exist_anime_task_cur_mikan_id, 
                                        total_anime_seed_cur_mikan_id):
 
         anime_task_cur_mikan_id = dict()
 
-        for episode, anime_list in total_anime_seed_cur_mikan_id.items():
-            torrent_name = anime_list[0]
-            seed_status = anime_list[1]
-            subgroup_id = anime_list[2]
+        for seed_info in total_anime_seed_cur_mikan_id:
+            episode = seed_info[0]
+            torrent_name = seed_info[1]
+            seed_status = seed_info[2]
+            subgroup_id = seed_info[3]
 
             # 跳过：
             # 1. 已经添加过的种子
@@ -44,6 +45,7 @@ class AddAnimeTask:
             if (episode in anime_task_cur_mikan_id) or \
                 (episode in exist_anime_task_cur_mikan_id) or \
                 (seed_status == 1) :
+                self.logger.info("[addAnimeTask] skip used torrent: {}.".format(torrent_name))
                 continue
             seed_info_cur_mikanId_and_episode = [torrent_name, subgroup_id]
             anime_task_cur_mikan_id[episode] = seed_info_cur_mikanId_and_episode

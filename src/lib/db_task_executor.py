@@ -32,7 +32,7 @@ class DbTaskExecutor:
         return exist_anime_task
     
     def get_total_anime_seed_by_mikan_id(self, mikan_id):
-        total_anime_seed = dict()
+        total_anime_seed = []
         # TODO 添加 anime_seed 标记位，用来标识种子是否被消费过
         sql = 'select episode,seed_url,seed_status,subgroup_id from anime_seed where mikan_id={}'.format(mikan_id)
         anime_lists = self.m_db_connector.execute(sql)
@@ -43,7 +43,7 @@ class DbTaskExecutor:
             seed_status = anime_list[2]
             subgroup_id = anime_list[3]
             
-            total_anime_seed[episode] = [seed_url, seed_status, subgroup_id]
+            total_anime_seed.append([episode, seed_url, seed_status, subgroup_id])
         
         return total_anime_seed
 

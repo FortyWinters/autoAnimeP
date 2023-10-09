@@ -33,7 +33,6 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
             exist_anime_task_cur_mikan_id = self.get_exist_anime_task_by_mikan_id(mikan_id)
             if len(total_anime_seed_cur_mikan_id) == 0:
                 self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] no anime tasks found by mikan_id: {}.".format(mikan_id))
-            
             # Get animeTask, animeTask : {mikan_id, {episode, [torrent_name, subgroupname]]}}
             self.update_anime_tasks_by_mikan_id(mikan_id, 
                                                 exist_anime_task_cur_mikan_id, 
@@ -93,6 +92,7 @@ class doTask(doAnimeTask, SpiderTask):
         self.qb_status_schedule_task()
         self.update_anime_seed()
         self.seed_schedule_task()
+        self.anime_task.clear()
         end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info("[do_anime_task][doTask][createTask] Finish Task at {}".format(end_time))
 
