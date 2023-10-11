@@ -71,7 +71,7 @@ function getDaemonPid() {
           if (info_list != null) {
               html_string += info_list;
           } else {
-              html_string += "无"
+              html_string += "无";
           }
           infoDiv.innerHTML = html_string;
       })
@@ -79,3 +79,38 @@ function getDaemonPid() {
 }
 
 getDaemonPid()
+
+function modifyMaxActiveDownloads() {
+    var nums = document.getElementById("max-download").value;
+
+    fetch('/download/modify_max_active_downloads?nums=' + nums, {method: 'POST'})
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        this.disabled = false;
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });   
+}
+
+function getMaxActiveDownloads() {
+  fetch('/download/get_max_active_downloads', {method: 'GET'})
+      .then(response => response.json())
+      .then(data => {
+          const info_list = data.data;
+          const infoDiv = document.getElementById('max-download-input');
+          var html_string = '<input type="number"'
+          if (info_list != null) {
+              html_string += 'value=' + info_list;
+          } else {
+              html_string += '';
+          }
+          html_string += ' id="max-download" style="width: 40px;">';
+          infoDiv.innerHTML = html_string;
+      })
+      .catch(error => console.error('Error:', error));
+}
+
+getMaxActiveDownloads()
