@@ -51,6 +51,12 @@ class AnimeSubgroup(db.Model):
     subgroup_id = db.Column(db.Integer, nullable=True, unique=True)
     subgroup_name = db.Column(db.String(40), nullable=True)
 
+class AnimeFilter(db.Model):
+    __tablename__ = "anime_filter"
+    index = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    episode_offset = db.Column(db.Integer, default=0)
+    skip_subgroup = db.Column(db.String(200), nullable=True)
+
 def session_commit():
     try:
         db.session.commit()

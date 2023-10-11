@@ -96,3 +96,16 @@ CREATE TABLE `anime_subgroup` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for anime_filter
+-- ----------------------------
+CREATE TABLE `anime_filter` (
+  `index` int NOT NULL AUTO_INCREMENT,
+  `mikan_id` int NOT NULL,
+  `episode_offset` int DEFAULT 0,
+  `skip_subgroup` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`index`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
