@@ -1,12 +1,12 @@
 import os
 from flask import request, jsonify, render_template, Blueprint
-from exts import logger
+from exts import logger, broadcast_map
 
 bp = Blueprint("setting", __name__, url_prefix="/setting")
 
 @bp.route("/", methods=['GET'])
 def index():
-    return render_template("setting.html")
+    return render_template("setting.html", broadcast_map=broadcast_map)
 
 @bp.route("/start_main_task", methods=['POST'])
 def start_main_task():

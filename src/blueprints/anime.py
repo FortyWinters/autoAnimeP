@@ -2,7 +2,7 @@ import os
 import time
 from datetime import datetime
 from flask import request, jsonify, render_template, Blueprint
-from exts import mikan, logger, config, qb
+from exts import mikan, logger, config, qb, broadcast_map
 from lib.models import *
 
 bp = Blueprint("anime", __name__, url_prefix="/anime")
@@ -32,24 +32,6 @@ def index():
         anime_order_list.append(a)
     for a in unsubscribe_order_list:
         anime_order_list.append(a)
-
-    now = datetime.now()
-    current_year = now.year
-    current_month = now.month
-    broadcast_map = dict()
-    broadcast_map[2013] = [3]
-    for year in range(2014, current_year):
-        broadcast_map[year] = [4, 1, 2, 3]
-
-    if current_month > 0 and current_month < 3:
-        season_list = [4]
-    elif current_month >= 3 and current_month < 6:
-        season_list = [4, 1]
-    elif current_month >= 6 and current_month < 9:
-        season_list = [4, 1, 2]
-    else:
-        season_list = [4, 1, 2, 3]
-    broadcast_map[current_year] = season_list
 
     logger.info("[BP][ANIME] index success, url: /anime/")
     return render_template("my_anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map)
@@ -249,7 +231,7 @@ def detail(mikan_id):
     seed_group_by_subgroup = get_anime_seed_group_by_subgroup(mikan_id)
 
     logger.info("[BP][ANIME] detail success, url: /anime/detail/{}".format(mikan_id))
-    return render_template("detail.html", anime=anime, sorted_episode_list=sorted_episode_list, seed_group_by_subgroup=seed_group_by_subgroup, subgroup_map=subgroup_map)
+    return render_template("detail.html", anime=anime, sorted_episode_list=sorted_episode_list, seed_group_by_subgroup=seed_group_by_subgroup, subgroup_map=subgroup_map, broadcast_map=broadcast_map)
 
 # 按照年份和季度更新番剧列表
 @bp.route("/update_anime_list", methods=['POST'])
@@ -334,24 +316,6 @@ def anime_list_by_broadcast(url_year, url_season):
         anime_order_list.append(a)
     for a in unsubscribe_order_list:
         anime_order_list.append(a)
-
-    now = datetime.now()
-    current_year = now.year
-    current_month = now.month
-    broadcast_map = dict()
-    broadcast_map[2013] = [3]
-    for year in range(2014, current_year):
-        broadcast_map[year] = [4, 1, 2, 3]
-
-    if current_month > 0 and current_month < 3:
-        season_list = [4]
-    elif current_month >= 3 and current_month < 6:
-        season_list = [4, 1]
-    elif current_month >= 6 and current_month < 9:
-        season_list = [4, 1, 2]
-    else:
-        season_list = [4, 1, 2, 3]
-    broadcast_map[current_year] = season_list
 
     logger.info("[BP][ANIME] anime_list_by_broadcast success, url: /anime/")
     return render_template("anime.html", anime_list=anime_order_list, broadcast_map=broadcast_map, url_year=url_year, url_season=url_season)

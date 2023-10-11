@@ -1,5 +1,4 @@
 #torrentInfo {
-    margin-left: 45px;
     width: 1450px;
 }
 progress {
@@ -83,4 +82,7 @@ progress::-webkit-progress-value{
 }
 #delete {
     background-color: red;
+}
+.anime-button {
+    display: none;
 }

@@ -8,29 +8,15 @@
     <script src="{{ url_for('static', filename='js/anime.js') }}"></script>
 {% endblock %}
 
+{% block style %}
+<style>
+    .anime-button {
+        display: none;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
-    <div class="navi">
-    {% for year, seasons in broadcast_map.items() %}
-    <div class="broadcast">
-        <div class="year">{{ year }}</div>
-            {% for season in seasons %}
-            <div class="season">
-                <a href="/anime/{{ year }}/{{ season }}">
-                    {% if season == 1 %}
-                        春
-                    {% elif season == 2 %}
-                        夏
-                    {% elif season == 3 %}
-                        秋
-                    {% else %}
-                        冬
-                    {% endif %}
-                </a>
-            </div>
-            {% endfor %}
-    </div>
-    {% endfor %}
-    </div>
     <ul>
     {% for anime in anime_list %}
         <li>

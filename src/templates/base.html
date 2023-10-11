@@ -20,6 +20,66 @@
         <button class="lside-button" onclick="window.location.href='/setting'">设置</button>
     </div>
     <div class="container">
+        <div class="navi-with-button">
+            <div class="navi">
+                {% for year, seasons in broadcast_map.items() %}
+                <div class="broadcast">
+                    {% if year == url_year %}
+                    <div class="year" style="background-color: orange;">{{ year }}</div>
+                        {% for season in seasons %}
+                            {% if season == url_season %}
+                            <div class="season" style="background-color: orange;">
+                                <a href="/anime/{{ year }}/{{ season }}">
+                                    {% if season == 1 %}
+                                        春
+                                    {% elif season == 2 %}
+                                        夏
+                                    {% elif season == 3 %}
+                                        秋
+                                    {% else %}
+                                        冬
+                                    {% endif %}
+                                </a>
+                            </div>
+                            {% else %}
+                            <div class="season">
+                                <a href="/anime/{{ year }}/{{ season }}">
+                                    {% if season == 1 %}
+                                        春
+                                    {% elif season == 2 %}
+                                        夏
+                                    {% elif season == 3 %}
+                                        秋
+                                    {% else %}
+                                        冬
+                                    {% endif %}
+                                </a>    
+                            </div>    
+                            {% endif %}
+                        {% endfor %}        
+                    {% else %}
+                        <div class="year">{{ year }}</div>
+                            {% for season in seasons %}
+                            <div class="season">
+                                <a href="/anime/{{ year }}/{{ season }}">
+                                    {% if season == 1 %}
+                                        春
+                                    {% elif season == 2 %}
+                                        夏
+                                    {% elif season == 3 %}
+                                        秋
+                                    {% else %}
+                                        冬
+                                    {% endif %}
+                                </a>
+                            </div>
+                            {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            </div>
+            <button class="anime-button">列表更新</button>
+        </div>
         {% block body %}{% endblock %}
     </div>
 </body>

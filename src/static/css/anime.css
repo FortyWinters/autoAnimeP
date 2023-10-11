@@ -1,17 +1,17 @@
 ul {
     list-style: none;
+    padding-left: 0px;
+    margin-top: 0px;
 }
 li {
     float: left;
-}
-.container {
-    margin: 0 auto;
 }
 .anime-container {
     float: left;
     height: 350px;
     width: 210px;
-    margin: 0 5px 10px 5px;
+    margin-left: 0px;
+    margin-right: 10px;
 }
 .anime-info {
     height: 20px;
@@ -79,20 +79,9 @@ li {
     border-radius: 5px;
     width: 150px;
     height: 50px;
-    margin-left: 150px;
+    float: left;
+    margin-left: 140px;
 }
 .anime-button:hover {
     background-color: red;
-}
-.navi {
-    margin-left: 45px;
-    display: block;
-}
-a {
-    text-decoration: none;
-    color: inherit;
-}
-.broadcast {
-    float: left;
-    margin-left: 5px;
 }

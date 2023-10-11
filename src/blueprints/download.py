@@ -1,6 +1,5 @@
-import os
 from flask import request, jsonify, render_template, Blueprint
-from exts import logger, config, qb, m_DBconnector
+from exts import logger, config, qb, m_DBconnector, broadcast_map
 # from lib.addqbTask import AddqbTask
 from lib.models import *
 
@@ -19,7 +18,7 @@ def index():
             update_anime_task_qb_task_status_by_torrent_name(torrent["hash"], 1)
 
     logger.info("[BP][DOWNLOAD] index success, url: /download/")
-    return render_template("download.html")
+    return render_template("download.html", broadcast_map=broadcast_map)
 
 @bp.route("/get_qb_download_progress", methods=['GET'])
 def get_qb_download_progress():
