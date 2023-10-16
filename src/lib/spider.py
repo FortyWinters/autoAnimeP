@@ -126,7 +126,7 @@ class Mikan:
             if not self.if_1080(seed_name):
                 continue
 
-            if anime_type == '0':
+            if anime_type == 0:
                 episode_str = self.get_episode(seed_name)
                 if episode_str == "null":
                     continue

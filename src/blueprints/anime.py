@@ -63,7 +63,7 @@ def cancel_subscribe_anime():
 def insert_anime_seed_thread():
     start_time = time.time()
     mikan_id = request.args.get("mikan_id")
-    anime_type = request.args.get("anime_type")
+    anime_type = int(request.args.get("anime_type"))
 
     update_number = 0
     fail_number = 0
