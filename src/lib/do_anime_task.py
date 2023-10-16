@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 import datetime
 import schedule
@@ -80,6 +81,55 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
             self.logger.info("[do_anime_task][doAnimeTask][qb_status_schedule_task] Task {} has been completed".\
                              format(torrent["name"]))
             self.update_qb_task_status(torrent["hash"])
+
+    def check_fin_episode(self, anime_dir):
+        finished_episodes = os.listdir(anime_dir)
+        anime_task_status_lists = []
+
+        if finished_episodes is None:
+            self.logger.info("[do_anime_task][doAnimeTask][check_fin_episode] No completed episodes found!")
+            return
+
+        for finished_episode in finished_episodes:
+            try:
+                anime_seed_task_attr = []
+                finished_episode = finished_episode.split(' - ')
+                episode = finished_episode[1]
+                torrent_name = 'unknow'
+
+                anime_seed_task_attr = (episode, torrent_name)
+                anime_task_status_lists.append(anime_seed_task_attr)
+
+            except Exception as e:
+                self.logger.error("[do_anime_task][doAnimeTask][check_fin_episode] fail to parser anime name: {}.".format(finished_episode))
+                continue
+        
+        self.logger.info("[do_anime_task][doAnimeTask][check_fin_episode] Found {} completed episodes of {}.".\
+                         format(len(anime_task_status_lists), anime_dir))
+
+        return anime_task_status_lists
+
+    def load_fin_task(self):
+        download_dir = "downloads/"
+        finished_animes = os.listdir(download_dir)
+
+        if finished_animes is None:
+            self.logger.warning("[do_anime_task][doAnimeTask][load_fin_task] Empty directory!")
+            return
+        
+        print(len(finished_animes))
+
+        for anime_name in finished_animes:
+            
+            if anime_name == "seed" or anime_name == '.DS_Store':
+                continue
+            anime_dir = download_dir + anime_name
+            self.logger.info("[do_anime_task][doAnimeTask][load_fin_task] check anime dir: {}.".format(anime_dir))
+
+            mikan_id = self.get_mikan_id_by_anime_name(anime_name)
+            anime_task_status_lists = self.check_fin_episode(anime_dir)
+            self.check_torrent_status(mikan_id, anime_task_status_lists)
+
 
 class doTask(doAnimeTask, SpiderTask):
     def __init__(self, logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor):

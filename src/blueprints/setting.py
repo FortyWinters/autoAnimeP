@@ -121,3 +121,20 @@ def get_daemon_pid():
 
     logger.info("[BP][DOWNLOAD] get_daemon_pid success, pid: {}".format(pid))
     return jsonify({"code": 200, "message": "get_daemon_pid", "data": pid})
+
+@bp.route("/load_fin_task", methods=['GET'])
+def load_fin_task():
+    from lib.config import m_config
+    from lib.connect import m_DBconnector
+    from lib.spider import Mikan
+    from concurrent.futures import ThreadPoolExecutor
+    from lib.do_anime_task import doTask
+
+    anime_config = m_config.get('DOWNLOAD')
+    qb_config = m_config.get('QB')
+    spider_config = m_config.get('SPIDER')
+
+    executor = ThreadPoolExecutor(max_workers=12)
+    mikan = Mikan(logger, spider_config, executor)
+    doTask(logger, mikan, anime_config, qb_config, m_DBconnector, executor).load_fin_task()
+    return jsonify({"code": 200, "message": "load_fin_task", "data": None})

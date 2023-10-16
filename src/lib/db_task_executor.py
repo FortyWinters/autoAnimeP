@@ -64,6 +64,31 @@ class DbTaskExecutor:
                 format(mikan_id, 0, episode, torrent_name)
             self.m_db_connector.execute(sql)
 
+    def check_torrent_status(self,
+                              mikan_id,
+                              anime_task_status_lists):
+        
+        for anime_seed_task_attr in anime_task_status_lists:
+            # torrent_name = torrent_name.split('/')[3]
+            episode = anime_seed_task_attr[0]
+            torrent_name = anime_seed_task_attr[1]
+
+            sql = sql = "select * from anime_task WHERE mikan_id={} and episode={}".format(mikan_id, episode)
+            
+            try:
+                ret = self.m_db_connector.execute(sql)
+            except Exception as e:
+                self.logger.warning("[DbTaskExecutor][check_torrent_status] fail to find any item by mikan_id={} and episode={}".\
+                                  format(mikan_id, episode))
+                continue
+
+            if len(ret) != 0:
+                continue
+
+            sql = "INSERT INTO anime_task (mikan_id, qb_task_status, episode, torrent_name) VALUES ({}, {}, {}, '{}')".\
+                format(mikan_id, 1, episode, torrent_name)
+            self.m_db_connector.execute(sql)
+
     def update_seed_status(self, seed_url):
         sql = "UPDATE anime_seed SET seed_status=1 WHERE seed_url='{}'".format(seed_url)
         self.m_db_connector.execute(sql)
@@ -131,3 +156,11 @@ class DbTaskExecutor:
         else:
             ret = ret[0][0].split('|')
             return ret
+    
+    def get_mikan_id_by_anime_name(self, anime_name):
+        sql = "select mikan_id from anime_list WHERE anime_name='{}'".format(anime_name)
+        ret = self.m_db_connector.execute(sql)
+
+        if len(ret) == 0 or ret[0][0] is None:
+            return
+        return ret[0][0]
