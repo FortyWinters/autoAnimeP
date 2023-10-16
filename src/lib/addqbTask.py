@@ -109,6 +109,8 @@ class AddqbTask:
         return torrent_web_info
     
     def del_torrent(self, torrent_name):
+        if torrent_name == "unknow":
+            return
         torrent_hash = torrent_name.split('/')[3][:-8]
         try:
             self.qbt_client.torrents_delete(hashes=torrent_hash, delete_files=True)
