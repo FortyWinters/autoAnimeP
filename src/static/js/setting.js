@@ -113,4 +113,15 @@ function getMaxActiveDownloads() {
       .catch(error => console.error('Error:', error));
 }
 
+function syncAnime() {
+    fetch('/download/TMP', {method: 'GET'})
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        this.disabled = false;
+        window.location.reload();
+    })
+    .catch(error => console.error('Error:', error));
+}
+
 getMaxActiveDownloads()
