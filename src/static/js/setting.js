@@ -114,7 +114,7 @@ function getMaxActiveDownloads() {
 }
 
 function syncAnime() {
-    fetch('/download/TMP', {method: 'GET'})
+    fetch('/setting/load_fin_task', {method: 'GET'})
     .then(response => response.json())
     .then(data => {
         console.log(data)
