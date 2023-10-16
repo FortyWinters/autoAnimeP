@@ -225,6 +225,8 @@ def detail(mikan_id):
         if task["episode"] in episode_map:
             if episode_map[task["episode"]] != 1:
                 episode_map[task["episode"]] = task["qb_task_status"]
+        else:
+            episode_map[task["episode"]] = task["qb_task_status"]
     
     sorted_episode_list = [{k: v} for k, v in sorted(episode_map.items())]
 
