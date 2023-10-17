@@ -48,6 +48,7 @@ CREATE TABLE `anime_seed` (
   `seed_name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
   `seed_url` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
   `seed_status` int DEFAULT NULL COMMENT '0为未使用,1为已使用',
+  `seed_size` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`index`),
   UNIQUE KEY `seed_url` (`seed_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

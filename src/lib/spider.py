@@ -119,9 +119,11 @@ class Mikan:
         for tr in tr_list:
             seed_url_ = tr.xpath('.//a[last()]/@href')
             seed_name_ = tr.xpath('.//a[@class="magnet-link-wrap"]/text()')
+            seed_size_ = tr.xpath('.//td[2]/text()')
 
             seed_url = self.lxml_result_to_str(seed_url_)
             seed_name = self.lxml_result_to_str(seed_name_)
+            seed_size = self.lxml_result_to_str(seed_size_)
 
             if not self.if_1080(seed_name):
                 continue
@@ -135,7 +137,7 @@ class Mikan:
 
             episode = int(episode_str)
             seed_status = 0
-            seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status)
+            seed = Seed(mikan_id, episode, seed_url, subgroup_id, seed_name, seed_status, seed_size)
             seed_list.append(seed)
         
         self.logger.info("[SPIDER] get_seed_list success, mikan_id: {}, subgroup_id: {}, anime_type: {}, seed number: {}".format(mikan_id, subgroup_id, anime_type, len(seed_list)))   
