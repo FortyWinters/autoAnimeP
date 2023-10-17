@@ -27,7 +27,8 @@ class AddAnimeTask:
 
     # exist_anime_task_cur_mikan_id : {episode, [torrent_name, qb_task_status]}
     # total_anime_seed_cur_mikan_id : [episode, seed_url, seed_status, subgroup_id]
-    def update_anime_tasks_by_mikan_id(self, mikan_id, 
+    def update_anime_tasks_by_mikan_id(self, 
+                                       mikan_id, 
                                        exist_anime_task_cur_mikan_id, 
                                        total_anime_seed_cur_mikan_id):
 
@@ -42,9 +43,40 @@ class AddAnimeTask:
             # 跳过：
             # 1. 已经添加过的种子
             # 2. 下载成功的种子
-            if (episode in anime_task_cur_mikan_id) or \
-                (episode in exist_anime_task_cur_mikan_id) or \
+            if (episode in anime_task_cur_mikan_id) or (episode in exist_anime_task_cur_mikan_id) or \
                 (seed_status == 1) :
+                self.logger.debug("[addAnimeTask] skip used torrent: {}.".format(torrent_name))
+                continue
+            seed_info_cur_mikanId_and_episode = [torrent_name, subgroup_id]
+            anime_task_cur_mikan_id[episode] = seed_info_cur_mikanId_and_episode
+        
+        self.anime_task[mikan_id] = anime_task_cur_mikan_id
+    
+    def update_anime_tasks_by_mikan_id_with_filter(self, 
+                                                   mikan_id, 
+                                                   exist_anime_task_cur_mikan_id, 
+                                                   total_anime_seed_cur_mikan_id,
+                                                   global_filter):
+
+        anime_task_cur_mikan_id = dict()
+        global_episode_offset = global_filter['episode_offset']
+        global_skip_subgroup = global_filter['skip_subgroup']
+
+        for seed_info in total_anime_seed_cur_mikan_id:
+            episode = seed_info[0]
+            torrent_name = seed_info[1]
+            seed_status = seed_info[2]
+            subgroup_id = seed_info[3]
+
+            # 跳过：
+            # 1. 已经添加过的种子
+            # 2. 下载成功的种子
+            # 3. 需要跳过的字幕组的种子
+            # 4. 预设起始集数前的种子
+            if (episode in anime_task_cur_mikan_id) or (episode in exist_anime_task_cur_mikan_id) or \
+                (seed_status == 1) or \
+                (subgroup_id in global_skip_subgroup) or \
+                (episode < global_episode_offset):
                 self.logger.debug("[addAnimeTask] skip used torrent: {}.".format(torrent_name))
                 continue
             seed_info_cur_mikanId_and_episode = [torrent_name, subgroup_id]

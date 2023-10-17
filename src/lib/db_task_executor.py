@@ -187,9 +187,14 @@ class DbTaskExecutor:
     def get_global_episode_offset_filter(self):
         sql = "select filter_val from anime_filter WHERE object=1 and filter_type='episode_offset'"
         ret = self.m_db_connector.execute(sql)
+        if len(ret) == 0:
+            return 0
         return ret[0][0]
 
     def get_global_skip_subgroup_filter(self):
         sql = "select filter_val from anime_filter WHERE object=1 and filter_type='skip_subgroup'"
         ret = self.m_db_connector.execute(sql)
-        return ret
+        skip_subgroup_list = []
+        for item in ret:
+            skip_subgroup_list.append(item[0])
+        return skip_subgroup_list

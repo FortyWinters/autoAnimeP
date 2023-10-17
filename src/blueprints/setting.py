@@ -178,8 +178,5 @@ def get_global_episode_offset_filter():
 
 @bp.route("/get_global_skip_subgroup_filter", methods=['GET'])
 def get_global_skip_subgroup_filter():
-    skip_subgroup_list_raw = m_doTask.get_global_skip_subgroup_filter()
-    skip_subgroup_list = []
-    for item in skip_subgroup_list_raw:
-        skip_subgroup_list.append(item[0])
+    skip_subgroup_list = m_doTask.get_global_skip_subgroup_filter()
     return jsonify({"code": 200, "message": "get_global_skip_subgroup_filter", "data": skip_subgroup_list})

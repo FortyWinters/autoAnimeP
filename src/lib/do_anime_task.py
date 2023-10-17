@@ -24,6 +24,11 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
         self.mika_id_to_name_map = self.create_mika_id_to_name_map(self.mikan_id_lists)
         self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] mikan_id to name: {}".format(self.mika_id_to_name_map))
 
+        global_filter = dict(
+            episode_offset = self.get_global_episode_offset_filter(),
+            skip_subgroup = self.get_global_skip_subgroup_filter(),
+        )
+
         # 去重
         for mikan_id in self.mikan_id_lists:
             total_anime_seed_cur_mikan_id = self.get_total_anime_seed_by_mikan_id(mikan_id)
@@ -34,11 +39,16 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
             exist_anime_task_cur_mikan_id = self.get_exist_anime_task_by_mikan_id(mikan_id)
             if len(total_anime_seed_cur_mikan_id) == 0:
                 self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] no anime tasks found by mikan_id: {}.".format(mikan_id))
+            
             # Get animeTask, animeTask : {mikan_id, {episode, [torrent_name, subgroupname]]}}
             self.update_anime_tasks_by_mikan_id(mikan_id, 
                                                 exist_anime_task_cur_mikan_id, 
                                                 total_anime_seed_cur_mikan_id)
-        
+            
+            # self.update_anime_tasks_by_mikan_id_with_filter(mikan_id, 
+            #                                                 exist_anime_task_cur_mikan_id, 
+            #                                                 total_anime_seed_cur_mikan_id,
+            #                                                 global_filter)
         self.logger.info("[do_anime_task][doAnimeTask][seed_schedule_task] anime_task: {}".format(self.anime_task))
 
         # 标记使用过的seed
