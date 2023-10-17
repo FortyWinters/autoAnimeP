@@ -54,6 +54,7 @@ services:
       - ./log:/autoAnime/log
       - ./seed:/autoAnime/seed
       - ./config_file:/autoAnime/config_file
+      - ./downloads:/autoAnime/downloads
     depends_on:
       - mysql
       - qbittorrent
