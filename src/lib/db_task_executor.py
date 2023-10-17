@@ -11,6 +11,14 @@ class DbTaskExecutor:
         sub_mikan_id_lists.extend(item[0] for item in self.m_db_connector.execute(sql))  
         return sub_mikan_id_lists
     
+    def get_mikan_id_by_anime_name(self, anime_name):
+        sql = "select mikan_id from anime_list WHERE anime_name='{}'".format(anime_name)
+        ret = self.m_db_connector.execute(sql)
+
+        if len(ret) == 0 or ret[0][0] is None:
+            return
+        return ret[0][0]
+
     def create_mika_id_to_name_map(self, sub_mikan_id_lists):
         for mikan_id in sub_mikan_id_lists:
             sql = 'select anime_name from anime_list where mikan_id={}'.format(mikan_id)
@@ -102,65 +110,86 @@ class DbTaskExecutor:
         subgroup_name = self.m_db_connector.execute(sql)[0][0]
         return subgroup_name
     
+    # 局部filter
     def add_episode_offset_filter_by_mikan_id(self, mikan_id, episode_offset):
-        sql = "select * from anime_filter WHERE mikan_id={}".format(mikan_id)
+        sql = "select * from anime_filter WHERE mikan_id={} and filter_type='episode_offset'".format(mikan_id)
         ret = self.m_db_connector.execute(sql)
 
         if len(ret) == 0:
-            sql = "INSERT INTO anime_filter (mikan_id, episode_offset) VALUES ({}, {})".format(mikan_id, episode_offset)
+            sql = "INSERT INTO anime_filter (mikan_id, filter_val, filter_type) VALUES ({}, {}, 'episode_offset')".format(mikan_id, episode_offset)
         else:
-            sql = "UPDATE anime_filter SET episode_offset={} WHERE mikan_id={}".format(episode_offset, mikan_id)
-        
+            sql = "UPDATE anime_filter SET filter_val={} WHERE mikan_id={} and filter_type='episode_offset'".format(episode_offset, mikan_id)
         self.m_db_connector.execute(sql)
     
     def add_skip_subgroup_filter_by_mikan_id(self, mikan_id, skip_subgroup):
-        sql = "select * from anime_filter WHERE mikan_id={}".format(mikan_id)
+        sql = "select * from anime_filter WHERE mikan_id={} and filter_val={}".format(mikan_id, skip_subgroup)
         ret = self.m_db_connector.execute(sql)
-
-        if len(ret) == 0:
-            sql = "INSERT INTO anime_filter (mikan_id, skip_subgroup) VALUES ({}, '{}')".format(mikan_id, skip_subgroup)
-        else:
-            sql = "select skip_subgroup from anime_filter WHERE mikan_id={}".format(mikan_id)
-            ret = self.m_db_connector.execute(sql)
-
-            if ret[0][0] is None:
-                sql = "UPDATE anime_filter SET skip_subgroup='{}' WHERE mikan_id={}".format(skip_subgroup, mikan_id)
-            else:
-                skip_subgroup = skip_subgroup + '|' + ret[0][0]
-                sql = "UPDATE anime_filter SET skip_subgroup='{}' WHERE mikan_id={}".format(skip_subgroup, mikan_id)
-
+        
+        if len(ret) > 0:
+            return
+        sql = "INSERT INTO anime_filter (mikan_id, filter_val, filter_type) VALUES ({}, {}, 'skip_subgroup')".format(mikan_id, skip_subgroup)
         self.m_db_connector.execute(sql)
 
+    def del_episode_offset_filter_by_mikan_id(self, mikan_id):
+        sql = "DELETE FROM anime_filter WHERE mikan_id={} and filter_type='episode_offset'".format(mikan_id)
+        self.m_db_connector.execute(sql)
+    
     def del_skip_subgroup_filter_by_mikan_id(self, mikan_id):
-        sql = "select * from anime_filter WHERE mikan_id={}".format(mikan_id)
-        ret = self.m_db_connector.execute(sql)
+        sql = "DELETE FROM anime_filter WHERE mikan_id={} and filter_type='skip_subgroup'".format(mikan_id)
+        self.m_db_connector.execute(sql)
 
-        if len(ret) == 0:
-            return
-        else:
-            sql = "UPDATE anime_filter SET skip_subgroup=NULL WHERE mikan_id={}".format(mikan_id)
-            self.m_db_connector.execute(sql)
-    
+    def del_skip_subgroup_filter_by_mikan_id_and_skip_subgroup(self, mikan_id, skip_subgroup):
+        sql = "DELETE FROM anime_filter WHERE mikan_id={} and filter_type='skip_subgroup' and filter_val={}".format(mikan_id, skip_subgroup)
+        self.m_db_connector.execute(sql)
+
     def get_episode_offset_filter_by_mikan_id(self, mikan_id):
-        sql = "select episode_offset from anime_filter WHERE mikan_id={}".format(mikan_id)
+        sql = "select filter_val from anime_filter WHERE mikan_id={} and filter_type='episode_offset'".format(mikan_id)
         ret = self.m_db_connector.execute(sql)
-    
         return ret[0][0]
     
     def get_skip_subgroup_filter_by_mikan_id(self, mikan_id):
-        sql = "select skip_subgroup from anime_filter WHERE mikan_id={}".format(mikan_id)
+        sql = "select filter_val from anime_filter WHERE mikan_id={} and filter_type='skip_subgroup'".format(mikan_id)
         ret = self.m_db_connector.execute(sql)
-
-        if len(ret) == 0 or ret[0][0] is None:
-            return
-        else:
-            ret = ret[0][0].split('|')
-            return ret
+        return ret
     
-    def get_mikan_id_by_anime_name(self, anime_name):
-        sql = "select mikan_id from anime_list WHERE anime_name='{}'".format(anime_name)
+    # 全局filter
+    def add_global_episode_offset_filter(self, episode_offset):
+        sql = "select * from anime_filter WHERE object=1 and filter_type='episode_offset'"
         ret = self.m_db_connector.execute(sql)
 
-        if len(ret) == 0 or ret[0][0] is None:
+        if len(ret) == 0:
+            sql = "INSERT INTO anime_filter (mikan_id, filter_val, filter_type, object) VALUES (0, {}, 'episode_offset', 1)".format(episode_offset)
+        else:
+            sql = "UPDATE anime_filter SET filter_val={} WHERE object=1 and filter_type='episode_offset'".format(episode_offset)
+        self.m_db_connector.execute(sql)
+    
+    def add_global_skip_subgroup_filter_filter(self, skip_subgroup):
+        sql = "select * from anime_filter WHERE object=1 and filter_val={}".format(skip_subgroup)
+        ret = self.m_db_connector.execute(sql)
+        
+        if len(ret) > 0:
             return
+        sql = "INSERT INTO anime_filter (mikan_id, filter_val, filter_type, object) VALUES (0, {}, 'skip_subgroup', 1)".format(skip_subgroup)
+        self.m_db_connector.execute(sql)
+    
+    def del_global_episode_offset_filter(self):
+        sql = "DELETE FROM anime_filter WHERE object=1 and filter_type='episode_offset'"
+        self.m_db_connector.execute(sql)
+    
+    def del_global_skip_subgroup_filter(self):
+        sql = "DELETE FROM anime_filter WHERE object=1 and filter_type='skip_subgroup'"
+        self.m_db_connector.execute(sql)
+    
+    def del_global_skip_subgroup_filter_by_skip_subgroup(self, skip_subgroup):
+        sql = "DELETE FROM anime_filter WHERE object=1 and filter_type='skip_subgroup' and filter_val={}".format(skip_subgroup)
+        self.m_db_connector.execute(sql)
+    
+    def get_global_episode_offset_filter(self):
+        sql = "select filter_val from anime_filter WHERE object=1 and filter_type='episode_offset'"
+        ret = self.m_db_connector.execute(sql)
         return ret[0][0]
+
+    def get_global_skip_subgroup_filter(self):
+        sql = "select filter_val from anime_filter WHERE object=1 and filter_type='skip_subgroup'"
+        ret = self.m_db_connector.execute(sql)
+        return ret
