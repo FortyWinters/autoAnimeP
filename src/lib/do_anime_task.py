@@ -116,8 +116,6 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
         if finished_animes is None:
             self.logger.warning("[do_anime_task][doAnimeTask][load_fin_task] Empty directory!")
             return
-        
-        print(len(finished_animes))
 
         for anime_name in finished_animes:
             
