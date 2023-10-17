@@ -132,13 +132,13 @@ class doAnimeTask(AddAnimeTask, AddqbTask, DbTaskExecutor):
 class doTask(doAnimeTask, SpiderTask):
     def __init__(self, logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor):
         doAnimeTask.__init__(self, logger, mikan, anime_config, qb_cinfig, m_DBconnector, executor)
-        SpiderTask.__init__(self, mikan, m_DBconnector, logger)
+        SpiderTask.__init__(self, mikan, m_DBconnector, logger, executor)
     
     def createTask(self):
         start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info("[do_anime_task][doTask][createTask] Begin Task at {}".format(start_time))
         self.qb_status_schedule_task()
-        self.update_anime_seed()
+        self.update_anime_seed_full_speed()
         self.seed_schedule_task()
         self.anime_task.clear()
         end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

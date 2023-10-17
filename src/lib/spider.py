@@ -123,7 +123,7 @@ class Mikan:
 
             seed_url = self.lxml_result_to_str(seed_url_)
             seed_name = self.lxml_result_to_str(seed_name_)
-            seed_size = self.lxml_result_to_str(seed_size_)
+            seed_size = self.lxml_result_to_str(seed_size_).replace(' ', '')
 
             if not self.if_1080(seed_name):
                 continue

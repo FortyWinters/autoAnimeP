@@ -38,6 +38,12 @@ class Subgroup:
         self.subgroup_id   = subgroup_id
         self.subgroup_name = subgroup_name
 
+    def __eq__(self, other):
+        return isinstance(other, Subgroup) and self.subgroup_id == other.subgroup_id
+    
+    def __hash__(self):
+        return hash(self.subgroup_id)
+
     def to_string(self):
         return '({},  "{}")'.format(self.subgroup_id, self.subgroup_name)
 
