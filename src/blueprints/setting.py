@@ -1,19 +1,42 @@
 import os
+import subprocess
+import signal
+import multiprocessing
 from flask import request, jsonify, render_template, Blueprint
 from exts import logger, broadcast_map
+from lib.config import m_config
+from lib.connect import m_DBconnector
+from lib.spider import Mikan
+from concurrent.futures import ThreadPoolExecutor
+from lib.do_anime_task import doTask
 
 bp = Blueprint("setting", __name__, url_prefix="/setting")
+anime_config = m_config.get('DOWNLOAD')
+qb_config = m_config.get('QB')
+spider_config = m_config.get('SPIDER')
+
+executor = ThreadPoolExecutor(max_workers=12)
+mikan = Mikan(logger, spider_config, executor)
+m_doTask = doTask(logger, mikan, anime_config, qb_config, m_DBconnector, executor)
 
 @bp.route("/", methods=['GET'])
 def index():
+    if os.path.exists('config_file/daemon_pid.txt'):
+        with open('config_file/daemon_pid.txt', 'r') as file:
+            pid = file.read()
+        if not is_process_running(pid):
+            os.remove('config_file/daemon_pid.txt')
     return render_template("setting.html", broadcast_map=broadcast_map)
+
+def is_process_running(pid):
+    cmd = f'ps -p {pid}'
+    result = subprocess.run(cmd, shell=True, capture_output=True)
+    output = result.stdout.decode()
+    print(output)
+    return pid in output
 
 @bp.route("/start_main_task", methods=['POST'])
 def start_main_task():
-    import os
-    import multiprocessing
-    from flask import jsonify
-
     if os.path.exists('config_file/daemon_pid.txt'):
         with open('config_file/daemon_pid.txt', 'r') as file:
             pid = int(file.read())
@@ -39,8 +62,6 @@ def start_main_task():
 
 @bp.route("/stop_main_task", methods=['POST'])
 def stop_main_task():
-    import signal
-
     if not os.path.exists('config_file/daemon_pid.txt'):
         logger.error("[BP][stop_main_task] daemon process not started")
         return jsonify({"code": 200, "message": "daemon process not started", "data": None})
@@ -60,11 +81,6 @@ def stop_main_task():
 
 @bp.route("/change_main_task_interval", methods=['POST'])
 def change_main_task_interval():
-    import os
-    import signal
-    import multiprocessing
-    from flask import jsonify
-    
     if os.path.exists('config_file/daemon_pid.txt'):
         with open('config_file/daemon_pid.txt', 'r') as file:
             pid = int(file.read())
@@ -124,17 +140,5 @@ def get_daemon_pid():
 
 @bp.route("/load_fin_task", methods=['GET'])
 def load_fin_task():
-    from lib.config import m_config
-    from lib.connect import m_DBconnector
-    from lib.spider import Mikan
-    from concurrent.futures import ThreadPoolExecutor
-    from lib.do_anime_task import doTask
-
-    anime_config = m_config.get('DOWNLOAD')
-    qb_config = m_config.get('QB')
-    spider_config = m_config.get('SPIDER')
-
-    executor = ThreadPoolExecutor(max_workers=12)
-    mikan = Mikan(logger, spider_config, executor)
-    doTask(logger, mikan, anime_config, qb_config, m_DBconnector, executor).load_fin_task()
+    m_doTask.load_fin_task()
     return jsonify({"code": 200, "message": "load_fin_task", "data": None})
