@@ -54,8 +54,10 @@ class AnimeSubgroup(db.Model):
 class AnimeFilter(db.Model):
     __tablename__ = "anime_filter"
     index = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    episode_offset = db.Column(db.Integer, default=0)
-    skip_subgroup = db.Column(db.String(200), nullable=True)
+    mikan_id = db.Column(db.Integer, nullable=True)
+    filter_type = db.Column(db.String(200), nullable=True)
+    filter_val = db.Column(db.Integer, nullable=True)
+    object = db.Column(db.Integer, default=0, comment='filter类型 0表示local 1表示global')
 
 def session_commit():
     try:

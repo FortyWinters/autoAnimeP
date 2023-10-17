@@ -101,11 +101,13 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ----------------------------
 -- Table structure for anime_filter
 -- ----------------------------
+DROP TABLE IF EXISTS `anime_filter`;
 CREATE TABLE `anime_filter` (
   `index` int NOT NULL AUTO_INCREMENT,
   `mikan_id` int NOT NULL,
-  `episode_offset` int DEFAULT 0,
-  `skip_subgroup` varchar(200) DEFAULT NULL,
+  `filter_type` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `filter_val` int NOT null,
+  `object` int DEFAULT 0 COMMENT 'filter绑定的对象 0表示local 1表示global',
   PRIMARY KEY (`index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

@@ -142,3 +142,41 @@ def get_daemon_pid():
 def load_fin_task():
     m_doTask.load_fin_task()
     return jsonify({"code": 200, "message": "load_fin_task", "data": None})
+
+@bp.route("/add_global_episode_offset_filter", methods=['POST'])
+def add_global_episode_offset_filter():
+    episode_offset = request.args.get("episode_offset")
+    m_doTask.add_global_episode_offset_filter(episode_offset)
+    return jsonify({"code": 200, "message": "add_global_episode_offset_filter", "data": None})
+
+@bp.route("/add_global_skip_subgroup_filter_filter", methods=['POST'])
+def add_global_skip_subgroup_filter_filter():
+    skip_subgroup = request.args.get("skip_subgroup")
+    m_doTask.add_global_skip_subgroup_filter_filter(skip_subgroup)
+    return jsonify({"code": 200, "message": "add_global_skip_subgroup_filter_filter", "data": None})
+
+@bp.route("/del_global_episode_offset_filter", methods=['GET'])
+def del_global_episode_offset_filter():
+    m_doTask.del_global_episode_offset_filter()
+    return jsonify({"code": 200, "message": "del_global_episode_offset_filter", "data": None})
+
+@bp.route("/del_global_skip_subgroup_filter", methods=['GET'])
+def del_global_skip_subgroup_filter():
+    m_doTask.del_global_skip_subgroup_filter()
+    return jsonify({"code": 200, "message": "del_global_skip_subgroup_filter", "data": None})
+
+@bp.route("/del_global_skip_subgroup_filter_by_skip_subgroup", methods=['POST'])
+def del_global_skip_subgroup_filter_by_skip_subgroup():
+    skip_subgroup = request.args.get("skip_subgroup")
+    m_doTask.del_global_skip_subgroup_filter_by_skip_subgroup(skip_subgroup)
+    return jsonify({"code": 200, "message": "del_global_skip_subgroup_filter_by_skip_subgroup", "data": None})
+
+@bp.route("/get_global_episode_offset_filter", methods=['GET'])
+def get_global_episode_offset_filter():
+    episode_offset = m_doTask.get_global_episode_offset_filter()
+    return jsonify({"code": 200, "message": "get_global_episode_offset_filter", "data": episode_offset})
+
+@bp.route("/get_global_skip_subgroup_filter", methods=['GET'])
+def get_global_skip_subgroup_filter():
+    skip_subgroup_list = m_doTask.get_global_skip_subgroup_filter()
+    return jsonify({"code": 200, "message": "get_global_skip_subgroup_filter", "data": skip_subgroup_list})
