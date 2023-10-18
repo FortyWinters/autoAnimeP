@@ -56,11 +56,20 @@ class AddAnimeTask:
                                                    mikan_id, 
                                                    exist_anime_task_cur_mikan_id, 
                                                    total_anime_seed_cur_mikan_id,
-                                                   global_filter):
+                                                   global_filter,
+                                                   local_filter):
 
         anime_task_cur_mikan_id = dict()
-        global_episode_offset = global_filter['episode_offset']
-        global_skip_subgroup = global_filter['skip_subgroup']
+
+        episode_offset = global_filter['episode_offset']
+        skip_subgroup = global_filter['skip_subgroup']
+
+        if local_filter['episode_offset'] is not None:
+            episode_offset = local_filter['episode_offset']
+        if local_filter['skip_subgroup'] is not None:
+            skip_subgroup = local_filter['skip_subgroup']
+
+        print(episode_offset, skip_subgroup)
 
         for seed_info in total_anime_seed_cur_mikan_id:
             episode = seed_info[0]
@@ -75,8 +84,8 @@ class AddAnimeTask:
             # 4. 预设起始集数前的种子
             if (episode in anime_task_cur_mikan_id) or (episode in exist_anime_task_cur_mikan_id) or \
                 (seed_status == 1) or \
-                (subgroup_id in global_skip_subgroup) or \
-                (episode < global_episode_offset):
+                (subgroup_id in skip_subgroup) or \
+                (episode <= episode_offset):
                 self.logger.debug("[addAnimeTask] skip used torrent: {}.".format(torrent_name))
                 continue
             seed_info_cur_mikanId_and_episode = [torrent_name, subgroup_id]
