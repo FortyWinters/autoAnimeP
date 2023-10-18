@@ -28,3 +28,103 @@ function showSeeds(subgroupId) {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    var contextMenus = document.querySelectorAll('.context-menu');
+    var contextMenu;
+    var episodes = document.querySelectorAll('.episode');
+    var targetElement;
+    var episodeId;
+
+    // 将点击事件监听器绑定到所有的 .context-menu 元素
+    contextMenus.forEach(function(menu) {
+        menu.addEventListener('click', function(e) {
+            // 在这里处理 .context-menu 元素的点击事件
+            var ep = targetElement.innerHTML;
+            var mikanId = targetElement.getAttribute("data-id");
+            var seedUrl = targetElement.getAttribute("data-url");
+
+            switch (episodeId) {
+                case 'downloaded-ep':                            
+                    switch (e.target.id) {
+                        case 'delete':
+                            console.log('delete');
+                            console.log(ep);
+                            console.log(mikanId);
+                            break;
+                        case 'subscribe':
+                            console.log('subscribe');
+                            break;
+                        default:
+                            break;
+                    }
+                    break;         
+                case 'undownloaded-ep':
+                    switch (e.target.id) {
+                        case 'download':
+                            downloadSingleEpisode(mikanId, ep);
+                            break;
+                        case 'recover':
+                            console.log('recover');
+                            break;
+                        case 'subscribe':
+                            console.log('subscribe');
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 'downloaded-sd':
+                    switch (e.target.id) {
+                        case 'delete':
+                            console.log('delete');
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 'undownloaded-sd':
+                    switch (e.target.id) {
+                        case 'download':
+                            downloadSingleEpisodeBySubgroup(seedUrl);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 'failed-sd':
+                    switch (e.target.id) {
+                        case 'recover':
+                            console.log('recover');
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+    });
+
+    episodes.forEach(function(episode) {
+        episode.addEventListener('contextmenu', function(e) {
+            contextMenus.forEach(function(menu) {
+                menu.style.display = 'none';
+            });
+            e.preventDefault();
+            targetElement = e.target;
+            episodeId = targetElement.id;
+            contextMenu = document.getElementById(episodeId + '-menu');
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = e.pageX + 'px';
+            contextMenu.style.top = e.pageY + 'px';
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        contextMenus.forEach(function(menu) {
+            menu.style.display = 'none';
+        });  
+    });
+});

@@ -10,14 +10,6 @@
     <script src="{{ url_for('static', filename='js/detail.js') }}"></script>
 {% endblock %}
 
-{% block style %}
-<style>
-    .anime-button {
-        display: none;
-    }
-</style>
-{% endblock %}
-
 {% block body %}
 <div>
     <div class="anime-info-container">
@@ -67,13 +59,13 @@
                     {% for item in sorted_episode_list %}
                         {% for episode, status in item.items() %}
                             {% if status == 1 %}
-                                <div class="episode" style="background-color:rgb(41, 207, 132);">{{ episode }}</div>
+                                <div class="episode" id="downloaded-ep" data-id="{{ anime.mikan_id }}" style="background-color:rgb(41, 207, 132);">{{ episode }}</div>
                             {% elif status == 0 %}
                                 <a href="/download">
-                                    <div class="episode" style="background-color:rgb(88, 202, 255);">{{ episode }}</div>
+                                    <div class="episode" id="downloaded-ep" data-id="{{ anime.mikan_id }}" style="background-color:rgb(88, 202, 255);">{{ episode }}</div>
                                 </a>
                             {% else %}
-                                <div class="episode" onclick="downloadSingleEpisode('{{ anime.mikan_id }}', '{{ episode }}')">{{ episode }}</div>
+                                <div class="episode" id="undownloaded-ep" data-id="{{ anime.mikan_id }}">{{ episode }}</div>
                             {% endif %}
                         {% endfor %}
                     {% endfor %}
@@ -83,16 +75,16 @@
                         <div class="subgroup-seed" id="{{ subgroup_id }}">
                             {% for seed in seed_list %}
                                 {% if seed.seed_status == 0 %}
-                                    <div class="episode" title="{{ seed.seed_name }}" onclick="downloadSingleEpisodeBySubgroup('{{ seed.seed_url }}')">{{ seed.episode }}</div>
+                                    <div class="episode" id="undownloaded-sd" data-id="{{ anime.mikan_id }}" data-url="{{ seed.seed_url }}" title="{{ seed.seed_name }}">{{ seed.episode }}</div>
                                 {% else %}
                                     {% if seed.qb_task_status == 1 %}
-                                        <div class="episode" title="{{ seed.seed_name }}" style="background-color:rgb(41, 207, 132);">{{ seed.episode }}</div>
+                                        <div class="episode" id="downloaded-sd" data-id="{{ anime.mikan_id }}" title="{{ seed.seed_name }}" style="background-color:rgb(41, 207, 132);">{{ seed.episode }}</div>
                                     {% elif seed.qb_task_status == 0 %}
                                         <a href="/download">
-                                            <div class="episode" title="{{ seed.seed_name }}" style="background-color:rgb(88, 202, 255);">{{ seed.episode }}</div>
+                                            <div class="episode" id="downloaded-sd" data-id="{{ anime.mikan_id }}" title="{{ seed.seed_name }}" style="background-color:rgb(88, 202, 255);">{{ seed.episode }}</div>
                                         </a>
                                     {% else %}
-                                        <div class="episode" title="{{ seed.seed_name }}" style="background-color:grey;">{{ seed.episode }}</div>
+                                        <div class="episode" id="failed-sd" data-id="{{ anime.mikan_id }}" title="{{ seed.seed_name }}" style="background-color:grey;">{{ seed.episode }}</div>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
@@ -102,5 +94,24 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="context-menu" id="undownloaded-ep-menu">
+    <div id="download">下载</div>
+    <div id="recover">恢复</div>
+    <div id="subscribe">开始订阅</div>
+</div>
+<div class="context-menu" id="downloaded-ep-menu">
+    <div id="delete">删除</div>
+    <div id="subscribe">开始订阅</div>
+</div>
+<div class="context-menu" id="undownloaded-sd-menu">
+    <div id="download">下载</div>
+</div>
+<div class="context-menu" id="downloaded-sd-menu">
+    <div id="delete">删除</div>
+</div>
+<div class="context-menu" id="failed-sd-menu">
+    <div id="recover">恢复</div>
 </div>
 {% endblock %}

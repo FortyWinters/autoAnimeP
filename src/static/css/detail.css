@@ -1,3 +1,6 @@
+.anime-button {
+    display: none;
+}
 .anime-img {
     float: left;
 }
@@ -52,4 +55,11 @@ li {
 .subgroup-seed {
     clear: both;
     display: none;
+}
+.context-menu {
+    display: none;
+    position: absolute; 
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
 }
