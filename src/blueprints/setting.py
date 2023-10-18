@@ -143,6 +143,7 @@ def load_fin_task():
     m_doTask.load_fin_task()
     return jsonify({"code": 200, "message": "load_fin_task", "data": None})
 
+# global filter
 @bp.route("/add_global_episode_offset_filter", methods=['POST'])
 def add_global_episode_offset_filter():
     episode_offset = request.args.get("episode_offset")
@@ -180,3 +181,49 @@ def get_global_episode_offset_filter():
 def get_global_skip_subgroup_filter():
     skip_subgroup_list = m_doTask.get_global_skip_subgroup_filter()
     return jsonify({"code": 200, "message": "get_global_skip_subgroup_filter", "data": skip_subgroup_list})
+
+# local filter
+@bp.route("/add_episode_offset_filter_by_mikan_id", methods=['POST'])
+def add_episode_offset_filter_by_mikan_id():
+    mikan_id = request.args.get("mikan_id")
+    episode_offset = request.args.get("episode_offset")
+    m_doTask.add_episode_offset_filter_by_mikan_id(mikan_id, episode_offset)
+    return jsonify({"code": 200, "message": "add_episode_offset_filter_by_mikan_id", "data": None})
+
+@bp.route("/add_skip_subgroup_filter_by_mikan_id", methods=['POST'])
+def add_skip_subgroup_filter_by_mikan_id():
+    mikan_id = request.args.get("mikan_id")
+    skip_subgroup = request.args.get("skip_subgroup")
+    m_doTask.add_skip_subgroup_filter_by_mikan_id(mikan_id, skip_subgroup)
+    return jsonify({"code": 200, "message": "add_skip_subgroup_filter_by_mikan_id", "data": None})
+
+@bp.route("/del_episode_offset_filter_by_mikan_id", methods=['POST'])
+def del_episode_offset_filter_by_mikan_id():
+    mikan_id = request.args.get("mikan_id")
+    m_doTask.del_episode_offset_filter_by_mikan_id(mikan_id)
+    return jsonify({"code": 200, "message": "del_episode_offset_filter_by_mikan_id", "data": None})
+
+@bp.route("/del_skip_subgroup_filter_by_mikan_id", methods=['POST'])
+def del_skip_subgroup_filter_by_mikan_id():
+    mikan_id = request.args.get("mikan_id")
+    m_doTask.del_skip_subgroup_filter_by_mikan_id(mikan_id)
+    return jsonify({"code": 200, "message": "del_skip_subgroup_filter_by_mikan_id", "data": None})
+
+@bp.route("/del_skip_subgroup_filter_by_mikan_id_and_skip_subgroup", methods=['POST'])
+def del_skip_subgroup_filter_by_mikan_id_and_skip_subgroup():
+    mikan_id = request.args.get("mikan_id")
+    skip_subgroup = request.args.get("skip_subgroup")
+    m_doTask.del_skip_subgroup_filter_by_mikan_id_and_skip_subgroup(mikan_id, skip_subgroup)
+    return jsonify({"code": 200, "message": "del_skip_subgroup_filter_by_mikan_id_and_skip_subgroup", "data": None})
+
+@bp.route("/get_episode_offset_filter_by_mikan_id", methods=['POST'])
+def get_episode_offset_filter_by_mikan_id():
+    mikan_id = request.args.get("mikan_id")
+    episode_offset = m_doTask.get_episode_offset_filter_by_mikan_id(mikan_id)
+    return jsonify({"code": 200, "message": "get_episode_offset_filter_by_mikan_id", "data": episode_offset})
+
+@bp.route("/get_skip_subgroup_filter_by_mikan_id", methods=['POST'])
+def get_skip_subgroup_filter_by_mikan_id():
+    mikan_id = request.args.get("mikan_id")
+    skip_subgroup = m_doTask.get_skip_subgroup_filter_by_mikan_id(mikan_id)
+    return jsonify({"code": 200, "message": "get_skip_subgroup_filter_by_mikan_id", "data": skip_subgroup})

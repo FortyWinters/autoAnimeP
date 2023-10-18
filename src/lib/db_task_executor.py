@@ -145,12 +145,17 @@ class DbTaskExecutor:
     def get_episode_offset_filter_by_mikan_id(self, mikan_id):
         sql = "select filter_val from anime_filter WHERE mikan_id={} and filter_type='episode_offset'".format(mikan_id)
         ret = self.m_db_connector.execute(sql)
+        if len(ret) == 0:
+            return
         return ret[0][0]
     
     def get_skip_subgroup_filter_by_mikan_id(self, mikan_id):
         sql = "select filter_val from anime_filter WHERE mikan_id={} and filter_type='skip_subgroup'".format(mikan_id)
         ret = self.m_db_connector.execute(sql)
-        return ret
+        skip_subgroup_list = []
+        for item in ret:
+            skip_subgroup_list.append(item[0])
+        return skip_subgroup_list
     
     # 全局filter
     def add_global_episode_offset_filter(self, episode_offset):
