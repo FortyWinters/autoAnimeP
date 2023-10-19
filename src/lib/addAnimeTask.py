@@ -85,7 +85,7 @@ class AddAnimeTask:
             if (episode in anime_task_cur_mikan_id) or (episode in exist_anime_task_cur_mikan_id) or \
                 (seed_status == 1) or \
                 (subgroup_id in skip_subgroup) or \
-                (episode <= episode_offset):
+                (episode < episode_offset):
                 self.logger.debug("[addAnimeTask] skip used torrent: {}.".format(torrent_name))
                 continue
             seed_info_cur_mikanId_and_episode = [torrent_name, subgroup_id]

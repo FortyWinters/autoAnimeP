@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             break;
                         case 'subscribe':
                             console.log('subscribe');
+                            subscribeAnime(mikanId)
                             downloadFromCurEpisode(mikanId, ep)
                             break;
                         default:
