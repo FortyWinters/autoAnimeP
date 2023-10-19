@@ -84,7 +84,7 @@
                                             <div class="episode" id="downloaded-sd" data-id="{{ anime.mikan_id }}" title="{{ seed.seed_name }}" style="background-color:rgb(88, 202, 255);">{{ seed.episode }}</div>
                                         </a>
                                     {% else %}
-                                        <div class="episode" id="failed-sd" data-id="{{ anime.mikan_id }}" title="{{ seed.seed_name }}" style="background-color:grey;">{{ seed.episode }}</div>
+                                        <div class="episode" id="failed-sd" data-id="{{ anime.mikan_id }}" data-url="{{ seed.seed_url }}" title="{{ seed.seed_name }}" style="background-color:grey;">{{ seed.episode }}</div>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}

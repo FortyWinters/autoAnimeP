@@ -455,4 +455,25 @@ def download_single_episode_by_subgroup():
     logger.info("[BP][ANIME] download_single_episode_by_subgroup success, mikan_id : {}, episode: {}, seed_url: {}".format(mikan_id, episode, seed_url))
     return jsonify({"code": 200, "message": "download_single_episode_by_subgroup", "data": None})
 
-    
+# 字幕组单一种子恢复
+@bp.route("/recover_single_seed", methods=['POST'])
+def recover_single_seed():
+    seed_url = request.args.get("seed_url")
+    update_anime_seed_seed_status_by_seed_url(seed_url, 0)
+
+    logger.info("[BP][ANIME] recover_single_seed success, seed_url : {}".format(seed_url))
+    return jsonify({"code": 200, "message": "recover_single_seed success", "data": None})
+
+# 番剧单集种子恢复
+@bp.route("/recover_episode_seed", methods=['POST'])
+def recover_episode_seed():
+    mikan_id = request.args.get("mikan_id")
+    episode = request.args.get("episode")
+
+    seed_list_used = query_anime_seed_by_condition(mikan_id=mikan_id, episode=episode, seed_status=1)
+    seed_url_list_used = []
+    for s in seed_list_used:
+        update_anime_seed_seed_status_by_seed_url(s["seed_url"], 0)
+
+    logger.info("[BP][ANIME] recover_episode_seed success, mikan_id : {}, episode: {}".format(mikan_id, episode))
+    return jsonify({"code": 200, "message": "recover_episode_seed success", "data": None})

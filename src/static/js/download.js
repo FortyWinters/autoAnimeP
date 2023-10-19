@@ -2,9 +2,9 @@ function getTorrentInfo() {
     fetch('/download/get_qb_download_progress', {method: 'GET'})
         .then(response => response.json())
         .then(data => {
-            const info_list = data.data;
+            const infoList = data.data;
             const infoDiv = document.getElementById('torrentInfo');
-            var html_string = `
+            var htmlString = `
                 <tr>
                     <th class="column-name">番名</th>
                     <th class="column-episode">集数</th>
@@ -18,10 +18,10 @@ function getTorrentInfo() {
                     <th class="column-state">状态</th>
                     <th class="column-button"></td>
                 </tr>`;
-            if (info_list.length > 0) {
-                info_list.forEach(function(info) {
+            if (infoList.length > 0) {
+                infoList.forEach(function(info) {
                     const done = Math.round(parseFloat(info.Done.trim()));
-                    html_string += `
+                    htmlString += `
                         <tr>
                             <td class="column-name" title='${info.Name}'>
                                 <a href="/anime/detail/${info.mikan_id}">${info.anime_name}</a>
@@ -45,7 +45,7 @@ function getTorrentInfo() {
                         </tr>`
                 });
             }
-            infoDiv.innerHTML = html_string;
+            infoDiv.innerHTML = htmlString;
             setTimeout(getTorrentInfo, 2000);
         })
         .catch(error => console.error('Error:', error));
@@ -53,8 +53,8 @@ function getTorrentInfo() {
 
 getTorrentInfo()
 
-function handleTaskDelete(torrent_name) {
-    fetch("/download/delete_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+function handleTaskDelete(torrentName) {
+    fetch("/download/delete_task_by_torrent_name?torrent_name=" + torrentName, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             window.location.reload();
@@ -64,8 +64,8 @@ function handleTaskDelete(torrent_name) {
         });
 }
 
-function handleTaskStart(torrent_name) {
-    fetch("/download/start_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+function handleTaskStart(torrentName) {
+    fetch("/download/start_task_by_torrent_name?torrent_name=" + torrentName, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             window.location.reload();
@@ -75,8 +75,8 @@ function handleTaskStart(torrent_name) {
         });
 }
 
-function handleTaskPause(torrent_name) {
-    fetch("/download/pause_task_by_torrent_name?torrent_name=" + torrent_name, {method: 'POST'})
+function handleTaskPause(torrentName) {
+    fetch("/download/pause_task_by_torrent_name?torrent_name=" + torrentName, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             window.location.reload();

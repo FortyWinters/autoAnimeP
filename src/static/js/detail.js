@@ -29,6 +29,26 @@ function showSeeds(subgroupId) {
     });
 }
 
+function recoverSingleSeed(seedUrl) {
+    fetch('/anime/recover_single_seed?seed_url=' + seedUrl, {method: 'POST'})
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        window.location.reload();
+    })
+    .catch(error => console.error('Error:', error)); 
+}
+
+function recoverEpisodeSeed(mikanId, episode) {
+    fetch('/anime/recover_episode_seed?mikan_id=' + mikanId + '&episode=' + episode, {method: 'POST'})
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        window.location.reload();
+    })
+    .catch(error => console.error('Error:', error)); 
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var contextMenus = document.querySelectorAll('.context-menu');
     var contextMenu;
@@ -65,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             downloadSingleEpisode(mikanId, ep);
                             break;
                         case 'recover':
-                            console.log('recover');
+                            recoverEpisodeSeed(mikanId, ep);
                             break;
                         case 'subscribe':
                             console.log('subscribe');
@@ -95,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case 'failed-sd':
                     switch (e.target.id) {
                         case 'recover':
-                            console.log('recover');
+                            recoverSingleSeed(seedUrl);
                             break;
                         default:
                             break;
