@@ -52,7 +52,6 @@ services:
       - 5555:5555
     volumes:
       - ./log:/autoAnime/log
-      - ./seed:/autoAnime/seed
       - ./config_file:/autoAnime/config_file
       - ./downloads:/autoAnime/downloads
     depends_on:

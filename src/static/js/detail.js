@@ -49,6 +49,16 @@ function recoverEpisodeSeed(mikanId, episode) {
     .catch(error => console.error('Error:', error)); 
 }
 
+function downloadFromCurEpisode(mikan_id, episode) {
+    fetch('/setting/add_episode_offset_filter_by_mikan_id?mikan_id=' + mikan_id + '&episode_offset=' + episode, {method: 'POST'})
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            window.location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var contextMenus = document.querySelectorAll('.context-menu');
     var contextMenu;
@@ -74,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             break;
                         case 'subscribe':
                             console.log('subscribe');
+                            downloadFromCurEpisode(mikanId, ep)
                             break;
                         default:
                             break;
@@ -88,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             recoverEpisodeSeed(mikanId, ep);
                             break;
                         case 'subscribe':
+                            downloadFromCurEpisode(mikanId, ep)
                             console.log('subscribe');
                             break;
                         default:
